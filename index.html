@@ -39,27 +39,6 @@
             font-size: 14px;
             margin-bottom: 20px;
         }
-        /* 模式选择 */
-        .mode-panel {
-            margin-bottom: 15px;
-            padding: 12px;
-            background: #1e1e38;
-            border-radius: 10px;
-        }
-        .mode-btn {
-            padding: 8px 14px;
-            margin: 0 5px;
-            border: none;
-            border-radius: 6px;
-            background: #272750;
-            color: #fff;
-            cursor: pointer;
-            font-size: 15px;
-        }
-        .mode-btn.active {
-            background: #c92a2a;
-        }
-        /* 联机面板 */
         .online-panel {
             margin-bottom: 15px;
             padding: 12px;
@@ -166,34 +145,14 @@
         .cell:hover:not(.eaten) { background: #3a3a70; transform: scale(1.05); }
         .cell:active:not(.eaten) { transform: scale(0.95); }
         .cell.eaten { background: #000; border-color: #111; cursor: not-allowed; transform: none; }
+
         /* 自己的毒药全程可见 */
         .cell.my-poison-p1 { background: #c92a2a !important; border-color: #ff8787 !important; }
         .cell.my-poison-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; }
         /* 对方毒药游戏结束才显示 */
         .cell.oppo-poison-p1 { background: #c92a2a !important; border-color: #ff8787 !important; animation: poisonBlink 0.8s infinite alternate; }
-        .cell.oppo-poison-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; animation: poisonBlink 0.8s infinite alternate; }
+        .cell.oppo-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; animation: poisonBlink 0.8s infinite alternate; }
         @keyframes poisonBlink { from { opacity: 0.8; } to { opacity: 1; } }
-
-        /* ========== 胜负动画 ========== */
-        @keyframes failShake {
-            0%,100% { transform: translateX(0); }
-            10%,30%,50%,70%,90% { transform: translateX(-8px); }
-            20%,40%,60%,80% { transform: translateX(8px); }
-        }
-        @keyframes failFlash {
-            0%,100% { opacity:1; }
-            50% { opacity:0.3; }
-        }
-        .fail-animate {
-            animation: failShake 0.6s ease, failFlash 0.6s ease 3;
-        }
-        @keyframes winPulse {
-            0%,100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,215,0,0); }
-            50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(255,215,0,0.8); }
-        }
-        .win-animate {
-            animation: winPulse 0.8s ease infinite alternate;
-        }
 
         .mask {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -214,12 +173,7 @@
     <h1>女巫的毒药</h1>
     <div class="rule-desc">双人暗选毒药 · 允许同格毒药 · 吃到对方毒药即败</div>
 
-    <div class="mode-panel">
-        <button class="mode-btn active" onclick="setMode('online')">联机对战</button>
-        <button class="mode-btn" onclick="setMode('ai')">人机AI对战</button>
-    </div>
-
-    <div class="online-panel" id="onlinePanel">
+    <div class="online-panel">
         <input type="text" id="roomId" placeholder="输入房间号">
         <button class="online-btn" onclick="createRoom()">创建房间</button>
         <button class="online-btn" onclick="joinRoom()">加入房间</button>
@@ -243,8 +197,6 @@
 let peer, conn;
 let isOnline = false;
 let myPlayer = 0;
-// 严格隔离模式：online/ai 完全独立，绝不串台
-let gameMode = "online";
 
 let totalCells = 9;
 let poison1 = -1;
@@ -253,24 +205,6 @@ let eatenList = [];
 let nowPlayer = 1;
 let gameStage = "select";
 let allCells = [];
-
-// ========== 模式切换：彻底隔离联机/人机，绝不串台 ==========
-function setMode(mode){
-    gameMode = mode;
-    // 按钮高亮
-    document.querySelectorAll(".mode-btn").forEach(btn=>btn.classList.remove("active"));
-    event.target.classList.add("active");
-    // 联机面板只在联机模式显示
-    document.getElementById("onlinePanel").style.display = mode==="online" ? "block" : "none";
-    // 重置所有状态，彻底清干净
-    resetGame();
-    isOnline = false;
-    myPlayer = 0;
-    // 人机模式固定身份
-    if(mode==="ai"){
-        myPlayer = 1;
-    }
-}
 
 function createRoom() {
     const roomId = document.getElementById("roomId").value || Math.random().toString(36).slice(2,8);
@@ -317,17 +251,15 @@ function bindConn() {
                     document.getElementById("turnHint").innerText=data.msg;
                     document.getElementById("turnHint").className="turn-hint turn-end";
                     lockAllCell();
-                    if(data.winPlayer===1) triggerWinAnim(1);
-                    if(data.winPlayer===2) triggerWinAnim(2);
                 }
                 break;
         }
     });
     conn.on('close', ()=>{isOnline=false;myPlayer=0;document.getElementById("onlineStatus").innerText="❌ 对手断开";});
 }
-function sendData(type,val,winPlayer=null){
+function sendData(type,val){
     if(!isOnline||!conn)return;
-    conn.send({type,val,eaten:eatenList,player:nowPlayer,stage:gameStage,msg:document.getElementById("turnHint").innerText,winPlayer});
+    conn.send({type,val,eaten:eatenList,player:nowPlayer,stage:gameStage,msg:document.getElementById("turnHint").innerText});
 }
 function setDiff(num){totalCells=num;resetGame();gameStage="pick1";updateUI();sendData("diff",num);}
 function initGrid(){
@@ -344,85 +276,46 @@ function initGrid(){
 function showMask(t){document.getElementById("mask").innerText=t;document.getElementById("mask").style.display="flex";}
 function hideMask(){document.getElementById("mask").style.display="none";}
 
-// 平局判定
+// 平局判定：格子全部吃完无人中招
 function checkTieGame(){
     if(eatenList.length >= totalCells){
         gameStage = "end";
         document.getElementById("turnHint").innerText = "⚪ 全部格子吃完，平局！";
         document.getElementById("turnHint").className = "turn-hint turn-end";
         lockAllCell();
-        sendData("eat",null);
+        sendData("eat");
         return true;
     }
     return false;
 }
 
-// ========== 核心修复1：AI瞬间反应 0延迟 ==========
-function aiPlay(){
-    // 严格限定：仅人机模式+对战阶段+AI回合才执行
-    if(gameMode !== "ai" || gameStage !== "battle" || nowPlayer !== 2) return;
-    // 无任何延迟，瞬间执行
-    // 筛选安全格子：不吃自己毒药、不吃玩家毒药、没被吃掉
-    let available = [];
-    for(let i=0;i<totalCells;i++){
-        if(!eatenList.includes(i) && i !== poison2 && i !== poison1){
-            available.push(i);
-        }
-    }
-    // 随机选一个安全格，瞬间点击
-    let pick = available[Math.floor(Math.random() * available.length)];
-    clickCell(pick);
-}
-
-// ========== 胜负动画 ==========
-function triggerFailAnim(){
-    document.getElementById("gridBox").classList.add("fail-animate");
-    setTimeout(()=>document.getElementById("gridBox").classList.remove("fail-animate"),600);
-}
-function triggerWinAnim(winner){
-    let target = winner===1 ? poison1 : poison2;
-    allCells[target].classList.add("win-animate");
-}
-
 function clickCell(id){
     if(eatenList.includes(id)||gameStage==="end")return;
-
-    // ========== 联机模式权限 ==========
-    if(gameMode === "online"){
-        // 没联机直接禁止操作
-        if(!isOnline) return;
-        if(gameStage==="pick1"&&myPlayer!==1)return;
-        if(gameStage==="pick2"&&myPlayer!==2)return;
-        if(gameStage==="battle"&&myPlayer!==nowPlayer)return;
+    if(isOnline){
+        if(gameStage==="pick1"&&myPlayer!==1){alert("等待玩家1选毒");return;}
+        if(gameStage==="pick2"&&myPlayer!==2){alert("等待玩家2选毒");return;}
+        if(gameStage==="battle"&&myPlayer!==nowPlayer){alert("不是你的回合");return;}
     }
 
-    // ========== 人机模式权限 ==========
-    if(gameMode === "ai"){
-        // 玩家只能在自己回合操作
-        if(gameStage==="battle" && nowPlayer!==1) return;
-    }
+    // ==============================================
+    // 核心修改：**完全允许两人选同一个格子当毒药**
+    // 删掉所有锁格、变暗、拦截、alert提示！
+    // 选毒阶段所有格子完全一致，绝不泄密！
+    // ==============================================
 
-    // ========== 选毒阶段 ==========
+    // 玩家1选毒药
     if(gameStage==="pick1"){
         poison1 = id;
         gameStage = "pick2";
         updateUI();
         sendData("pick1", id);
-        // 人机模式：AI瞬间选毒，无延迟
-        if(gameMode === "ai"){
-            poison2 = Math.floor(Math.random() * totalCells);
-            gameStage = "battle";
-            updateUI();
-            showMask("✅ 双方选毒完毕，游戏开始");
-            setTimeout(()=>hideMask(),1500);
-        }else{
-            showMask("你已选毒，等待玩家2");
-            setTimeout(()=>hideMask(),2000);
-        }
+        showMask("你已选毒，等待玩家2");
+        setTimeout(()=>hideMask(),2000);
         return;
     }
 
-    if(gameMode === "online" && gameStage==="pick2"){
+    // 玩家2选毒药：**无条件允许重复，无拦截无提示**
+    if(gameStage==="pick2"){
         poison2 = id;
         gameStage = "battle";
         updateUI();
@@ -430,63 +323,28 @@ function clickCell(id){
         return;
     }
 
-    // ========== 对战阶段 ==========
+    // ============= 对战阶段规则 =============
+    // 吃到【自己的毒药】：正常吃掉，无事发生
+    // 吃到【对方的毒药】：直接输掉游戏
     eatenList.push(id);
     if(checkTieGame()) return;
 
-    // ========== 核心修复2：胜负判定严格区分模式，绝不串台 ==========
-    // 【联机模式】胜负
-    if(gameMode === "online"){
-        if(nowPlayer===1 && id === poison2){
-            gameStage="end";
-            document.getElementById("turnHint").innerText="💀 玩家1中招！玩家2获胜！";
-            document.getElementById("turnHint").className="turn-hint turn-end";
-            triggerFailAnim();
-            triggerWinAnim(2);
-            lockAllCell();
-            sendData("eat",null,2);
-            return;
-        }
-        if(nowPlayer===2 && id === poison1){
-            gameStage="end";
-            document.getElementById("turnHint").innerText="💀 玩家2中招！玩家1获胜！";
-            document.getElementById("turnHint").className="turn-hint turn-end";
-            triggerWinAnim(1);
-            lockAllCell();
-            sendData("eat",null,1);
-            return;
-        }
+    // 胜负判定
+    if(nowPlayer===1 && id === poison2){
+        gameStage="end";
+        document.getElementById("turnHint").innerText="💀 玩家1中招！玩家2获胜！";
+        document.getElementById("turnHint").className="turn-hint turn-end";
+        lockAllCell();sendData("eat");return;
+    }
+    if(nowPlayer===2 && id === poison1){
+        gameStage="end";
+        document.getElementById("turnHint").innerText="💀 玩家2中招！玩家1获胜！";
+        document.getElementById("turnHint").className="turn-hint turn-end";
+        lockAllCell();sendData("eat");return;
     }
 
-    // 【人机模式】胜负（和联机完全隔离，单独判定）
-    if(gameMode === "ai"){
-        if(nowPlayer===1 && id === poison2){
-            // 玩家吃到AI毒药 → 玩家输 AI赢
-            gameStage="end";
-            document.getElementById("turnHint").innerText="💀 你中招！AI获胜！";
-            document.getElementById("turnHint").className="turn-hint turn-end";
-            triggerFailAnim();
-            triggerWinAnim(2);
-            lockAllCell();
-            return;
-        }
-        if(nowPlayer===2 && id === poison1){
-            // AI吃到玩家毒药 → AI输 玩家赢
-            gameStage="end";
-            document.getElementById("turnHint").innerText="🎉 AI中招！你获胜！";
-            document.getElementById("turnHint").className="turn-hint turn-end";
-            triggerWinAnim(1);
-            lockAllCell();
-            return;
-        }
-    }
-
-    // 切换回合
     nowPlayer = nowPlayer===1?2:1;
-    updateUI();
-    sendData("eat",null);
-    // 人机模式：瞬间触发AI行动
-    if(gameMode === "ai") aiPlay();
+    updateUI();sendData("eat");
 }
 
 function updateUI(){
@@ -494,29 +352,20 @@ function updateUI(){
     if(gameStage==="select"){hint.innerText="请先选择宫格或联机";hint.className="turn-hint turn-default";}
     else if(gameStage==="pick1"){hint.innerText="玩家1：请选择毒药";hint.className="turn-hint turn-p1";}
     else if(gameStage==="pick2"){hint.innerText="玩家2：请选择毒药";hint.className="turn-hint turn-p2";}
-    else if(gameStage==="battle"){
-        if(gameMode==="ai"){
-            hint.innerText = nowPlayer===1 ? "你的回合，请点击格子" : "AI思考中...";
-        }else{
-            hint.innerText=`玩家${nowPlayer} 回合，请点击格子`;
-        }
-        hint.className=nowPlayer===1?"turn-hint turn-p1":"turn-hint turn-p2";
-    }
+    else if(gameStage==="battle"){hint.innerText=`玩家${nowPlayer} 回合，请点击格子`;hint.className=nowPlayer===1?"turn-hint turn-p1":"turn-hint turn-p2";}
 
     allCells.forEach((cell,idx)=>{
-        cell.classList.remove("eaten","my-poison-p1","my-poison-p2","oppo-poison-p1","oppo-poison-p2","win-animate","fail-animate");
+        cell.classList.remove("eaten","my-poison-p1","my-poison-p2","oppo-poison-p1","oppo-p2");
         if(eatenList.includes(idx))cell.classList.add("eaten");
 
-        // 自己毒药全程高亮
+        // 自己的毒药：全程高亮可见
         if(myPlayer===1 && idx===poison1) cell.classList.add("my-poison-p1");
         if(myPlayer===2 && idx===poison2) cell.classList.add("my-poison-p2");
-        // 人机模式：玩家只看自己毒药
-        if(gameMode==="ai" && idx===poison1) cell.classList.add("my-poison-p1");
 
-        // 游戏结束揭晓
+        // 游戏结束：才显示对方毒药
         if(gameStage==="end"){
             if(idx===poison1) cell.classList.add("oppo-poison-p1");
-            if(idx===poison2) cell.classList.add("oppo-poison-p2");
+            if(idx===poison2) cell.classList.add("oppo-p2");
         }
     });
 }
@@ -528,5 +377,7 @@ function resetGame(){
 }
 window.onload=()=>{initGrid();updateUI();};
 </script>
+</body>
+</html>
 </body>
 </html>
