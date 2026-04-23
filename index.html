@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>网页版模拟人生 | Life Simulator</title>
+    <title>网页版模拟人生 | Life Simulator（完整版）</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
             background: #1e1e2f;
             color: #eee;
             padding: 20px;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             line-height: 1.6;
         }
@@ -28,6 +28,19 @@
             text-align: center;
             margin-bottom: 20px;
             color: #7cb3ff;
+        }
+        .info-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .time-info, .family-info, .debt-info {
+            flex: 1;
+            min-width: 250px;
+            background: #333355;
+            padding: 12px;
+            border-radius: 8px;
         }
         .status-box {
             display: grid;
@@ -56,12 +69,6 @@
         .energy{background:#ffd972;}
         .health{background:#72ff98;}
         .mood{background:#b272ff;}
-        .time-info{
-            background:#333355;
-            padding:12px;
-            border-radius:8px;
-            margin-bottom:15px;
-        }
         .btn-group{
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px,1fr));
@@ -80,11 +87,15 @@
         button:hover{
             background:#3556d9;
         }
+        button:disabled{
+            background:#666;
+            cursor:not-allowed;
+        }
         .log{
             background:#222238;
             padding:15px;
             border-radius:8px;
-            height:200px;
+            height:250px;
             overflow-y:auto;
             margin-top:20px;
             font-size:14px;
@@ -92,17 +103,59 @@
         .warning{color:#ff6b6b;}
         .good{color:#6bff99;}
         .normal{color:#ccc;}
+        .special{color:#ffcc72;}
+        .property-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background: #383858;
+            border-radius: 8px;
+        }
+        .property-item {
+            padding: 5px 10px;
+            background: #4a4a70;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .career-promote {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333355;
+            border-radius: 8px;
+            display: none;
+        }
+        .career-promote.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>网页模拟人生 Life Simulator</h1>
+    <h1>网页模拟人生 Life Simulator（完整版）</h1>
 
-    <div class="time-info">
-        <div>当前时间：<span id="time"></span></div>
-        <div>角色年龄：<span id="age">18</span> 岁</div>
-        <div>拥有金钱：<span id="money">1000</span> 元</div>
-        <div>当前职业：<span id="career">无业</span></div>
+    <div class="info-group">
+        <div class="time-info">
+            <div>当前时间：<span id="time"></span></div>
+            <div>角色年龄：<span id="age">18</span> 岁</div>
+            <div>拥有金钱：<span id="money">1000</span> 元</div>
+            <div>当前职业：<span id="career">无业</span> Lv.<span id="careerLv">0</span></div>
+        </div>
+        <div class="family-info">
+            <div>感情状态：<span id="loveStatus">单身</span></div>
+            <div>伴侣：<span id="partner">无</span></div>
+            <div>子女：<span id="children">0</span> 个</div>
+        </div>
+        <div class="debt-info">
+            <div>负债金额：<span id="debt">0</span> 元</div>
+            <div>健康状态：<span id="healthStatus">健康</span></div>
+        </div>
+    </div>
+
+    <div class="property-box">
+        <div class="property-item">房产：<span id="house">无</span></div>
+        <div class="property-item">车辆：<span id="car">无</span></div>
     </div>
 
     <div class="status-box">
@@ -126,17 +179,47 @@
             <div id="mood-val">100</div>
             <div class="bar"><div class="fill mood" id="mood-bar" style="width:100%"></div></div>
         </div>
+        <div class="status-item">
+            <div>智力</div>
+            <div id="intelligence-val">50</div>
+            <div class="bar"><div class="fill mood" id="intelligence-bar" style="width:50%"></div></div>
+        </div>
+        <div class="status-item">
+            <div>魅力</div>
+            <div id="charm-val">50</div>
+            <div class="bar"><div class="fill good" id="charm-bar" style="width:50%"></div></div>
+        </div>
+    </div>
+
+    <div class="career-promote" id="careerPromote">
+        <span class="special">【升职提示】</span> 你已满足升职条件，点击<button onclick="promoteCareer()" style="padding:5px 10px; margin-left:10px">升职</button>
     </div>
 
     <div class="btn-group">
+        <!-- 基础行动 -->
         <button onclick="actionEat()">吃饭</button>
         <button onclick="actionSleep()">睡觉</button>
         <button onclick="actionStudy()">学习</button>
         <button onclick="actionSport()">健身</button>
         <button onclick="actionSocial()">社交</button>
         <button onclick="actionPlay()">娱乐</button>
-        <button onclick="actionWork()">上班</button>
+        <!-- 职业相关 -->
         <button onclick="chooseCareer()">就职</button>
+        <button onclick="actionWork()" id="workBtn" disabled>上班</button>
+        <!-- 恋爱结婚 -->
+        <button onclick="actionDate()" id="dateBtn" disabled>约会</button>
+        <button onclick="proposeMarriage()" id="proposeBtn" disabled>求婚</button>
+        <button onclick="haveChild()" id="childBtn" disabled>生子</button>
+        <!-- 生病医院 -->
+        <button onclick="goHospital()" id="hospitalBtn" disabled>去医院</button>
+        <!-- 消费/房产车辆 -->
+        <button onclick="buyHouse()">买房</button>
+        <button onclick="buyCar()">买车</button>
+        <button onclick="buyLuxury()">奢侈品</button>
+        <!-- 负债相关 -->
+        <button onclick="borrowMoney()">借钱</button>
+        <button onclick="repayDebt()">还债</button>
+        <!-- 存档读档 -->
         <button onclick="saveGame()">本地存档</button>
         <button onclick="loadGame()">读取存档</button>
     </div>
@@ -145,80 +228,562 @@
 </div>
 
 <script>
-    // 游戏核心数据
+    // 游戏核心数据（新增所有需求相关字段）
     let gameData = {
+        // 时间系统
         year: 2025, month: 1, day: 1, hour: 8,
-        age: 18, money: 1000, career: "无业", careerLv: 1,
+        // 基础属性
+        age: 18, money: 1000, debt: 0,
         hunger: 100, energy: 100, health: 100, mood: 100,
-        intelligence: 50, charm: 50, physique: 50, creativity: 50
+        intelligence: 50, charm: 50, physique: 50, creativity: 50,
+        // 职业系统（新增多职业+升职规则）
+        career: "无业", careerLv: 0, careerExp: 0,
+        // 职业配置（多职业+升职条件+薪资）
+        careerConfig: {
+            "无业": { lv: 0, salary: 0, expNeed: 0 },
+            "上班族": {
+                lv1: { salary: 3000, expNeed: 100, condition: { intelligence: 60 } },
+                lv2: { salary: 5000, expNeed: 250, condition: { intelligence: 75 } },
+                lv3: { salary: 8000, expNeed: 500, condition: { intelligence: 90 } }
+            },
+            "销售": {
+                lv1: { salary: 2500, expNeed: 100, condition: { charm: 60 } },
+                lv2: { salary: 4500, expNeed: 250, condition: { charm: 75 } },
+                lv3: { salary: 7500, expNeed: 500, condition: { charm: 90 } }
+            },
+            "自由职业": {
+                lv1: { salary: 2000, expNeed: 100, condition: { creativity: 60 } },
+                lv2: { salary: 4000, expNeed: 250, condition: { creativity: 75 } },
+                lv3: { salary: 6500, expNeed: 500, condition: { creativity: 90 } }
+            },
+            "程序员": {
+                lv1: { salary: 4000, expNeed: 120, condition: { intelligence: 70 } },
+                lv2: { salary: 7000, expNeed: 300, condition: { intelligence: 85 } },
+                lv3: { salary: 12000, expNeed: 600, condition: { intelligence: 95 } }
+            },
+            "医生": {
+                lv1: { salary: 4500, expNeed: 120, condition: { intelligence: 75, health: 80 } },
+                lv2: { salary: 8000, expNeed: 300, condition: { intelligence: 85, health: 85 } },
+                lv3: { salary: 13000, expNeed: 600, condition: { intelligence: 95, health: 90 } }
+            }
+        },
+        // 恋爱结婚生子系统
+        loveStatus: "单身", // 单身/恋爱/已婚
+        partner: "无",
+        partnerMood: 50, // 伴侣好感度（0-100，低于30分手）
+        children: 0,
+        canHaveChild: false, // 是否可生子（已婚+年龄25-45）
+        // 房产车辆系统
+        house: "无", // 无/普通住宅/豪宅
+        car: "无", // 无/代步车/豪车
+        // 健康系统（生病状态）
+        healthStatus: "健康", // 健康/轻微生病/严重生病
+        sickDays: 0, // 生病天数
+        // 负债系统
+        debtRate: 0.05, // 月利率5%
+        // 随机事件冷却（避免频繁触发大事件）
+        bigEventCD: 0
     };
 
     // 每小时自然消耗
     const decRate = { hunger:5, energy:3, health:1, mood:2 };
-    // 随机事件库
-    const events = [
-        {txt:"捡到100元！", type:"good", fn:()=>gameData.money+=100},
-        {txt:"身体轻微不适", type:"warning", fn:()=>gameData.health-=5},
-        {txt:"朋友发来问候，心情变好", type:"good", fn:()=>gameData.mood+=10},
-        {txt:"莫名烦躁", type:"warning", fn:()=>gameData.mood-=8}
-    ];
 
-    // 更新界面显示
+    // 新增：更多随机人生事件（含小事件、大事件，覆盖所有需求）
+    const events = {
+        // 小型事件（30%概率，每小时）
+        small: [
+            {txt:"捡到100元！", type:"good", fn:()=>gameData.money+=100},
+            {txt:"身体轻微不适", type:"warning", fn:()=>{gameData.health-=5; checkSick()}},
+            {txt:"朋友发来问候，心情变好", type:"good", fn:()=>gameData.mood+=10},
+            {txt:"莫名烦躁", type:"warning", fn:()=>gameData.mood-=8},
+            {txt:"学习时有所感悟，智力+1", type:"good", fn:()=>gameData.intelligence+=1},
+            {txt:"出门忘带钱，尴尬不已", type:"warning", fn:()=>gameData.mood-=5},
+            {txt:"帮邻居做事，获得50元报酬", type:"good", fn:()=>gameData.money+=50},
+            {txt:"熬夜导致精力下降更快", type:"warning", fn:()=>gameData.energy-=5}
+        ],
+        // 大型事件（20%概率，每天，有冷却）
+        big: [
+            // 职业相关
+            {txt:"公司裁员，你不幸被裁！", type:"warning", fn:()=>{
+                gameData.career = "无业";
+                gameData.careerLv = 0;
+                gameData.careerExp = 0;
+                updateBtnStatus();
+            }},
+            {txt:"工作表现突出，获得奖金2000元！", type:"good", fn:()=>{
+                gameData.money += 2000;
+                gameData.careerExp += 50;
+            }},
+            {txt:"行业红利，你的薪资临时上涨20%！", type:"good", fn:()=>{
+                const salary = getCurrentSalary();
+                gameData.money += Math.floor(salary * 0.2);
+            }},
+            // 恋爱婚姻相关
+            {txt:"在社交场合遇到心动的人，魅力+3", type:"good", fn:()=>{
+                gameData.charm += 3;
+                if(gameData.loveStatus === "单身"){
+                    addLog("对方对你有好感，可尝试约会！", "special");
+                    gameData.loveStatus = "暧昧";
+                    updateUI();
+                }
+            }},
+            {txt:"伴侣生气了，好感度-15", type:"warning", fn:()=>{
+                gameData.partnerMood -= 15;
+                checkBreakup();
+            }},
+            {txt:"和伴侣一起旅行，好感度+20，花费800元", type:"good", fn:()=>{
+                gameData.partnerMood += 20;
+                gameData.money -= 800;
+            }},
+            // 健康生病相关
+            {txt:"突发疾病，健康-30，需及时就医！", type:"warning", fn:()=>{
+                gameData.health -= 30;
+                gameData.healthStatus = "严重生病";
+                gameData.sickDays = 7;
+                checkSick();
+            }},
+            {txt:"体检发现小问题，及时调理，健康+5", type:"good", fn:()=>{
+                gameData.health += 5;
+                gameData.money -= 300;
+            }},
+            // 金钱负债相关
+            {txt:"投资失败，损失3000元", type:"warning", fn:()=>{
+                gameData.money -= 3000;
+                checkDebt();
+            }},
+            {txt:"继承遗产，获得10000元！", type:"good", fn:()=>gameData.money += 10000},
+            {txt:"欠的钱逾期，产生违约金500元", type:"warning", fn:()=>{
+                gameData.debt += 500;
+                addLog(`负债变为${gameData.debt}元`, "warning");
+            }},
+            // 房产车辆相关
+            {txt:"房产升值，价值增加20000元", type:"good", fn:()=>{
+                if(gameData.house !== "无"){
+                    addLog(`你的${gameData.house}升值了！`, "good");
+                }
+            }},
+            {txt:"车辆出现故障，维修花费800元", type:"warning", fn:()=>{
+                if(gameData.car !== "无"){
+                    gameData.money -= 800;
+                }
+            }},
+            // 其他大事件
+            {txt:"中奖5000元，运气爆棚！", type:"good", fn:()=>gameData.money += 5000},
+            {txt:"被人诈骗，损失1500元", type:"warning", fn:()=>{
+                gameData.money -= 1500;
+                checkDebt();
+            }},
+            {txt:"遇到贵人相助，职业经验+100", type:"good", fn:()=>gameData.careerExp += 100}
+        ]
+    };
+
+    // 房产车辆价格配置
+    const propertyConfig = {
+        house: {
+            "普通住宅": 150000,
+            "豪宅": 500000
+        },
+        car: {
+            "代步车": 30000,
+            "豪车": 150000
+        },
+        luxury: 5000 // 奢侈品价格
+    };
+
+    // 更新界面显示（适配所有新增字段）
     function updateUI(){
+        // 时间、基础信息
         document.getElementById('time').innerText = `${gameData.year}年${gameData.month}月${gameData.day}日 ${gameData.hour}时`;
         document.getElementById('age').innerText = gameData.age;
         document.getElementById('money').innerText = gameData.money;
         document.getElementById('career').innerText = gameData.career;
+        document.getElementById('careerLv').innerText = gameData.careerLv;
+        // 恋爱婚姻信息
+        document.getElementById('loveStatus').innerText = gameData.loveStatus;
+        document.getElementById('partner').innerText = gameData.partner;
+        document.getElementById('children').innerText = gameData.children;
+        // 负债、健康信息
+        document.getElementById('debt').innerText = gameData.debt;
+        document.getElementById('healthStatus').innerText = gameData.healthStatus;
+        // 房产车辆信息
+        document.getElementById('house').innerText = gameData.house;
+        document.getElementById('car').innerText = gameData.car;
 
-        // 状态数值+进度条
-        const stats = ['hunger','energy','health','mood'];
+        // 状态数值+进度条（新增智力、魅力）
+        const stats = ['hunger','energy','health','mood','intelligence','charm'];
         stats.forEach(s=>{
             document.getElementById(`${s}-val`).innerText = gameData[s];
             document.getElementById(`${s}-bar`).style.width = gameData[s]+"%";
         });
+
+        // 升职提示显示/隐藏
+        const canPromote = checkPromoteCondition();
+        document.getElementById('careerPromote').classList.toggle('show', canPromote);
+
+        // 更新按钮状态
+        updateBtnStatus();
     }
 
-    // 时间流逝
+    // 更新按钮可用状态
+    function updateBtnStatus(){
+        // 上班按钮：有职业才能点击
+        document.getElementById('workBtn').disabled = gameData.career === "无业";
+        // 约会按钮：单身/暧昧才能点击
+        document.getElementById('dateBtn').disabled = gameData.loveStatus === "已婚";
+        // 求婚按钮：恋爱状态才能点击
+        document.getElementById('proposeBtn').disabled = gameData.loveStatus !== "恋爱";
+        // 生子按钮：已婚+年龄25-45才能点击
+        document.getElementById('childBtn').disabled = !(gameData.loveStatus === "已婚" && gameData.age >=25 && gameData.age <=45);
+        // 医院按钮：生病才能点击
+        document.getElementById('hospitalBtn').disabled = gameData.healthStatus === "健康";
+        // 还债按钮：有负债才能点击
+        document.getElementById('repayDebt').disabled = gameData.debt <= 0;
+    }
+
+    // 时间流逝（新增月结算：负债计息、年龄增长）
     function passHour(){
         gameData.hour++;
-        if(gameData.hour>=24){gameData.hour=0;gameData.day++;}
-        if(gameData.day>30){gameData.day=1;gameData.month++;}
-        if(gameData.month>12){gameData.month=1;gameData.year++;gameData.age++;}
+        // 天、月、年切换
+        if(gameData.hour>=24){
+            gameData.hour=0;
+            gameData.day++;
+            // 每天触发大型事件（有冷却）
+            if(gameData.bigEventCD <= 0 && Math.random() < 0.2){
+                triggerBigEvent();
+                gameData.bigEventCD = 3; // 3天冷却
+            }else{
+                gameData.bigEventCD = Math.max(0, gameData.bigEventCD - 1);
+            }
+        }
+        if(gameData.day>30){
+            gameData.day=1;
+            gameData.month++;
+            // 每月结算：负债计息
+            if(gameData.debt > 0){
+                const interest = Math.floor(gameData.debt * gameData.debtRate);
+                gameData.debt += interest;
+                addLog(`负债计息${interest}元，当前负债${gameData.debt}元`, "warning");
+            }
+        }
+        if(gameData.month>12){
+            gameData.month=1;
+            gameData.year++;
+            gameData.age++;
+            addLog(`你满${gameData.age}岁了！`, "special");
+            // 年龄影响：50岁后属性缓慢下降
+            if(gameData.age >=50){
+                gameData.intelligence = Math.max(30, gameData.intelligence - 1);
+                gameData.charm = Math.max(30, gameData.charm - 1);
+                gameData.physique = Math.max(20, gameData.physique - 2);
+            }
+            // 已婚且年龄超45，无法生子
+            if(gameData.age >45){
+                gameData.canHaveChild = false;
+            }
+        }
 
         // 自然衰减
         Object.keys(decRate).forEach(k=>{
             gameData[k] = Math.max(0, gameData[k]-decRate[k]);
         });
 
-        // 30%概率触发随机事件
+        // 生病状态下，健康额外下降
+        if(gameData.healthStatus !== "健康"){
+            gameData.health -= 3;
+            gameData.sickDays--;
+            if(gameData.sickDays <= 0){
+                gameData.healthStatus = "健康";
+                addLog("你的病痊愈了！", "good");
+            }
+        }
+
+        // 30%概率触发小型事件
         if(Math.random()<0.3){
-            const e = events[Math.floor(Math.random()*events.length)];
+            const e = events.small[Math.floor(Math.random()*events.small.length)];
             e.fn();
             addLog(e.txt, e.type);
         }
-        updateUI();
+
+        // 检查各种状态（升职、分手、死亡等）
+        checkPromoteCondition();
+        checkBreakup();
         checkDeath();
+        checkSick();
+        updateUI();
     }
 
-    // 死亡判定
+    // 触发大型事件
+    function triggerBigEvent(){
+        const e = events.big[Math.floor(Math.random()*events.big.length)];
+        e.fn();
+        addLog(`【人生大事】${e.txt}`, e.type);
+    }
+
+    // 职业系统：获取当前薪资
+    function getCurrentSalary(){
+        if(gameData.career === "无业") return 0;
+        const career = gameData.careerConfig[gameData.career];
+        return career[`lv${gameData.careerLv}`].salary;
+    }
+
+    // 职业系统：检查升职条件
+    function checkPromoteCondition(){
+        if(gameData.career === "无业" || gameData.careerLv >=3) return false;
+        const career = gameData.careerConfig[gameData.career];
+        const nextLv = gameData.careerLv + 1;
+        const nextConfig = career[`lv${nextLv}`];
+        // 经验达标 + 属性达标
+        const expOk = gameData.careerExp >= nextConfig.expNeed;
+        const conditionOk = Object.keys(nextConfig.condition).every(key => {
+            return gameData[key] >= nextConfig.condition[key];
+        });
+        return expOk && conditionOk;
+    }
+
+    // 职业系统：升职操作
+    function promoteCareer(){
+        if(!checkPromoteCondition()) return;
+        gameData.careerLv++;
+        gameData.careerExp = 0;
+        const salary = getCurrentSalary();
+        addLog(`恭喜升职！当前职业等级Lv.${gameData.careerLv}，月薪${salary}元`, "good");
+        updateUI();
+    }
+
+    // 职业系统：选择职业
+    function chooseCareer(){
+        const careers = ["上班族", "销售", "自由职业", "程序员", "医生"];
+        const choice = prompt(`请选择职业（输入编号）：\n1.${careers[0]}\n2.${careers[1]}\n3.${careers[2]}\n4.${careers[3]}\n5.${careers[4]}`);
+        if(!choice || isNaN(choice) || choice <1 || choice>5) {
+            addLog("选择无效，未就职", "warning");
+            return;
+        }
+        gameData.career = careers[choice-1];
+        gameData.careerLv = 1;
+        gameData.careerExp = 0;
+        addLog(`你成功就职：${gameData.career} Lv.1`, "good");
+        updateUI();
+    }
+
+    // 恋爱结婚生子系统：约会（提升好感度）
+    function actionDate(){
+        if(gameData.loveStatus === "单身"){
+            gameData.loveStatus = "恋爱";
+            gameData.partner = gameData.gender === "男" ? "心仪的女生" : "心仪的男生";
+            gameData.partnerMood = 60;
+            gameData.money -= 100;
+            addLog(`你和${gameData.partner}约会，花费100元，好感度60`, "good");
+        }else if(gameData.loveStatus === "暧昧"){
+            gameData.loveStatus = "恋爱";
+            gameData.partnerMood = 70;
+            gameData.money -= 100;
+            addLog(`你和${gameData.partner}正式确立关系，好感度70`, "good");
+        }else{
+            gameData.partnerMood = Math.min(100, gameData.partnerMood + 10);
+            gameData.money -= 100;
+            addLog(`你和${gameData.partner}约会，好感度+10，花费100元`, "good");
+        }
+        passHour();
+    }
+
+    // 恋爱结婚生子系统：求婚（需好感度≥80）
+    function proposeMarriage(){
+        if(gameData.partnerMood < 80){
+            addLog(`伴侣好感度不足（当前${gameData.partnerMood}），求婚失败`, "warning");
+            gameData.partnerMood -= 10;
+            passHour();
+            return;
+        }
+        gameData.loveStatus = "已婚";
+        gameData.partnerMood = 100;
+        gameData.money -= 5000;
+        addLog(`求婚成功！你和${gameData.partner}结婚了，花费5000元`, "good");
+        passHour();
+    }
+
+    // 恋爱结婚生子系统：生子（已婚+年龄25-45）
+    function haveChild(){
+        if(gameData.loveStatus !== "已婚" || gameData.age <25 || gameData.age >45){
+            addLog("无法生子（需已婚且年龄25-45岁）", "warning");
+            return;
+        }
+        gameData.children++;
+        gameData.money -= 2000;
+        addLog(`你有了第${gameData.children}个孩子，花费2000元`, "good");
+        passHour();
+    }
+
+    // 恋爱结婚生子系统：检查分手（伴侣好感度<30）
+    function checkBreakup(){
+        if(gameData.loveStatus === "恋爱" && gameData.partnerMood <30){
+            gameData.loveStatus = "单身";
+            gameData.partner = "无";
+            gameData.partnerMood = 50;
+            addLog("伴侣好感度过低，你们分手了", "warning");
+        }
+    }
+
+    // 生病医院系统：检查生病状态
+    function checkSick(){
+        if(gameData.health < 50 && gameData.healthStatus === "健康"){
+            gameData.healthStatus = "轻微生病";
+            gameData.sickDays = 3;
+            addLog("你生病了，身体不适，建议去医院", "warning");
+        }else if(gameData.health < 20 && gameData.healthStatus === "轻微生病"){
+            gameData.healthStatus = "严重生病";
+            gameData.sickDays = 7;
+            addLog("你的病情加重，必须尽快去医院！", "warning");
+        }
+    }
+
+    // 生病医院系统：去医院（花费金钱，恢复健康）
+    function goHospital(){
+        if(gameData.healthStatus === "健康") return;
+        let cost = 0;
+        if(gameData.healthStatus === "轻微生病"){
+            cost = 500;
+            gameData.health = 80;
+        }else{
+            cost = 1500;
+            gameData.health = 90;
+        }
+        gameData.money -= cost;
+        gameData.healthStatus = "健康";
+        gameData.sickDays = 0;
+        addLog(`你去了医院，花费${cost}元，健康恢复`, "good");
+        checkDebt(); // 检查是否因看病负债
+        passHour();
+    }
+
+    // 房产车辆消费系统：买房
+    function buyHouse(){
+        const choice = prompt(`请选择房产（输入编号）：\n1.普通住宅（150000元）\n2.豪宅（500000元）\n3.取消`);
+        if(!choice || choice === "3") return;
+        let houseType = "";
+        let cost = 0;
+        if(choice === "1"){
+            houseType = "普通住宅";
+            cost = propertyConfig.house["普通住宅"];
+        }else if(choice === "2"){
+            houseType = "豪宅";
+            cost = propertyConfig.house["豪宅"];
+        }else{
+            addLog("选择无效", "warning");
+            return;
+        }
+        if(gameData.money < cost){
+            addLog(`金钱不足（需${cost}元），无法购买`, "warning");
+            return;
+        }
+        gameData.money -= cost;
+        gameData.house = houseType;
+        addLog(`你购买了${houseType}，花费${cost}元`, "good");
+        updateUI();
+    }
+
+    // 房产车辆消费系统：买车
+    function buyCar(){
+        const choice = prompt(`请选择车辆（输入编号）：\n1.代步车（30000元）\n2.豪车（150000元）\n3.取消`);
+        if(!choice || choice === "3") return;
+        let carType = "";
+        let cost = 0;
+        if(choice === "1"){
+            carType = "代步车";
+            cost = propertyConfig.car["代步车"];
+        }else if(choice === "2"){
+            carType = "豪车";
+            cost = propertyConfig.car["豪车"];
+        }else{
+            addLog("选择无效", "warning");
+            return;
+        }
+        if(gameData.money < cost){
+            addLog(`金钱不足（需${cost}元），无法购买`, "warning");
+            return;
+        }
+        gameData.money -= cost;
+        gameData.car = carType;
+        addLog(`你购买了${carType}，花费${cost}元`, "good");
+        updateUI();
+    }
+
+    // 房产车辆消费系统：购买奢侈品
+    function buyLuxury(){
+        const cost = propertyConfig.luxury;
+        if(gameData.money < cost){
+            addLog(`金钱不足（需${cost}元），无法购买奢侈品`, "warning");
+            return;
+        }
+        gameData.money -= cost;
+        gameData.mood = Math.min(100, gameData.mood + 15);
+        gameData.charm = Math.min(100, gameData.charm + 5);
+        addLog(`你购买了奢侈品，花费${cost}元，心情和魅力提升`, "good");
+        passHour();
+    }
+
+    // 负债系统：借钱（新增负债）
+    function borrowMoney(){
+        const amount = prompt("请输入借钱金额（1000-50000元）：");
+        if(!amount || isNaN(amount) || amount <1000 || amount >50000){
+            addLog("借钱金额无效", "warning");
+            return;
+        }
+        const borrowAmount = parseInt(amount);
+        gameData.money += borrowAmount;
+        gameData.debt += borrowAmount;
+        addLog(`你借了${borrowAmount}元，当前负债${gameData.debt}元（月利率5%）`, "warning");
+        updateUI();
+    }
+
+    // 负债系统：还债（减少负债）
+    function repayDebt(){
+        const amount = prompt(`请输入还债金额（当前负债${gameData.debt}元）：`);
+        if(!amount || isNaN(amount) || amount <=0){
+            addLog("还债金额无效", "warning");
+            return;
+        }
+        const repayAmount = parseInt(amount);
+        if(gameData.money < repayAmount){
+            addLog("金钱不足，无法还债", "warning");
+            return;
+        }
+        gameData.money -= repayAmount;
+        gameData.debt = Math.max(0, gameData.debt - repayAmount);
+        addLog(`你偿还了${repayAmount}元，剩余负债${gameData.debt}元`, "good");
+        updateUI();
+    }
+
+    // 负债系统：检查是否因消费负债
+    function checkDebt(){
+        if(gameData.money < 0){
+            gameData.debt += Math.abs(gameData.money);
+            gameData.money = 0;
+            addLog(`金钱不足，产生负债${gameData.debt}元`, "warning");
+        }
+    }
+
+    // 死亡判定（饥饿/健康为0）
     function checkDeath(){
         if(gameData.hunger<=0 || gameData.health<=0){
             addLog("【游戏结束】你的人生走向终点", "warning");
+            // 禁用所有按钮
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
         }
     }
 
     // 日志输出
     function addLog(text, cls="normal"){
         const log = document.getElementById('gameLog');
-        log.innerHTML += `<div class="${cls}">${text}</div>`;
+        log.innerHTML += `${text}`;
         log.scrollTop = log.scrollHeight;
     }
 
-    // 全部行动函数
+    // 基础行动函数（保留原逻辑，适配新增系统）
     function actionEat(){
         gameData.hunger = Math.min(100, gameData.hunger+50);
         gameData.money -= 20;
         addLog("你吃了一顿饭，饥饿恢复，花费20元");
+        checkDebt();
         passHour();
     }
     function actionSleep(){
@@ -229,70 +794,67 @@
         passHour();
     }
     function actionStudy(){
-        gameData.intelligence +=2;
+        gameData.intelligence = Math.min(100, gameData.intelligence +2);
         gameData.energy -=10;
         gameData.mood -=5;
         addLog("你认真学习，智力提升");
         passHour();
     }
     function actionSport(){
-        gameData.physique +=2;
+        gameData.physique = Math.min(100, gameData.physique +2);
         gameData.energy -=15;
-        gameData.health +=5;
+        gameData.health = Math.min(100, gameData.health +5);
         gameData.mood +=5;
         addLog("你健身运动，体质变强");
         passHour();
     }
     function actionSocial(){
-        gameData.charm +=2;
+        gameData.charm = Math.min(100, gameData.charm +2);
         gameData.energy -=10;
         gameData.mood +=15;
         gameData.money -=50;
         addLog("外出社交，魅力提升，花费50元");
+        checkDebt();
         passHour();
     }
     function actionPlay(){
-        gameData.creativity +=1;
+        gameData.creativity = Math.min(100, gameData.creativity +1);
         gameData.energy -=8;
         gameData.mood +=10;
         addLog("休闲娱乐，心情愉悦");
         passHour();
     }
     function actionWork(){
-        if(gameData.career=="无业"){
+        if(gameData.career == "无业"){
             addLog("你还没有工作，无法上班！");return;
         }
         gameData.energy -=30;
-        gameData.money += 3000;
-        addLog("今日上班完成，获得薪资3000元");
+        const salary = getCurrentSalary();
+        gameData.money += salary;
+        gameData.careerExp += 20;
+        addLog(`今日上班完成，获得薪资${salary}元，职业经验+20`, "good");
         passHour();
     }
-    function chooseCareer(){
-        gameData.career = "上班族";
-        gameData.careerLv = 1;
-        addLog("你成功就职：上班族");
-        updateUI();
-    }
 
-    // 浏览器本地 localStorage 存档（永久保存）
+    // 浏览器本地 localStorage 存档（永久保存，包含所有新增数据）
     function saveGame(){
         localStorage.setItem('lifeSimSave', JSON.stringify(gameData));
-        addLog("游戏已本地存档！");
+        addLog("游戏已本地存档！", "good");
     }
     function loadGame(){
         const data = localStorage.getItem('lifeSimSave');
         if(data){
             gameData = JSON.parse(data);
             updateUI();
-            addLog("存档读取成功！");
+            addLog("存档读取成功！", "good");
         }else{
-            addLog("未找到存档！");
+            addLog("未找到存档！", "warning");
         }
     }
 
     // 页面初始化
     updateUI();
-    addLog("欢迎来到网页版模拟人生！");
+    addLog("欢迎来到网页版模拟人生（完整版）！");
 </script>
 </body>
 </html>
