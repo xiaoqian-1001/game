@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>女巫的毒药</title>
     <style>
         * {
@@ -11,20 +11,25 @@
             box-sizing: border-box;
             font-family: "微软雅黑", sans-serif;
         }
-        /* ========== 修复1：页面强制完美居中 ========== */
+        /* ========== 终极修复：全设备强制居中 ========== */
         html, body {
             width: 100%;
             height: 100%;
             background: #121224;
+            /* 核心居中 */
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px 0;
+            /* 禁止滚动、适配所有屏幕 */
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
         }
         .game-wrap {
-            text-align: center;
             width: 100%;
             max-width: 500px;
+            padding: 20px;
+            text-align: center;
         }
         h1 {
             color: #c92a2a;
@@ -37,7 +42,7 @@
             font-size: 14px;
             margin-bottom: 20px;
         }
-        /* 联机面板样式 */
+        /* 联机面板 */
         .online-panel {
             margin-bottom: 15px;
             padding: 12px;
@@ -73,7 +78,7 @@
             font-size: 15px;
             color: #888;
         }
-        /* 宫格选择按钮 */
+        /* 宫格选择 */
         .diff-buttons {
             margin-bottom: 20px;
         }
@@ -91,7 +96,7 @@
         .diff-btn:hover {
             background: #3a3a70;
         }
-        /* ========== 修复2：回合提示文字颜色清晰可见 ========== */
+        /* 回合提示 */
         .turn-hint {
             font-size: 22px;
             margin: 15px 0;
@@ -121,11 +126,12 @@
             color: #ffffff;
             border: 2px solid #3a3a70;
         }
-        /* 棋盘通用样式 */
+        /* 棋盘：严格居中 */
         .grid-board {
             display: grid;
             gap: 12px;
             margin: 0 auto 30px;
+            justify-content: center;
         }
         /* 不同宫格尺寸 */
         .grid-9 {
@@ -171,20 +177,31 @@
         .cell:active:not(.eaten) {
             transform: scale(0.95);
         }
-        /* 已吃掉格子：纯黑完全不可用 */
+        /* 已吃掉格子 */
         .cell.eaten {
             background: #000;
             border-color: #111;
             cursor: not-allowed;
             transform: none;
         }
-        /* 游戏结束才显示毒药 */
-        .cell.p1-poison {
+        /* ========== 修复2：自己的毒药自己永远可见 ========== */
+        /* 玩家1自己的毒药：全程红色可见 */
+        .cell.my-poison-p1 {
+            background: #c92a2a !important;
+            border-color: #ff8787 !important;
+        }
+        /* 玩家2自己的毒药：全程绿色可见 */
+        .cell.my-poison-p2 {
+            background: #2b8a3e !important;
+            border-color: #87ffb8 !important;
+        }
+        /* 游戏结束才显示对方毒药 */
+        .cell.oppo-poison-p1 {
             background: #c92a2a !important;
             border-color: #ff8787 !important;
             animation: poisonBlink 0.8s infinite alternate;
         }
-        .cell.p2-poison {
+        .cell.oppo-poison-p2 {
             background: #2b8a3e !important;
             border-color: #87ffb8 !important;
             animation: poisonBlink 0.8s infinite alternate;
@@ -226,7 +243,6 @@
             background: #3a3a70;
         }
     </style>
-    <!-- 引入P2P联机库 -->
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
@@ -234,7 +250,6 @@
         <h1>女巫的毒药</h1>
         <div class="rule-desc">双人暗选毒药 · 轮流吃格 · 吃到对方毒药即败</div>
 
-        <!-- 联机面板 -->
         <div class="online-panel">
             <input type="text" id="roomId" placeholder="输入房间号">
             <button class="online-btn" onclick="createRoom()">创建房间</button>
@@ -243,7 +258,6 @@
             <div class="online-status" id="onlineStatus">未连接</div>
         </div>
 
-        <!-- 宫格选择 -->
         <div class="diff-buttons">
             <button class="diff-btn" onclick="setDiff(9)">9宫格</button>
             <button class="diff-btn" onclick="setDiff(16)">16宫格</button>
@@ -255,34 +269,28 @@
         <button id="restart-btn" onclick="confirmReset()">重新开始</button>
     </div>
 
-    <!-- 防偷看遮罩 -->
     <div class="mask" id="mask" style="display: none;"></div>
 
     <script>
-        // ========== 联机核心 ==========
+        // 联机核心
         let peer, conn;
-        let isHost = false;
         let isOnline = false;
+        let myPlayer = 0; // 0未连接 / 1房主(玩家1) / 2访客(玩家2)
 
-        // ========== 修复3：严格区分玩家身份 ==========
-        // 房主 = 玩家1  访客 = 玩家2  身份永久固定，不会切换
-        let myPlayer = 0; // 0未连接 / 1房主 / 2访客
-
-        // ========== 游戏核心 ==========
+        // 游戏核心
         let totalCells = 9;
-        let poison1 = -1; // 玩家1毒药（房主）
-        let poison2 = -1; // 玩家2毒药（访客）
+        let poison1 = -1; // 玩家1毒药
+        let poison2 = -1; // 玩家2毒药
         let eatenList = [];
-        let nowPlayer = 1; // 当前回合玩家
-        let gameStage = "select"; // select/pick1/pick2/battle/end
+        let nowPlayer = 1;
+        let gameStage = "select";
         let allCells = [];
 
-        // ========== 联机函数 ==========
+        // ========== 联机逻辑 ==========
         function createRoom() {
             const roomId = document.getElementById("roomId").value || Math.random().toString(36).slice(2,8);
             peer = new Peer(roomId);
-            isHost = true;
-            myPlayer = 1; // 创建房间的人固定为玩家1
+            myPlayer = 1;
 
             peer.on('open', () => {
                 document.getElementById("onlineStatus").innerText = `✅ 房间：${roomId}，等待对手加入`;
@@ -301,8 +309,7 @@
             if (!roomId) return alert("请输入房间号");
 
             peer = new Peer();
-            isHost = false;
-            myPlayer = 2; // 加入房间的人固定为玩家2
+            myPlayer = 2;
 
             peer.on('open', () => {
                 conn = peer.connect(roomId);
@@ -335,7 +342,6 @@
                         poison1 = data.val;
                         gameStage = "pick2";
                         updateUI();
-                        // 只有玩家2才会收到这个提示
                         if(myPlayer === 2){
                             showMask("✅ 玩家1已选毒\n请你悄悄选择你的毒药");
                             setTimeout(()=>{hideMask();},2000);
@@ -356,7 +362,6 @@
                         if (data.stage === "end") {
                             document.getElementById("turnHint").innerText = data.msg;
                             document.getElementById("turnHint").className = "turn-hint turn-end";
-                            showAllPoison();
                             lockAllCell();
                         }
                         break;
@@ -411,7 +416,7 @@
             }
         }
 
-        // ========== 防偷看遮罩 ==========
+        // ========== 遮罩 ==========
         function showMask(text) {
             const mask = document.getElementById("mask");
             mask.innerText = text;
@@ -425,40 +430,40 @@
         function clickCell(id) {
             if (eatenList.includes(id) || gameStage === "end") return;
 
-            // ========== 修复3：严格限制操作权限 ==========
-            // 1. 选毒阶段：只能自己选自己的毒药，别人不能操作
-            // 2. 对战阶段：只能自己回合才能操作
+            // 联机权限控制
             if (isOnline) {
-                // 选毒1阶段：只有房主（玩家1）能操作
                 if(gameStage === "pick1" && myPlayer !== 1){
                     alert("请等待玩家1选择毒药");
                     return;
                 }
-                // 选毒2阶段：只有访客（玩家2）能操作
                 if(gameStage === "pick2" && myPlayer !== 2){
                     alert("请等待玩家2选择毒药");
                     return;
                 }
-                // 对战阶段：只有当前回合玩家能操作
                 if(gameStage === "battle" && myPlayer !== nowPlayer){
                     alert("现在不是你的回合！");
                     return;
                 }
             }
 
-            // 阶段1：玩家1（房主）选毒
+            // 禁止点击自己的毒药
+            if ((myPlayer === 1 && id === poison1) || (myPlayer === 2 && id === poison2)) {
+                alert("⚠️ 不能选择自己的毒药！");
+                return;
+            }
+
+            // 玩家1选毒
             if (gameStage === "pick1") {
                 poison1 = id;
                 gameStage = "pick2";
                 updateUI();
                 sendData("pick1", id);
-                // 房主自己的遮罩
                 showMask("✅ 你已选毒完成！\n请等待玩家2选择");
                 setTimeout(()=>{hideMask();},2000);
                 return;
             }
 
-            // 阶段2：玩家2（访客）选毒
+            // 玩家2选毒
             if (gameStage === "pick2") {
                 if (id === poison1) {
                     alert("⚠️ 不能和玩家1选择同一个毒药！");
@@ -471,12 +476,6 @@
                 return;
             }
 
-            // 不能吃自己的毒药
-            if ((myPlayer === 1 && id === poison1) || (myPlayer === 2 && id === poison2)) {
-                alert("⚠️ 不能选择自己的毒药！");
-                return;
-            }
-
             // 对战吃格
             eatenList.push(id);
 
@@ -485,7 +484,7 @@
                 gameStage = "end";
                 document.getElementById("turnHint").innerText = "💀 玩家1中招！玩家2获胜！";
                 document.getElementById("turnHint").className = "turn-hint turn-end";
-                showAllPoison();
+                updateUI();
                 lockAllCell();
                 sendData("eat");
                 return;
@@ -494,7 +493,7 @@
                 gameStage = "end";
                 document.getElementById("turnHint").innerText = "💀 玩家2中招！玩家1获胜！";
                 document.getElementById("turnHint").className = "turn-hint turn-end";
-                showAllPoison();
+                updateUI();
                 lockAllCell();
                 sendData("eat");
                 return;
@@ -506,8 +505,9 @@
             sendData("eat");
         }
 
-        // ========== 界面更新 ==========
+        // ========== 核心修复：毒药显示逻辑 ==========
         function updateUI() {
+            // 更新提示文字
             const hint = document.getElementById("turnHint");
             if (gameStage === "select") {
                 hint.innerText = "请先选择宫格或联机";
@@ -523,26 +523,38 @@
                 hint.className = nowPlayer === 1 ? "turn-hint turn-p1" : "turn-hint turn-p2";
             }
 
+            // 刷新所有格子样式
             allCells.forEach((cell, idx) => {
-                cell.classList.remove("eaten", "p1-poison", "p2-poison");
-                if (eatenList.includes(idx)) cell.classList.add("eaten");
+                // 先清空所有样式
+                cell.classList.remove("eaten", "my-poison-p1", "my-poison-p2", "oppo-poison-p1", "oppo-poison-p2");
+                
+                // 1. 已吃掉的格子
+                if (eatenList.includes(idx)) {
+                    cell.classList.add("eaten");
+                }
+
+                // 2. 自己的毒药：全程高亮可见
+                if (myPlayer === 1 && idx === poison1) {
+                    cell.classList.add("my-poison-p1");
+                }
+                if (myPlayer === 2 && idx === poison2) {
+                    cell.classList.add("my-poison-p2");
+                }
+
+                // 3. 游戏结束后：显示对方毒药
+                if (gameStage === "end") {
+                    if (idx === poison1) cell.classList.add("oppo-poison-p1");
+                    if (idx === poison2) cell.classList.add("oppo-poison-p2");
+                }
             });
         }
 
-        // ========== 显示毒药 ==========
-        function showAllPoison() {
-            allCells.forEach((cell, idx) => {
-                if (idx === poison1) cell.classList.add("p1-poison");
-                if (idx === poison2) cell.classList.add("p2-poison");
-            });
-        }
-
-        // ========== 锁定格子 ==========
+        // 锁定所有格子
         function lockAllCell() {
             allCells.forEach(cell => cell.onclick = null);
         }
 
-        // ========== 重置确认 ==========
+        // 重置确认
         function confirmReset() {
             if (confirm("确定要重新开始游戏吗？本局进度将清空！")) {
                 resetGame();
@@ -550,7 +562,7 @@
             }
         }
 
-        // ========== 重置游戏 ==========
+        // 重置游戏
         function resetGame() {
             poison1 = -1;
             poison2 = -1;
@@ -561,7 +573,7 @@
             updateUI();
         }
 
-        // ========== 页面启动 ==========
+        // 页面启动
         window.onload = () => {
             initGrid();
             updateUI();
