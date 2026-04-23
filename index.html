@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>网页版模拟人生 | Life Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, sans-serif;
+        }
+        body {
+            background: #1e1e2f;
+            color: #eee;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .container {
+            background: #2b2b40;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px #0003;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7cb3ff;
+        }
+        .status-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .status-item {
+            background: #383858;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .bar {
+            height: 8px;
+            background: #444;
+            border-radius: 4px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        .hunger{background:#ff7d7d;}
+        .energy{background:#ffd972;}
+        .health{background:#72ff98;}
+        .mood{background:#b272ff;}
+        .time-info{
+            background:#333355;
+            padding:12px;
+            border-radius:8px;
+            margin-bottom:15px;
+        }
+        .btn-group{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px,1fr));
+            gap:10px;
+            margin:20px 0;
+        }
+        button{
+            padding:10px;
+            border:none;
+            border-radius:8px;
+            background:#4a6cf7;
+            color:white;
+            cursor:pointer;
+            transition:0.2s;
+        }
+        button:hover{
+            background:#3556d9;
+        }
+        .log{
+            background:#222238;
+            padding:15px;
+            border-radius:8px;
+            height:200px;
+            overflow-y:auto;
+            margin-top:20px;
+            font-size:14px;
+        }
+        .warning{color:#ff6b6b;}
+        .good{color:#6bff99;}
+        .normal{color:#ccc;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>网页模拟人生 Life Simulator</h1>
+
+    <div class="time-info">
+        <div>当前时间：<span id="time"></span></div>
+        <div>角色年龄：<span id="age">18</span> 岁</div>
+        <div>拥有金钱：<span id="money">1000</span> 元</div>
+        <div>当前职业：<span id="career">无业</span></div>
+    </div>
+
+    <div class="status-box">
+        <div class="status-item">
+            <div>饥饿</div>
+            <div id="hunger-val">100</div>
+            <div class="bar"><div class="fill hunger" id="hunger-bar" style="width:100%"></div></div>
+        </div>
+        <div class="status-item">
+            <div>精力</div>
+            <div id="energy-val">100</div>
+            <div class="bar"><div class="fill energy" id="energy-bar" style="width:100%"></div></div>
+        </div>
+        <div class="status-item">
+            <div>健康</div>
+            <div id="health-val">100</div>
+            <div class="bar"><div class="fill health" id="health-bar" style="width:100%"></div></div>
+        </div>
+        <div class="status-item">
+            <div>心情</div>
+            <div id="mood-val">100</div>
+            <div class="bar"><div class="fill mood" id="mood-bar" style="width:100%"></div></div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button onclick="actionEat()">吃饭</button>
+        <button onclick="actionSleep()">睡觉</button>
+        <button onclick="actionStudy()">学习</button>
+        <button onclick="actionSport()">健身</button>
+        <button onclick="actionSocial()">社交</button>
+        <button onclick="actionPlay()">娱乐</button>
+        <button onclick="actionWork()">上班</button>
+        <button onclick="chooseCareer()">就职</button>
+        <button onclick="saveGame()">本地存档</button>
+        <button onclick="loadGame()">读取存档</button>
+    </div>
+
+    <div class="log" id="gameLog"></div>
+</div>
+
+<script>
+    // 游戏核心数据
+    let gameData = {
+        year: 2025, month: 1, day: 1, hour: 8,
+        age: 18, money: 1000, career: "无业", careerLv: 1,
+        hunger: 100, energy: 100, health: 100, mood: 100,
+        intelligence: 50, charm: 50, physique: 50, creativity: 50
+    };
+
+    // 每小时自然消耗
+    const decRate = { hunger:5, energy:3, health:1, mood:2 };
+    // 随机事件库
+    const events = [
+        {txt:"捡到100元！", type:"good", fn:()=>gameData.money+=100},
+        {txt:"身体轻微不适", type:"warning", fn:()=>gameData.health-=5},
+        {txt:"朋友发来问候，心情变好", type:"good", fn:()=>gameData.mood+=10},
+        {txt:"莫名烦躁", type:"warning", fn:()=>gameData.mood-=8}
+    ];
+
+    // 更新界面显示
+    function updateUI(){
+        document.getElementById('time').innerText = `${gameData.year}年${gameData.month}月${gameData.day}日 ${gameData.hour}时`;
+        document.getElementById('age').innerText = gameData.age;
+        document.getElementById('money').innerText = gameData.money;
+        document.getElementById('career').innerText = gameData.career;
+
+        // 状态数值+进度条
+        const stats = ['hunger','energy','health','mood'];
+        stats.forEach(s=>{
+            document.getElementById(`${s}-val`).innerText = gameData[s];
+            document.getElementById(`${s}-bar`).style.width = gameData[s]+"%";
+        });
+    }
+
+    // 时间流逝
+    function passHour(){
+        gameData.hour++;
+        if(gameData.hour>=24){gameData.hour=0;gameData.day++;}
+        if(gameData.day>30){gameData.day=1;gameData.month++;}
+        if(gameData.month>12){gameData.month=1;gameData.year++;gameData.age++;}
+
+        // 自然衰减
+        Object.keys(decRate).forEach(k=>{
+            gameData[k] = Math.max(0, gameData[k]-decRate[k]);
+        });
+
+        // 30%概率触发随机事件
+        if(Math.random()<0.3){
+            const e = events[Math.floor(Math.random()*events.length)];
+            e.fn();
+            addLog(e.txt, e.type);
+        }
+        updateUI();
+        checkDeath();
+    }
+
+    // 死亡判定
+    function checkDeath(){
+        if(gameData.hunger<=0 || gameData.health<=0){
+            addLog("【游戏结束】你的人生走向终点", "warning");
+        }
+    }
+
+    // 日志输出
+    function addLog(text, cls="normal"){
+        const log = document.getElementById('gameLog');
+        log.innerHTML += `<div class="${cls}">${text}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    // 全部行动函数
+    function actionEat(){
+        gameData.hunger = Math.min(100, gameData.hunger+50);
+        gameData.money -= 20;
+        addLog("你吃了一顿饭，饥饿恢复，花费20元");
+        passHour();
+    }
+    function actionSleep(){
+        gameData.energy = 100;
+        gameData.health += 10;
+        gameData.mood += 5;
+        addLog("你睡了一觉，精力完全恢复");
+        passHour();
+    }
+    function actionStudy(){
+        gameData.intelligence +=2;
+        gameData.energy -=10;
+        gameData.mood -=5;
+        addLog("你认真学习，智力提升");
+        passHour();
+    }
+    function actionSport(){
+        gameData.physique +=2;
+        gameData.energy -=15;
+        gameData.health +=5;
+        gameData.mood +=5;
+        addLog("你健身运动，体质变强");
+        passHour();
+    }
+    function actionSocial(){
+        gameData.charm +=2;
+        gameData.energy -=10;
+        gameData.mood +=15;
+        gameData.money -=50;
+        addLog("外出社交，魅力提升，花费50元");
+        passHour();
+    }
+    function actionPlay(){
+        gameData.creativity +=1;
+        gameData.energy -=8;
+        gameData.mood +=10;
+        addLog("休闲娱乐，心情愉悦");
+        passHour();
+    }
+    function actionWork(){
+        if(gameData.career=="无业"){
+            addLog("你还没有工作，无法上班！");return;
+        }
+        gameData.energy -=30;
+        gameData.money += 3000;
+        addLog("今日上班完成，获得薪资3000元");
+        passHour();
+    }
+    function chooseCareer(){
+        gameData.career = "上班族";
+        gameData.careerLv = 1;
+        addLog("你成功就职：上班族");
+        updateUI();
+    }
+
+    // 浏览器本地 localStorage 存档（永久保存）
+    function saveGame(){
+        localStorage.setItem('lifeSimSave', JSON.stringify(gameData));
+        addLog("游戏已本地存档！");
+    }
+    function loadGame(){
+        const data = localStorage.getItem('lifeSimSave');
+        if(data){
+            gameData = JSON.parse(data);
+            updateUI();
+            addLog("存档读取成功！");
+        }else{
+            addLog("未找到存档！");
+        }
+    }
+
+    // 页面初始化
+    updateUI();
+    addLog("欢迎来到网页版模拟人生！");
+</script>
+</body>
+</html>
