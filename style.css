@@ -1,0 +1,17 @@
+body {
+    text-align: center;
+    font-family: sans-serif;
+    background: #f0f0f0;
+}
+
+canvas {
+    background: #e6c48a;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    touch-action: none;
+}
+
+.controls button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
