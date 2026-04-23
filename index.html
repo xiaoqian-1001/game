@@ -142,18 +142,18 @@
             transition: all 0.2s ease;
             border: 2px solid #3a3a70;
         }
-        .cell:hover:not(.eaten):not(.locked) { background: #3a3a70; transform: scale(1.05); }
-        .cell:active:not(.eaten):not(.locked) { transform: scale(0.95); }
+        .cell:hover:not(.eaten) { background: #3a3a70; transform: scale(1.05); }
+        .cell:active:not(.eaten) { transform: scale(0.95); }
         .cell.eaten { background: #000; border-color: #111; cursor: not-allowed; transform: none; }
-        /* 自己毒药全程可见 */
+
+        /* 自己的毒药全程可见 */
         .cell.my-poison-p1 { background: #c92a2a !important; border-color: #ff8787 !important; }
         .cell.my-poison-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; }
         /* 对方毒药游戏结束才显示 */
         .cell.oppo-poison-p1 { background: #c92a2a !important; border-color: #ff8787 !important; animation: poisonBlink 0.8s infinite alternate; }
-        .cell.oppo-poison-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; animation: poisonBlink 0.8s infinite alternate; }
-        /* 选毒阶段：对方毒药直接锁定不可点，**无任何提示**，绝不泄密 */
-        .cell.locked { pointer-events: none; opacity: 0.4; cursor: not-allowed; }
+        .cell.oppo-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; animation: poisonBlink 0.8s infinite alternate; }
         @keyframes poisonBlink { from { opacity: 0.8; } to { opacity: 1; } }
+
         .mask {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center;
@@ -171,7 +171,7 @@
 <body>
 <div class="game-wrap">
     <h1>女巫的毒药</h1>
-    <div class="rule-desc">双人暗选毒药 · 轮流吃格 · 吃到对方毒药即败</div>
+    <div class="rule-desc">双人暗选毒药 · 允许同格毒药 · 吃到对方毒药即败</div>
 
     <div class="online-panel">
         <input type="text" id="roomId" placeholder="输入房间号">
@@ -276,11 +276,11 @@ function initGrid(){
 function showMask(t){document.getElementById("mask").innerText=t;document.getElementById("mask").style.display="flex";}
 function hideMask(){document.getElementById("mask").style.display="none";}
 
-// 平局检测
+// 平局判定：格子全部吃完无人中招
 function checkTieGame(){
     if(eatenList.length >= totalCells){
         gameStage = "end";
-        document.getElementById("turnHint").innerText = "⚪ 格子全部吃完，平局！";
+        document.getElementById("turnHint").innerText = "⚪ 全部格子吃完，平局！";
         document.getElementById("turnHint").className = "turn-hint turn-end";
         lockAllCell();
         sendData("eat");
@@ -297,37 +297,46 @@ function clickCell(id){
         if(gameStage==="battle"&&myPlayer!==nowPlayer){alert("不是你的回合");return;}
     }
 
-    // ===================== 核心泄密BUG根治 =====================
-    // 1. 玩家2选毒时，**直接锁定玩家1的毒药格子，点不动、无弹窗、无提示、绝不泄密**
-    // 2. 彻底删掉所有 alert 提示，不会暴露对方位置
-    if(gameStage === "pick2" && id === poison1){
-        return; // 静默拦截，什么都不提示，对方完全不知道这里是毒药
-    }
+    // ==============================================
+    // 核心修改：**完全允许两人选同一个格子当毒药**
+    // 删掉所有锁格、变暗、拦截、alert提示！
+    // 选毒阶段所有格子完全一致，绝不泄密！
+    // ==============================================
 
-    // 禁止点击自己的毒药
-    if((myPlayer===1&&id===poison1)||(myPlayer===2&&id===poison2)){
-        return; // 同样静默拦截
-    }
-
+    // 玩家1选毒药
     if(gameStage==="pick1"){
-        poison1=id;gameStage="pick2";updateUI();sendData("pick1",id);
-        showMask("你已选毒，等待玩家2");setTimeout(()=>hideMask(),2000);return;
-    }
-    if(gameStage==="pick2"){
-        poison2=id;gameStage="battle";updateUI();sendData("pick2",id);return;
+        poison1 = id;
+        gameStage = "pick2";
+        updateUI();
+        sendData("pick1", id);
+        showMask("你已选毒，等待玩家2");
+        setTimeout(()=>hideMask(),2000);
+        return;
     }
 
+    // 玩家2选毒药：**无条件允许重复，无拦截无提示**
+    if(gameStage==="pick2"){
+        poison2 = id;
+        gameStage = "battle";
+        updateUI();
+        sendData("pick2", id);
+        return;
+    }
+
+    // ============= 对战阶段规则 =============
+    // 吃到【自己的毒药】：正常吃掉，无事发生
+    // 吃到【对方的毒药】：直接输掉游戏
     eatenList.push(id);
     if(checkTieGame()) return;
 
-    // 对战胜负判定
-    if(nowPlayer===1&&id===poison2){
+    // 胜负判定
+    if(nowPlayer===1 && id === poison2){
         gameStage="end";
         document.getElementById("turnHint").innerText="💀 玩家1中招！玩家2获胜！";
         document.getElementById("turnHint").className="turn-hint turn-end";
         lockAllCell();sendData("eat");return;
     }
-    if(nowPlayer===2&&id===poison1){
+    if(nowPlayer===2 && id === poison1){
         gameStage="end";
         document.getElementById("turnHint").innerText="💀 玩家2中招！玩家1获胜！";
         document.getElementById("turnHint").className="turn-hint turn-end";
@@ -346,26 +355,21 @@ function updateUI(){
     else if(gameStage==="battle"){hint.innerText=`玩家${nowPlayer} 回合，请点击格子`;hint.className=nowPlayer===1?"turn-hint turn-p1":"turn-hint turn-p2";}
 
     allCells.forEach((cell,idx)=>{
-        cell.classList.remove("eaten","my-poison-p1","my-poison-p2","oppo-poison-p1","oppo-poison-p2","locked");
+        cell.classList.remove("eaten","my-poison-p1","my-poison-p2","oppo-poison-p1","oppo-p2");
         if(eatenList.includes(idx))cell.classList.add("eaten");
 
-        // ========== 选毒阶段锁格，防重复选+防泄密 ==========
-        if(gameStage === "pick2" && idx === poison1){
-            cell.classList.add("locked"); // 变暗不可点，不提示
-        }
+        // 自己的毒药：全程高亮可见
+        if(myPlayer===1 && idx===poison1) cell.classList.add("my-poison-p1");
+        if(myPlayer===2 && idx===poison2) cell.classList.add("my-poison-p2");
 
-        // 自己毒药全程高亮可见
-        if(myPlayer===1&&idx===poison1)cell.classList.add("my-poison-p1");
-        if(myPlayer===2&&idx===poison2)cell.classList.add("my-poison-p2");
-
-        // 游戏结束才揭晓对方毒药
+        // 游戏结束：才显示对方毒药
         if(gameStage==="end"){
-            if(idx===poison1)cell.classList.add("oppo-poison-p1");
-            if(idx===poison2)cell.classList.add("oppo-poison-p2");
+            if(idx===poison1) cell.classList.add("oppo-poison-p1");
+            if(idx===poison2) cell.classList.add("oppo-p2");
         }
     });
 }
-function lockAllCell(){allCells.forEach(c=>c.classList.add("locked"));}
+function lockAllCell(){allCells.forEach(c=>c.onclick=null);}
 function confirmReset(){if(confirm("确定重新开始？")){resetGame();sendData("diff",totalCells);}}
 function resetGame(){
     poison1=-1;poison2=-1;eatenList=[];nowPlayer=1;gameStage="select";
@@ -376,3 +380,4 @@ window.onload=()=>{initGrid();updateUI();};
 </body>
 </html>
 </body>
+</html>
