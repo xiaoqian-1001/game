@@ -1,0 +1,76 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    background: #1a1822;
+    color: #e0d8f5;
+    padding: 30px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #f2cfff;
+}
+
+.resource {
+    background: #272338;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    line-height: 1.8;
+}
+
+.click-btn {
+    width: 100%;
+    padding: 18px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background: #9955bb;
+    color: white;
+    margin-bottom: 25px;
+    cursor: pointer;
+}
+
+.upgrades {
+    background: #272338;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.upgrade-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #884aaa;
+    color: white;
+    cursor: pointer;
+}
+
+.save-box {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+#saveTip {
+    color: #b6f5c9;
+}
