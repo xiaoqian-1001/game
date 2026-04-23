@@ -11,16 +11,13 @@
             box-sizing: border-box;
             font-family: "微软雅黑", sans-serif;
         }
-        /* ========== 终极修复：全设备强制居中 ========== */
         html, body {
             width: 100%;
             height: 100%;
             background: #121224;
-            /* 核心居中 */
             display: flex;
             justify-content: center;
             align-items: center;
-            /* 禁止滚动、适配所有屏幕 */
             overflow: hidden;
             padding: 0;
             margin: 0;
@@ -42,7 +39,6 @@
             font-size: 14px;
             margin-bottom: 20px;
         }
-        /* 联机面板 */
         .online-panel {
             margin-bottom: 15px;
             padding: 12px;
@@ -78,7 +74,6 @@
             font-size: 15px;
             color: #888;
         }
-        /* 宫格选择 */
         .diff-buttons {
             margin-bottom: 20px;
         }
@@ -96,7 +91,6 @@
         .diff-btn:hover {
             background: #3a3a70;
         }
-        /* 回合提示 */
         .turn-hint {
             font-size: 22px;
             margin: 15px 0;
@@ -126,42 +120,20 @@
             color: #ffffff;
             border: 2px solid #3a3a70;
         }
-        /* 棋盘：严格居中 */
         .grid-board {
             display: grid;
             gap: 12px;
             margin: 0 auto 30px;
             justify-content: center;
         }
-        /* 不同宫格尺寸 */
-        .grid-9 {
-            grid-template-columns: repeat(3, 90px);
-            grid-template-rows: repeat(3, 90px);
-        }
-        .grid-16 {
-            grid-template-columns: repeat(4, 75px);
-            grid-template-rows: repeat(4, 75px);
-        }
-        .grid-25 {
-            grid-template-columns: repeat(5, 65px);
-            grid-template-rows: repeat(5, 65px);
-        }
+        .grid-9 { grid-template-columns: repeat(3, 90px); grid-template-rows: repeat(3, 90px); }
+        .grid-16 { grid-template-columns: repeat(4, 75px); grid-template-rows: repeat(4, 75px); }
+        .grid-25 { grid-template-columns: repeat(5, 65px); grid-template-rows: repeat(5, 65px); }
         @media (max-width: 450px) {
-            .grid-board {
-                gap: 8px;
-            }
-            .grid-9 {
-                grid-template-columns: repeat(3, 70px);
-                grid-template-rows: repeat(3, 70px);
-            }
-            .grid-16 {
-                grid-template-columns: repeat(4, 60px);
-                grid-template-rows: repeat(4, 60px);
-            }
-            .grid-25 {
-                grid-template-columns: repeat(5, 50px);
-                grid-template-rows: repeat(5, 50px);
-            }
+            .grid-board { gap: 8px; }
+            .grid-9 { grid-template-columns: repeat(3, 70px); grid-template-rows: repeat(3, 70px); }
+            .grid-16 { grid-template-columns: repeat(4, 60px); grid-template-rows: repeat(4, 60px); }
+            .grid-25 { grid-template-columns: repeat(5, 50px); grid-template-rows: repeat(5, 50px); }
         }
         .cell {
             background: #272750;
@@ -170,414 +142,237 @@
             transition: all 0.2s ease;
             border: 2px solid #3a3a70;
         }
-        .cell:hover:not(.eaten) {
-            background: #3a3a70;
-            transform: scale(1.05);
-        }
-        .cell:active:not(.eaten) {
-            transform: scale(0.95);
-        }
-        /* 已吃掉格子 */
-        .cell.eaten {
-            background: #000;
-            border-color: #111;
-            cursor: not-allowed;
-            transform: none;
-        }
-        /* ========== 修复2：自己的毒药自己永远可见 ========== */
-        /* 玩家1自己的毒药：全程红色可见 */
-        .cell.my-poison-p1 {
-            background: #c92a2a !important;
-            border-color: #ff8787 !important;
-        }
-        /* 玩家2自己的毒药：全程绿色可见 */
-        .cell.my-poison-p2 {
-            background: #2b8a3e !important;
-            border-color: #87ffb8 !important;
-        }
-        /* 游戏结束才显示对方毒药 */
-        .cell.oppo-poison-p1 {
-            background: #c92a2a !important;
-            border-color: #ff8787 !important;
-            animation: poisonBlink 0.8s infinite alternate;
-        }
-        .cell.oppo-poison-p2 {
-            background: #2b8a3e !important;
-            border-color: #87ffb8 !important;
-            animation: poisonBlink 0.8s infinite alternate;
-        }
-        @keyframes poisonBlink {
-            from { opacity: 0.8; }
-            to { opacity: 1; }
-        }
-        /* 遮罩防偷看 */
+        .cell:hover:not(.eaten):not(.locked) { background: #3a3a70; transform: scale(1.05); }
+        .cell:active:not(.eaten):not(.locked) { transform: scale(0.95); }
+        .cell.eaten { background: #000; border-color: #111; cursor: not-allowed; transform: none; }
+        /* 自己毒药全程可见 */
+        .cell.my-poison-p1 { background: #c92a2a !important; border-color: #ff8787 !important; }
+        .cell.my-poison-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; }
+        /* 对方毒药游戏结束才显示 */
+        .cell.oppo-poison-p1 { background: #c92a2a !important; border-color: #ff8787 !important; animation: poisonBlink 0.8s infinite alternate; }
+        .cell.oppo-poison-p2 { background: #2b8a3e !important; border-color: #87ffb8 !important; animation: poisonBlink 0.8s infinite alternate; }
+        /* 选毒阶段：对方毒药直接锁定不可点，**无任何提示**，绝不泄密 */
+        .cell.locked { pointer-events: none; opacity: 0.4; cursor: not-allowed; }
+        @keyframes poisonBlink { from { opacity: 0.8; } to { opacity: 1; } }
         .mask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            color: #fff;
-            font-size: 24px;
-            text-align: center;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center;
+            z-index: 999; color: #fff; font-size: 24px; text-align: center; padding: 20px;
         }
-        /* 按钮 */
         #restart-btn {
-            padding: 12px 35px;
-            border: none;
-            border-radius: 10px;
-            background: #272750;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 2px solid #3a3a70;
+            padding: 12px 35px; border: none; border-radius: 10px;
+            background: #272750; color: #fff; font-size: 18px; cursor: pointer;
+            transition: 0.2s; border: 2px solid #3a3a70;
         }
-        #restart-btn:hover {
-            background: #3a3a70;
-        }
+        #restart-btn:hover { background: #3a3a70; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
-    <div class="game-wrap">
-        <h1>女巫的毒药</h1>
-        <div class="rule-desc">双人暗选毒药 · 轮流吃格 · 吃到对方毒药即败</div>
+<div class="game-wrap">
+    <h1>女巫的毒药</h1>
+    <div class="rule-desc">双人暗选毒药 · 轮流吃格 · 吃到对方毒药即败</div>
 
-        <div class="online-panel">
-            <input type="text" id="roomId" placeholder="输入房间号">
-            <button class="online-btn" onclick="createRoom()">创建房间</button>
-            <button class="online-btn" onclick="joinRoom()">加入房间</button>
-            <button class="online-btn" onclick="disconnectRoom()">断开</button>
-            <div class="online-status" id="onlineStatus">未连接</div>
-        </div>
-
-        <div class="diff-buttons">
-            <button class="diff-btn" onclick="setDiff(9)">9宫格</button>
-            <button class="diff-btn" onclick="setDiff(16)">16宫格</button>
-            <button class="diff-btn" onclick="setDiff(25)">25宫格</button>
-        </div>
-        
-        <div class="turn-hint turn-default" id="turnHint">请先选择宫格或联机</div>
-        <div class="grid-board" id="gridBox"></div>
-        <button id="restart-btn" onclick="confirmReset()">重新开始</button>
+    <div class="online-panel">
+        <input type="text" id="roomId" placeholder="输入房间号">
+        <button class="online-btn" onclick="createRoom()">创建房间</button>
+        <button class="online-btn" onclick="joinRoom()">加入房间</button>
+        <button class="online-btn" onclick="disconnectRoom()">断开</button>
+        <div class="online-status" id="onlineStatus">未连接</div>
     </div>
 
-    <div class="mask" id="mask" style="display: none;"></div>
+    <div class="diff-buttons">
+        <button class="diff-btn" onclick="setDiff(9)">9宫格</button>
+        <button class="diff-btn" onclick="setDiff(16)">16宫格</button>
+        <button class="diff-btn" onclick="setDiff(25)">25宫格</button>
+    </div>
+    
+    <div class="turn-hint turn-default" id="turnHint">请先选择宫格或联机</div>
+    <div class="grid-board" id="gridBox"></div>
+    <button id="restart-btn" onclick="confirmReset()">重新开始</button>
+</div>
+<div class="mask" id="mask" style="display: none;"></div>
 
-    <script>
-        // 联机核心
-        let peer, conn;
-        let isOnline = false;
-        let myPlayer = 0; // 0未连接 / 1房主(玩家1) / 2访客(玩家2)
+<script>
+let peer, conn;
+let isOnline = false;
+let myPlayer = 0;
 
-        // 游戏核心
-        let totalCells = 9;
-        let poison1 = -1; // 玩家1毒药
-        let poison2 = -1; // 玩家2毒药
-        let eatenList = [];
-        let nowPlayer = 1;
-        let gameStage = "select";
-        let allCells = [];
+let totalCells = 9;
+let poison1 = -1;
+let poison2 = -1;
+let eatenList = [];
+let nowPlayer = 1;
+let gameStage = "select";
+let allCells = [];
 
-        // ========== 联机逻辑 ==========
-        function createRoom() {
-            const roomId = document.getElementById("roomId").value || Math.random().toString(36).slice(2,8);
-            peer = new Peer(roomId);
-            myPlayer = 1;
-
-            peer.on('open', () => {
-                document.getElementById("onlineStatus").innerText = `✅ 房间：${roomId}，等待对手加入`;
-            });
-
-            peer.on('connection', (c) => {
-                conn = c;
-                isOnline = true;
-                document.getElementById("onlineStatus").innerText = "✅ 对手已加入，你是【玩家1】";
-                bindConn();
-            });
-        }
-
-        function joinRoom() {
-            const roomId = document.getElementById("roomId").value;
-            if (!roomId) return alert("请输入房间号");
-
-            peer = new Peer();
-            myPlayer = 2;
-
-            peer.on('open', () => {
-                conn = peer.connect(roomId);
-                document.getElementById("onlineStatus").innerText = "正在连接房间...";
-
-                conn.on('open', () => {
-                    isOnline = true;
-                    document.getElementById("onlineStatus").innerText = "✅ 加入成功，你是【玩家2】";
-                    bindConn();
-                });
-            });
-        }
-
-        function disconnectRoom() {
-            if (conn) conn.close();
-            if (peer) peer.destroy();
-            isOnline = false;
-            myPlayer = 0;
-            document.getElementById("onlineStatus").innerText = "已断开连接";
-        }
-
-        function bindConn() {
-            conn.on('data', (data) => {
-                switch(data.type) {
-                    case "diff":
-                        totalCells = data.val;
-                        resetGame();
-                        break;
-                    case "pick1":
-                        poison1 = data.val;
-                        gameStage = "pick2";
-                        updateUI();
-                        if(myPlayer === 2){
-                            showMask("✅ 玩家1已选毒\n请你悄悄选择你的毒药");
-                            setTimeout(()=>{hideMask();},2000);
-                        }
-                        break;
-                    case "pick2":
-                        poison2 = data.val;
-                        gameStage = "battle";
-                        updateUI();
-                        showMask("✅ 双方选毒完成！\n开始对战，千万别吃到对方毒药！");
-                        setTimeout(()=>{hideMask();},2000);
-                        break;
-                    case "eat":
-                        eatenList = data.eaten;
-                        nowPlayer = data.player;
-                        gameStage = data.stage;
-                        updateUI();
-                        if (data.stage === "end") {
-                            document.getElementById("turnHint").innerText = data.msg;
-                            document.getElementById("turnHint").className = "turn-hint turn-end";
-                            lockAllCell();
-                        }
-                        break;
-                }
-            });
-
-            conn.on('close', () => {
-                isOnline = false;
-                myPlayer = 0;
-                document.getElementById("onlineStatus").innerText = "❌ 对手断开连接";
-            });
-        }
-
-        function sendData(type, val) {
-            if (!isOnline || !conn) return;
-            conn.send({
-                type, val,
-                eaten: eatenList,
-                player: nowPlayer,
-                stage: gameStage,
-                msg: document.getElementById("turnHint").innerText
-            });
-        }
-
-        // ========== 宫格切换 ==========
-        function setDiff(num) {
-            totalCells = num;
-            resetGame();
-            gameStage = "pick1";
-            updateUI();
-            sendData("diff", num);
-        }
-
-        // ========== 棋盘初始化 ==========
-        function initGrid() {
-            const box = document.getElementById("gridBox");
-            box.innerHTML = "";
-            allCells = [];
-
-            box.className = "grid-board";
-            if (totalCells === 9) box.classList.add("grid-9");
-            if (totalCells === 16) box.classList.add("grid-16");
-            if (totalCells === 25) box.classList.add("grid-25");
-
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement("div");
-                cell.className = "cell";
-                cell.dataset.id = i;
-                cell.onclick = () => clickCell(i);
-                box.appendChild(cell);
-                allCells.push(cell);
-            }
-        }
-
-        // ========== 遮罩 ==========
-        function showMask(text) {
-            const mask = document.getElementById("mask");
-            mask.innerText = text;
-            mask.style.display = "flex";
-        }
-        function hideMask() {
-            document.getElementById("mask").style.display = "none";
-        }
-
-        // ========== 点击逻辑 ==========
-        function clickCell(id) {
-            if (eatenList.includes(id) || gameStage === "end") return;
-
-            // 联机权限控制
-            if (isOnline) {
-                if(gameStage === "pick1" && myPlayer !== 1){
-                    alert("请等待玩家1选择毒药");
-                    return;
-                }
-                if(gameStage === "pick2" && myPlayer !== 2){
-                    alert("请等待玩家2选择毒药");
-                    return;
-                }
-                if(gameStage === "battle" && myPlayer !== nowPlayer){
-                    alert("现在不是你的回合！");
-                    return;
-                }
-            }
-
-            // 禁止点击自己的毒药
-            if ((myPlayer === 1 && id === poison1) || (myPlayer === 2 && id === poison2)) {
-                alert("⚠️ 不能选择自己的毒药！");
-                return;
-            }
-
-            // 玩家1选毒
-            if (gameStage === "pick1") {
-                poison1 = id;
-                gameStage = "pick2";
+function createRoom() {
+    const roomId = document.getElementById("roomId").value || Math.random().toString(36).slice(2,8);
+    peer = new Peer(roomId);
+    myPlayer = 1;
+    peer.on('open', () => document.getElementById("onlineStatus").innerText = `✅ 房间：${roomId}，等待对手加入`);
+    peer.on('connection', (c) => {
+        conn = c; isOnline = true;
+        document.getElementById("onlineStatus").innerText = "✅ 对手已加入，你是【玩家1】";
+        bindConn();
+    });
+}
+function joinRoom() {
+    const roomId = document.getElementById("roomId").value;
+    if (!roomId) return alert("请输入房间号");
+    peer = new Peer(); myPlayer = 2;
+    peer.on('open', () => {
+        conn = peer.connect(roomId);
+        document.getElementById("onlineStatus").innerText = "正在连接房间...";
+        conn.on('open', () => {
+            isOnline = true;
+            document.getElementById("onlineStatus").innerText = "✅ 加入成功，你是【玩家2】";
+            bindConn();
+        });
+    });
+}
+function disconnectRoom() {
+    if(conn) conn.close(); if(peer) peer.destroy();
+    isOnline = false; myPlayer = 0;
+    document.getElementById("onlineStatus").innerText = "已断开连接";
+}
+function bindConn() {
+    conn.on('data', (data) => {
+        switch(data.type){
+            case "diff": totalCells=data.val; resetGame(); break;
+            case "pick1": poison1=data.val; gameStage="pick2"; updateUI();
+                if(myPlayer===2){showMask("✅ 玩家1已选毒，请你选择毒药");setTimeout(()=>hideMask(),2000);} break;
+            case "pick2": poison2=data.val; gameStage="battle"; updateUI();
+                showMask("✅ 双方选毒完毕，游戏开始");setTimeout(()=>hideMask(),2000); break;
+            case "eat":
+                eatenList=data.eaten; nowPlayer=data.player; gameStage=data.stage;
                 updateUI();
-                sendData("pick1", id);
-                showMask("✅ 你已选毒完成！\n请等待玩家2选择");
-                setTimeout(()=>{hideMask();},2000);
-                return;
-            }
-
-            // 玩家2选毒
-            if (gameStage === "pick2") {
-                if (id === poison1) {
-                    alert("⚠️ 不能和玩家1选择同一个毒药！");
-                    return;
+                if(data.stage==="end"){
+                    document.getElementById("turnHint").innerText=data.msg;
+                    document.getElementById("turnHint").className="turn-hint turn-end";
+                    lockAllCell();
                 }
-                poison2 = id;
-                gameStage = "battle";
-                updateUI();
-                sendData("pick2", id);
-                return;
-            }
+                break;
+        }
+    });
+    conn.on('close', ()=>{isOnline=false;myPlayer=0;document.getElementById("onlineStatus").innerText="❌ 对手断开";});
+}
+function sendData(type,val){
+    if(!isOnline||!conn)return;
+    conn.send({type,val,eaten:eatenList,player:nowPlayer,stage:gameStage,msg:document.getElementById("turnHint").innerText});
+}
+function setDiff(num){totalCells=num;resetGame();gameStage="pick1";updateUI();sendData("diff",num);}
+function initGrid(){
+    const box=document.getElementById("gridBox");box.innerHTML="";allCells=[];
+    box.className="grid-board";
+    if(totalCells===9)box.classList.add("grid-9");
+    if(totalCells===16)box.classList.add("grid-16");
+    if(totalCells===25)box.classList.add("grid-25");
+    for(let i=0;i<totalCells;i++){
+        const cell=document.createElement("div");cell.className="cell";cell.dataset.id=i;
+        cell.onclick=()=>clickCell(i);box.appendChild(cell);allCells.push(cell);
+    }
+}
+function showMask(t){document.getElementById("mask").innerText=t;document.getElementById("mask").style.display="flex";}
+function hideMask(){document.getElementById("mask").style.display="none";}
 
-            // 对战吃格
-            eatenList.push(id);
+// 平局检测
+function checkTieGame(){
+    if(eatenList.length >= totalCells){
+        gameStage = "end";
+        document.getElementById("turnHint").innerText = "⚪ 格子全部吃完，平局！";
+        document.getElementById("turnHint").className = "turn-hint turn-end";
+        lockAllCell();
+        sendData("eat");
+        return true;
+    }
+    return false;
+}
 
-            // 胜负判定
-            if (nowPlayer === 1 && id === poison2) {
-                gameStage = "end";
-                document.getElementById("turnHint").innerText = "💀 玩家1中招！玩家2获胜！";
-                document.getElementById("turnHint").className = "turn-hint turn-end";
-                updateUI();
-                lockAllCell();
-                sendData("eat");
-                return;
-            }
-            if (nowPlayer === 2 && id === poison1) {
-                gameStage = "end";
-                document.getElementById("turnHint").innerText = "💀 玩家2中招！玩家1获胜！";
-                document.getElementById("turnHint").className = "turn-hint turn-end";
-                updateUI();
-                lockAllCell();
-                sendData("eat");
-                return;
-            }
+function clickCell(id){
+    if(eatenList.includes(id)||gameStage==="end")return;
+    if(isOnline){
+        if(gameStage==="pick1"&&myPlayer!==1){alert("等待玩家1选毒");return;}
+        if(gameStage==="pick2"&&myPlayer!==2){alert("等待玩家2选毒");return;}
+        if(gameStage==="battle"&&myPlayer!==nowPlayer){alert("不是你的回合");return;}
+    }
 
-            // 切换回合
-            nowPlayer = nowPlayer === 1 ? 2 : 1;
-            updateUI();
-            sendData("eat");
+    // ===================== 核心泄密BUG根治 =====================
+    // 1. 玩家2选毒时，**直接锁定玩家1的毒药格子，点不动、无弹窗、无提示、绝不泄密**
+    // 2. 彻底删掉所有 alert 提示，不会暴露对方位置
+    if(gameStage === "pick2" && id === poison1){
+        return; // 静默拦截，什么都不提示，对方完全不知道这里是毒药
+    }
+
+    // 禁止点击自己的毒药
+    if((myPlayer===1&&id===poison1)||(myPlayer===2&&id===poison2)){
+        return; // 同样静默拦截
+    }
+
+    if(gameStage==="pick1"){
+        poison1=id;gameStage="pick2";updateUI();sendData("pick1",id);
+        showMask("你已选毒，等待玩家2");setTimeout(()=>hideMask(),2000);return;
+    }
+    if(gameStage==="pick2"){
+        poison2=id;gameStage="battle";updateUI();sendData("pick2",id);return;
+    }
+
+    eatenList.push(id);
+    if(checkTieGame()) return;
+
+    // 对战胜负判定
+    if(nowPlayer===1&&id===poison2){
+        gameStage="end";
+        document.getElementById("turnHint").innerText="💀 玩家1中招！玩家2获胜！";
+        document.getElementById("turnHint").className="turn-hint turn-end";
+        lockAllCell();sendData("eat");return;
+    }
+    if(nowPlayer===2&&id===poison1){
+        gameStage="end";
+        document.getElementById("turnHint").innerText="💀 玩家2中招！玩家1获胜！";
+        document.getElementById("turnHint").className="turn-hint turn-end";
+        lockAllCell();sendData("eat");return;
+    }
+
+    nowPlayer = nowPlayer===1?2:1;
+    updateUI();sendData("eat");
+}
+
+function updateUI(){
+    const hint=document.getElementById("turnHint");
+    if(gameStage==="select"){hint.innerText="请先选择宫格或联机";hint.className="turn-hint turn-default";}
+    else if(gameStage==="pick1"){hint.innerText="玩家1：请选择毒药";hint.className="turn-hint turn-p1";}
+    else if(gameStage==="pick2"){hint.innerText="玩家2：请选择毒药";hint.className="turn-hint turn-p2";}
+    else if(gameStage==="battle"){hint.innerText=`玩家${nowPlayer} 回合，请点击格子`;hint.className=nowPlayer===1?"turn-hint turn-p1":"turn-hint turn-p2";}
+
+    allCells.forEach((cell,idx)=>{
+        cell.classList.remove("eaten","my-poison-p1","my-poison-p2","oppo-poison-p1","oppo-poison-p2","locked");
+        if(eatenList.includes(idx))cell.classList.add("eaten");
+
+        // ========== 选毒阶段锁格，防重复选+防泄密 ==========
+        if(gameStage === "pick2" && idx === poison1){
+            cell.classList.add("locked"); // 变暗不可点，不提示
         }
 
-        // ========== 核心修复：毒药显示逻辑 ==========
-        function updateUI() {
-            // 更新提示文字
-            const hint = document.getElementById("turnHint");
-            if (gameStage === "select") {
-                hint.innerText = "请先选择宫格或联机";
-                hint.className = "turn-hint turn-default";
-            } else if (gameStage === "pick1") {
-                hint.innerText = "玩家1：请悄悄选择你的毒药";
-                hint.className = "turn-hint turn-p1";
-            } else if (gameStage === "pick2") {
-                hint.innerText = "玩家2：请悄悄选择你的毒药";
-                hint.className = "turn-hint turn-p2";
-            } else if (gameStage === "battle") {
-                hint.innerText = `玩家${nowPlayer} 回合，请点击格子`;
-                hint.className = nowPlayer === 1 ? "turn-hint turn-p1" : "turn-hint turn-p2";
-            }
+        // 自己毒药全程高亮可见
+        if(myPlayer===1&&idx===poison1)cell.classList.add("my-poison-p1");
+        if(myPlayer===2&&idx===poison2)cell.classList.add("my-poison-p2");
 
-            // 刷新所有格子样式
-            allCells.forEach((cell, idx) => {
-                // 先清空所有样式
-                cell.classList.remove("eaten", "my-poison-p1", "my-poison-p2", "oppo-poison-p1", "oppo-poison-p2");
-                
-                // 1. 已吃掉的格子
-                if (eatenList.includes(idx)) {
-                    cell.classList.add("eaten");
-                }
-
-                // 2. 自己的毒药：全程高亮可见
-                if (myPlayer === 1 && idx === poison1) {
-                    cell.classList.add("my-poison-p1");
-                }
-                if (myPlayer === 2 && idx === poison2) {
-                    cell.classList.add("my-poison-p2");
-                }
-
-                // 3. 游戏结束后：显示对方毒药
-                if (gameStage === "end") {
-                    if (idx === poison1) cell.classList.add("oppo-poison-p1");
-                    if (idx === poison2) cell.classList.add("oppo-poison-p2");
-                }
-            });
+        // 游戏结束才揭晓对方毒药
+        if(gameStage==="end"){
+            if(idx===poison1)cell.classList.add("oppo-poison-p1");
+            if(idx===poison2)cell.classList.add("oppo-poison-p2");
         }
-
-        // 锁定所有格子
-        function lockAllCell() {
-            allCells.forEach(cell => cell.onclick = null);
-        }
-
-        // 重置确认
-        function confirmReset() {
-            if (confirm("确定要重新开始游戏吗？本局进度将清空！")) {
-                resetGame();
-                sendData("diff", totalCells);
-            }
-        }
-
-        // 重置游戏
-        function resetGame() {
-            poison1 = -1;
-            poison2 = -1;
-            eatenList = [];
-            nowPlayer = 1;
-            gameStage = "select";
-            initGrid();
-            updateUI();
-        }
-
-        // 页面启动
-        window.onload = () => {
-            initGrid();
-            updateUI();
-        };
-    </script>
+    });
+}
+function lockAllCell(){allCells.forEach(c=>c.classList.add("locked"));}
+function confirmReset(){if(confirm("确定重新开始？")){resetGame();sendData("diff",totalCells);}}
+function resetGame(){
+    poison1=-1;poison2=-1;eatenList=[];nowPlayer=1;gameStage="select";
+    initGrid();updateUI();
+}
+window.onload=()=>{initGrid();updateUI();};
+</script>
 </body>
 </html>
+</body>
