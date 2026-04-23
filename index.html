@@ -11,7 +11,7 @@
             box-sizing: border-box;
             font-family: "微软雅黑", sans-serif;
         }
-        /* 全局绝对居中 */
+        /* ========== 修复1：页面强制完美居中 ========== */
         html, body {
             width: 100%;
             height: 100%;
@@ -19,10 +19,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 15px 0;
         }
         .game-wrap {
             text-align: center;
-            padding: 20px;
+            width: 100%;
+            max-width: 500px;
         }
         h1 {
             color: #c92a2a;
@@ -38,62 +40,66 @@
         /* 联机面板样式 */
         .online-panel {
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 12px;
             background: #1e1e38;
-            border-radius: 8px;
+            border-radius: 10px;
         }
         .online-panel input {
-            padding: 6px;
-            width: 120px;
+            padding: 8px;
+            width: 140px;
             margin: 0 5px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             background: #272750;
             color: #fff;
+            font-size: 16px;
         }
         .online-btn {
-            padding: 6px 12px;
+            padding: 8px 14px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             background: #c92a2a;
             color: #fff;
             cursor: pointer;
             margin: 0 3px;
+            font-size: 15px;
         }
         .online-btn:disabled {
             background: #666;
             cursor: not-allowed;
         }
         .online-status {
-            margin-top: 8px;
-            font-size: 14px;
+            margin-top: 10px;
+            font-size: 15px;
             color: #888;
         }
         /* 宫格选择按钮 */
         .diff-buttons {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .diff-btn {
-            padding: 8px 16px;
-            margin: 0 5px;
+            padding: 10px 20px;
+            margin: 0 6px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             background: #272750;
             color: #fff;
             cursor: pointer;
             border: 2px solid #3a3a70;
+            font-size: 16px;
         }
         .diff-btn:hover {
             background: #3a3a70;
         }
-        /* 回合提示 */
+        /* ========== 修复2：回合提示文字颜色清晰可见 ========== */
         .turn-hint {
             font-size: 22px;
             margin: 15px 0;
-            padding: 8px 20px;
+            padding: 10px 24px;
             border-radius: 8px;
             display: inline-block;
             transition: 0.3s;
+            font-weight: bold;
         }
         .turn-p1 {
             background: #3c1a1a;
@@ -110,11 +116,16 @@
             color: #ffd700;
             border: 2px solid #ffd700;
         }
+        .turn-default {
+            background: #272750;
+            color: #ffffff;
+            border: 2px solid #3a3a70;
+        }
         /* 棋盘通用样式 */
         .grid-board {
             display: grid;
             gap: 12px;
-            margin: 0 auto 25px;
+            margin: 0 auto 30px;
         }
         /* 不同宫格尺寸 */
         .grid-9 {
@@ -130,6 +141,9 @@
             grid-template-rows: repeat(5, 65px);
         }
         @media (max-width: 450px) {
+            .grid-board {
+                gap: 8px;
+            }
             .grid-9 {
                 grid-template-columns: repeat(3, 70px);
                 grid-template-rows: repeat(3, 70px);
@@ -198,12 +212,12 @@
         }
         /* 按钮 */
         #restart-btn {
-            padding: 10px 30px;
+            padding: 12px 35px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             background: #272750;
             color: #fff;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
             transition: 0.2s;
             border: 2px solid #3a3a70;
@@ -236,7 +250,7 @@
             <button class="diff-btn" onclick="setDiff(25)">25宫格</button>
         </div>
         
-        <div class="turn-hint" id="turnHint">请先选择宫格或联机</div>
+        <div class="turn-hint turn-default" id="turnHint">请先选择宫格或联机</div>
         <div class="grid-board" id="gridBox"></div>
         <button id="restart-btn" onclick="confirmReset()">重新开始</button>
     </div>
@@ -250,12 +264,16 @@
         let isHost = false;
         let isOnline = false;
 
+        // ========== 修复3：严格区分玩家身份 ==========
+        // 房主 = 玩家1  访客 = 玩家2  身份永久固定，不会切换
+        let myPlayer = 0; // 0未连接 / 1房主 / 2访客
+
         // ========== 游戏核心 ==========
         let totalCells = 9;
-        let poison1 = -1;
-        let poison2 = -1;
+        let poison1 = -1; // 玩家1毒药（房主）
+        let poison2 = -1; // 玩家2毒药（访客）
         let eatenList = [];
-        let nowPlayer = 1;
+        let nowPlayer = 1; // 当前回合玩家
         let gameStage = "select"; // select/pick1/pick2/battle/end
         let allCells = [];
 
@@ -264,15 +282,16 @@
             const roomId = document.getElementById("roomId").value || Math.random().toString(36).slice(2,8);
             peer = new Peer(roomId);
             isHost = true;
+            myPlayer = 1; // 创建房间的人固定为玩家1
 
             peer.on('open', () => {
-                document.getElementById("onlineStatus").innerText = `✅ 房间：${roomId}，等待对手`;
+                document.getElementById("onlineStatus").innerText = `✅ 房间：${roomId}，等待对手加入`;
             });
 
             peer.on('connection', (c) => {
                 conn = c;
                 isOnline = true;
-                document.getElementById("onlineStatus").innerText = "✅ 对手已加入";
+                document.getElementById("onlineStatus").innerText = "✅ 对手已加入，你是【玩家1】";
                 bindConn();
             });
         }
@@ -283,14 +302,15 @@
 
             peer = new Peer();
             isHost = false;
+            myPlayer = 2; // 加入房间的人固定为玩家2
 
             peer.on('open', () => {
                 conn = peer.connect(roomId);
-                document.getElementById("onlineStatus").innerText = "正在连接...";
+                document.getElementById("onlineStatus").innerText = "正在连接房间...";
 
                 conn.on('open', () => {
                     isOnline = true;
-                    document.getElementById("onlineStatus").innerText = "✅ 加入成功";
+                    document.getElementById("onlineStatus").innerText = "✅ 加入成功，你是【玩家2】";
                     bindConn();
                 });
             });
@@ -300,7 +320,8 @@
             if (conn) conn.close();
             if (peer) peer.destroy();
             isOnline = false;
-            document.getElementById("onlineStatus").innerText = "已断开";
+            myPlayer = 0;
+            document.getElementById("onlineStatus").innerText = "已断开连接";
         }
 
         function bindConn() {
@@ -313,14 +334,19 @@
                     case "pick1":
                         poison1 = data.val;
                         gameStage = "pick2";
-                        showMask("✅ 玩家1选毒完成！\n请玩家1背对屏幕，让玩家2来选！");
-                        setTimeout(()=>{hideMask();updateUI();},2000);
+                        updateUI();
+                        // 只有玩家2才会收到这个提示
+                        if(myPlayer === 2){
+                            showMask("✅ 玩家1已选毒\n请你悄悄选择你的毒药");
+                            setTimeout(()=>{hideMask();},2000);
+                        }
                         break;
                     case "pick2":
                         poison2 = data.val;
                         gameStage = "battle";
+                        updateUI();
                         showMask("✅ 双方选毒完成！\n开始对战，千万别吃到对方毒药！");
-                        setTimeout(()=>{hideMask();updateUI();},2000);
+                        setTimeout(()=>{hideMask();},2000);
                         break;
                     case "eat":
                         eatenList = data.eaten;
@@ -339,7 +365,8 @@
 
             conn.on('close', () => {
                 isOnline = false;
-                document.getElementById("onlineStatus").innerText = "❌ 对手断开";
+                myPlayer = 0;
+                document.getElementById("onlineStatus").innerText = "❌ 对手断开连接";
             });
         }
 
@@ -398,26 +425,40 @@
         function clickCell(id) {
             if (eatenList.includes(id) || gameStage === "end") return;
 
-            // 联机：非自己回合禁止操作
+            // ========== 修复3：严格限制操作权限 ==========
+            // 1. 选毒阶段：只能自己选自己的毒药，别人不能操作
+            // 2. 对战阶段：只能自己回合才能操作
             if (isOnline) {
-                const myPlayer = isHost ? 1 : 2;
-                if (nowPlayer !== myPlayer) {
+                // 选毒1阶段：只有房主（玩家1）能操作
+                if(gameStage === "pick1" && myPlayer !== 1){
+                    alert("请等待玩家1选择毒药");
+                    return;
+                }
+                // 选毒2阶段：只有访客（玩家2）能操作
+                if(gameStage === "pick2" && myPlayer !== 2){
+                    alert("请等待玩家2选择毒药");
+                    return;
+                }
+                // 对战阶段：只有当前回合玩家能操作
+                if(gameStage === "battle" && myPlayer !== nowPlayer){
                     alert("现在不是你的回合！");
                     return;
                 }
             }
 
-            // 阶段1：玩家1选毒
+            // 阶段1：玩家1（房主）选毒
             if (gameStage === "pick1") {
                 poison1 = id;
                 gameStage = "pick2";
-                showMask("✅ 玩家1选毒完成！\n请玩家1背对屏幕，让玩家2来选！");
-                setTimeout(()=>{hideMask();updateUI();},2000);
+                updateUI();
                 sendData("pick1", id);
+                // 房主自己的遮罩
+                showMask("✅ 你已选毒完成！\n请等待玩家2选择");
+                setTimeout(()=>{hideMask();},2000);
                 return;
             }
 
-            // 阶段2：玩家2选毒
+            // 阶段2：玩家2（访客）选毒
             if (gameStage === "pick2") {
                 if (id === poison1) {
                     alert("⚠️ 不能和玩家1选择同一个毒药！");
@@ -425,14 +466,13 @@
                 }
                 poison2 = id;
                 gameStage = "battle";
-                showMask("✅ 双方选毒完成！\n开始对战，千万别吃到对方毒药！");
-                setTimeout(()=>{hideMask();updateUI();},2000);
+                updateUI();
                 sendData("pick2", id);
                 return;
             }
 
             // 不能吃自己的毒药
-            if ((nowPlayer === 1 && id === poison1) || (nowPlayer === 2 && id === poison2)) {
+            if ((myPlayer === 1 && id === poison1) || (myPlayer === 2 && id === poison2)) {
                 alert("⚠️ 不能选择自己的毒药！");
                 return;
             }
@@ -471,7 +511,7 @@
             const hint = document.getElementById("turnHint");
             if (gameStage === "select") {
                 hint.innerText = "请先选择宫格或联机";
-                hint.className = "turn-hint";
+                hint.className = "turn-hint turn-default";
             } else if (gameStage === "pick1") {
                 hint.innerText = "玩家1：请悄悄选择你的毒药";
                 hint.className = "turn-hint turn-p1";
