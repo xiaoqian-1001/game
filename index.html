@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>女巫的毒药 | 九宫格双人对战</title>
+    <title>女巫的毒药</title>
     <style>
         * {
             margin: 0;
@@ -11,239 +11,200 @@
             box-sizing: border-box;
             font-family: "微软雅黑", sans-serif;
         }
-        /* 全局绝对居中 */
         html, body {
             width: 100%;
             height: 100%;
-            background: #121224;
+            background: #1a1a2e;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        .game-wrap {
+        .game-box {
             text-align: center;
-            padding: 20px;
         }
         h1 {
-            color: #c92a2a;
-            margin-bottom: 8px;
-            font-size: 28px;
-            letter-spacing: 2px;
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 26px;
         }
-        .rule-desc {
-            color: #888;
+        .rule-tip {
+            color: #aaa;
+            margin-bottom: 15px;
             font-size: 14px;
+        }
+        /* 难度选择按钮 */
+        .diff-buttons {
             margin-bottom: 20px;
         }
-        /* 回合提示 */
-        .turn-hint {
-            font-size: 22px;
+        .diff-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 6px;
+            background: #0f3460;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .diff-btn:hover {
+            background: #16539e;
+        }
+        .turn-text {
+            font-size: 20px;
             margin: 15px 0;
-            padding: 8px 20px;
-            border-radius: 8px;
-            display: inline-block;
-            transition: 0.3s;
-        }
-        .turn-p1 {
-            background: #3c1a1a;
-            color: #ff8787;
-            border: 2px solid #c92a2a;
-        }
-        .turn-p2 {
-            background: #1a3c2a;
-            color: #87ffb8;
-            border: 2px solid #2b8a3e;
-        }
-        .turn-end {
-            background: #3c3c1a;
             color: #ffd700;
-            border: 2px solid #ffd700;
+            height: 30px;
         }
-        /* 九宫格 */
-        .grid-board {
+        /* 棋盘通用样式 */
+        .grid {
             display: grid;
+            gap: 8px;
+            margin: 0 auto 20px;
+        }
+        /* 不同宫格尺寸 */
+        .grid-9 {
             grid-template-columns: repeat(3, 90px);
             grid-template-rows: repeat(3, 90px);
-            gap: 12px;
-            margin: 0 auto 25px;
         }
-        @media (max-width: 400px) {
-            .grid-board {
-                grid-template-columns: repeat(3, 70px);
-                grid-template-rows: repeat(3, 70px);
-            }
+        .grid-16 {
+            grid-template-columns: repeat(4, 70px);
+            grid-template-rows: repeat(4, 70px);
+        }
+        .grid-25 {
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
         }
         .cell {
-            background: #272750;
-            border-radius: 12px;
+            background: #4a6cf7;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            border: 2px solid #3a3a70;
+            transition: 0.2s;
         }
-        .cell:hover:not(.eaten) {
-            background: #3a3a70;
-            transform: scale(1.05);
+        .cell:hover {
+            background: #6b8aff;
         }
-        .cell:active:not(.eaten) {
-            transform: scale(0.95);
-        }
-        /* 已吃掉格子：纯黑完全不可用 */
         .cell.eaten {
-            background: #000;
-            border-color: #111;
+            background: #333;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
-        /* 游戏结束才显示毒药 */
+        /* 仅游戏结束显示毒药 */
         .cell.p1-poison {
             background: #c92a2a !important;
-            border-color: #ff8787 !important;
-            animation: poisonBlink 0.8s infinite alternate;
         }
         .cell.p2-poison {
             background: #2b8a3e !important;
-            border-color: #87ffb8 !important;
-            animation: poisonBlink 0.8s infinite alternate;
         }
-        @keyframes poisonBlink {
-            from { opacity: 0.8; }
-            to { opacity: 1; }
-        }
-        /* 遮罩防偷看 */
-        .mask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            color: #fff;
-            font-size: 24px;
-            text-align: center;
-            padding: 20px;
-        }
-        /* 按钮 */
         #restart-btn {
-            padding: 10px 30px;
+            padding: 10px 25px;
             border: none;
             border-radius: 8px;
-            background: #272750;
+            background: #0f3460;
             color: #fff;
             font-size: 16px;
             cursor: pointer;
-            transition: 0.2s;
-            border: 2px solid #3a3a70;
         }
         #restart-btn:hover {
-            background: #3a3a70;
+            background: #16539e;
         }
     </style>
 </head>
 <body>
-    <div class="game-wrap">
-        <h1>🧙‍♀️ 女巫的毒药</h1>
-        <div class="rule-desc">双人暗选毒药 · 轮流吃格 · 吃到对方毒药即败</div>
-        
-        <div class="turn-hint" id="turnHint">玩家1：请悄悄选择你的毒药</div>
-        <div class="grid-board" id="gridBox"></div>
-        <button id="restart-btn" onclick="confirmReset()">重新开始</button>
+    <div class="game-box">
+        <h1>女巫的毒药</h1>
+        <div class="rule-tip">双人暗选毒药 | 轮流吃格 | 吃到对方毒药直接输</div>
+
+        <!-- 新增：宫格难度选择 -->
+        <div class="diff-buttons">
+            <button class="diff-btn" onclick="setDiff(9)">9宫格</button>
+            <button class="diff-btn" onclick="setDiff(16)">16宫格</button>
+            <button class="diff-btn" onclick="setDiff(25)">25宫格</button>
+        </div>
+
+        <div class="turn-text" id="turnTip">请先选择宫格大小开始游戏</div>
+        <div class="grid" id="gridBox"></div>
+        <button id="restart-btn" onclick="resetGame()">重新开始</button>
     </div>
 
-    <!-- 防偷看遮罩 -->
-    <div class="mask" id="mask" style="display: none;"></div>
-
     <script>
-        // 游戏核心状态
-        let poison1 = -1;    // 玩家1毒药（隐藏）
-        let poison2 = -1;    // 玩家2毒药（隐藏）
-        let eatenList = [];  // 已吃掉格子
-        let nowPlayer = 1;   // 当前玩家
-        let gameStage = "pick1"; // pick1/pick2/battle/end
+        // 全局游戏配置
+        let totalCells = 9; // 默认9宫格
+        let poison1 = -1;
+        let poison2 = -1;
+        let eatenList = [];
+        let nowPlayer = 1;
+        let gameStage = "select"; // select选择难度 / pick1 / pick2 / battle / end
         let allCells = [];
 
-        // 初始化九宫格
+        // 设置宫格难度
+        function setDiff(num) {
+            totalCells = num;
+            resetGame();
+            gameStage = "pick1";
+            updateUI();
+        }
+
+        // 初始化棋盘
         function initGrid() {
             const box = document.getElementById("gridBox");
             box.innerHTML = "";
             allCells = [];
-            for (let i = 0; i < 9; i++) {
+
+            // 根据宫格数设置样式
+            box.className = "grid";
+            if (totalCells === 9) box.classList.add("grid-9");
+            if (totalCells === 16) box.classList.add("grid-16");
+            if (totalCells === 25) box.classList.add("grid-25");
+
+            // 生成格子
+            for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement("div");
                 cell.className = "cell";
-                cell.dataset.id = i;
+                cell.dataset.num = i;
                 cell.onclick = () => clickCell(i);
                 box.appendChild(cell);
                 allCells.push(cell);
             }
         }
 
-        // 防偷看遮罩
-        function showMask(text) {
-            const mask = document.getElementById("mask");
-            mask.innerText = text;
-            mask.style.display = "flex";
-        }
-        function hideMask() {
-            document.getElementById("mask").style.display = "none";
-        }
-
         // 点击格子逻辑
-        function clickCell(id) {
-            if (eatenList.includes(id) || gameStage === "end") return;
+        function clickCell(num) {
+            if (eatenList.includes(num) || gameStage === "end" || gameStage === "select") return;
 
-            // 阶段1：玩家1暗选毒药 + 防偷看
+            // 玩家1选毒
             if (gameStage === "pick1") {
-                poison1 = id;
+                poison1 = num;
                 gameStage = "pick2";
-                showMask("✅ 玩家1选毒完成！\n请玩家1背对屏幕，让玩家2来选！");
-                setTimeout(() => {
-                    hideMask();
-                    updateUI();
-                }, 2000);
+                updateUI();
                 return;
             }
 
-            // 阶段2：玩家2暗选毒药 + 防偷看
+            // 玩家2选毒
             if (gameStage === "pick2") {
-                if (id === poison1) {
-                    alert("⚠️ 不能和玩家1选择同一个毒药！");
+                if (num === poison1) {
+                    alert("不能和对方选同一个毒药！");
                     return;
                 }
-                poison2 = id;
+                poison2 = num;
                 gameStage = "battle";
-                showMask("✅ 双方选毒完成！\n开始对战，千万别吃到对方毒药！");
-                setTimeout(() => {
-                    hideMask();
-                    updateUI();
-                }, 2000);
+                updateUI();
                 return;
             }
 
-            // 🔒 优化：不能吃自己的毒药
-            if ((nowPlayer === 1 && id === poison1) || (nowPlayer === 2 && id === poison2)) {
-                alert("⚠️ 不能选择自己的毒药！");
-                return;
-            }
-
-            // 阶段3：对战回合
-            eatenList.push(id);
+            // 对战阶段
+            eatenList.push(num);
 
             // 胜负判定
-            if (nowPlayer === 1 && id === poison2) {
+            if (nowPlayer === 1 && num === poison2) {
                 gameStage = "end";
-                document.getElementById("turnHint").innerText = "💀 玩家1中招！玩家2获胜！";
-                document.getElementById("turnHint").className = "turn-hint turn-end";
+                document.getElementById("turnTip").innerText = "玩家1中招！玩家2获胜！";
                 showAllPoison();
                 lockAllCell();
                 return;
             }
-            if (nowPlayer === 2 && id === poison1) {
+            if (nowPlayer === 2 && num === poison1) {
                 gameStage = "end";
-                document.getElementById("turnHint").innerText = "💀 玩家2中招！玩家1获胜！";
-                document.getElementById("turnHint").className = "turn-hint turn-end";
+                document.getElementById("turnTip").innerText = "玩家2中招！玩家1获胜！";
                 showAllPoison();
                 lockAllCell();
                 return;
@@ -256,31 +217,28 @@
 
         // 更新界面
         function updateUI() {
-            // 回合文字+样式
-            const hint = document.getElementById("turnHint");
-            if (gameStage === "pick1") {
-                hint.innerText = "玩家1：请悄悄选择你的毒药";
-                hint.className = "turn-hint turn-p1";
+            if (gameStage === "select") {
+                document.getElementById("turnTip").innerText = "请先选择宫格大小开始游戏";
+            } else if (gameStage === "pick1") {
+                document.getElementById("turnTip").innerText = "玩家1：悄悄选择你的毒药";
             } else if (gameStage === "pick2") {
-                hint.innerText = "玩家2：请悄悄选择你的毒药";
-                hint.className = "turn-hint turn-p2";
-            } else if (gameStage === "battle") {
-                hint.innerText = `玩家${nowPlayer} 回合，请点击格子`;
-                hint.className = nowPlayer === 1 ? "turn-hint turn-p1" : "turn-hint turn-p2";
+                document.getElementById("turnTip").innerText = "玩家2：悄悄选择你的毒药";
+            } else {
+                document.getElementById("turnTip").innerText = `玩家${nowPlayer} 回合，请点击格子`;
             }
 
-            // 刷新格子
-            allCells.forEach((cell, idx) => {
+            // 刷新格子状态
+            allCells.forEach((cell, index) => {
                 cell.classList.remove("eaten", "p1-poison", "p2-poison");
-                if (eatenList.includes(idx)) cell.classList.add("eaten");
+                if (eatenList.includes(index)) cell.classList.add("eaten");
             });
         }
 
-        // 游戏结束：显示毒药+闪烁
+        // 游戏结束显示毒药
         function showAllPoison() {
-            allCells.forEach((cell, idx) => {
-                if (idx === poison1) cell.classList.add("p1-poison");
-                if (idx === poison2) cell.classList.add("p2-poison");
+            allCells.forEach((cell, index) => {
+                if (index === poison1) cell.classList.add("p1-poison");
+                if (index === poison2) cell.classList.add("p2-poison");
             });
         }
 
@@ -289,25 +247,18 @@
             allCells.forEach(cell => cell.onclick = null);
         }
 
-        // 重置确认
-        function confirmReset() {
-            if (confirm("确定要重新开始游戏吗？本局进度将清空！")) {
-                resetGame();
-            }
-        }
-
         // 重置游戏
         function resetGame() {
             poison1 = -1;
             poison2 = -1;
             eatenList = [];
             nowPlayer = 1;
-            gameStage = "pick1";
+            gameStage = "select";
             initGrid();
             updateUI();
         }
 
-        // 页面加载启动
+        // 页面加载
         window.onload = () => {
             initGrid();
             updateUI();
