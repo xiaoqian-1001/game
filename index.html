@@ -44,7 +44,7 @@
 
         <!-- 分类标签 -->
         <div class="flex gap-2 overflow-x-auto pb-2 mb-4">
-            <button class="tab-btn active px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="vod">点播</button>
+            <button class="tab-btn active px-4 py-2 rounded-lg glass-dark whitespace-nowrap bg-primary/30" data-type="vod">点播</button>
             <button class="tab-btn px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="live">直播</button>
             <button class="tab-btn px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="history">历史</button>
             <button class="tab-btn px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="collect">收藏</button>
@@ -68,6 +68,7 @@
                 <button onclick="addSource()" class="flex-1 bg-primary py-2 rounded-lg">添加并加载</button>
                 <button onclick="clearAllSource()" class="px-4 bg-red-500/60 py-2 rounded-lg">清空</button>
             </div>
+            <div id="loadingTip" class="mt-2 text-sm text-yellow-400 hidden">加载中，请稍候...</div>
             <div class="mt-3 max-h-40 overflow-auto" id="sourceList"></div>
         </div>
     </div>
@@ -113,18 +114,31 @@
             document.getElementById('searchModal').style.display='none';
         }
 
-        // 源管理
+        // 源管理（修复：增加加载提示）
         async function addSource(){
             const val = document.getElementById('sourceInput').value.trim();
             if(!val)return alert('请输入有效源地址');
+            
+            // 显示加载提示
+            document.getElementById('loadingTip').classList.remove('hidden');
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '加载中...';
+
             const ok = await CatVodCore.loadConfig(val);
+            
+            // 恢复按钮状态
+            document.getElementById('loadingTip').classList.add('hidden');
+            btn.disabled = false;
+            btn.textContent = '添加并加载';
+
             if(ok){
                 SourceDB.add(val);
                 alert('加载成功');
                 renderSourceList();
                 closeSourceModal();
             }else{
-                alert('源加载失败，请检查链接');
+                alert('源加载失败，请检查链接是否有效，或尝试更换其他源');
             }
         }
         function renderSourceList(){
