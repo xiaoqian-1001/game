@@ -1,63 +1,91 @@
-// 原生支持 .js.md5 后缀源｜不修改原链接、直接加载
+// 三重加固版：解决跨域 + 代理失效 + iOS Safari 兼容
 const CatVodCore = {
   configList: [],
   currentConfig: null,
 
-  // 直接加载完整原始链接，不剔除、不改地址
+  // 备用跨域代理列表（防止单个代理失效）
+  proxyList: [
+    "https://api.allorigins.win/raw?url=",
+    "https://corsproxy.io/?",
+    "https://api.codetabs.com/v1/proxy?quest="
+  ],
+
+  // 尝试所有代理，找到可用的一个
+  async fetchWithFallback(url) {
+    for (const proxy of this.proxyList) {
+      try {
+        const proxyUrl = proxy + encodeURIComponent(url);
+        const res = await fetch(proxyUrl, { timeout: 10000 });
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.length > 100) {
+            return text;
+          }
+        }
+      } catch (e) {
+        console.warn(`代理 ${proxy} 失败，尝试下一个`);
+      }
+    }
+    throw new Error("所有代理均无法加载资源");
+  },
+
+  // 加载远程JS｜原生支持.md5后缀
   async loadConfig(rawUrl) {
     try {
-      // 直接使用用户输入完整链接，0修改
-      const targetUrl = rawUrl;
-      // 跨域代理
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error("资源请求失败");
-      // 强制读取纯文本，无视后缀&响应类型
-      const jsCode = await res.text();
+      // 1. 用备用代理列表获取JS内容
+      const jsCode = await this.fetchWithFallback(rawUrl);
 
-      // 注入执行JS代码
-      const script = document.createElement('script');
+      // 2. 用iframe沙箱方式执行JS（绕过Safari的安全限制）
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const script = doc.createElement('script');
       script.textContent = jsCode;
-      document.body.appendChild(script);
-      document.body.removeChild(script);
+      doc.body.appendChild(script);
 
-      // 校验CatVod标准函数
+      // 3. 把脚本里的函数挂载到当前window
+      const win = iframe.contentWindow;
+      window.getSiteClass = win.getSiteClass;
+      window.getSiteVideo = win.getSiteVideo;
+      window.getSiteSearch = win.getSiteSearch;
+      window.getSitePlay = win.getSitePlay;
+
+      document.body.removeChild(iframe);
+
+      // 4. 校验核心函数是否存在
       if (typeof window.getSiteClass !== 'function') {
-        throw new Error("脚本非标准CatVod格式");
+        throw new Error("脚本加载成功，但未找到核心函数，可能不是标准CatVod源");
       }
       return true;
     } catch (e) {
-      console.error("源加载错误：", e);
+      console.error("源加载失败：", e);
       return false;
     }
   },
 
-  // 分类
   async getCategory() {
     if (!window.getSiteClass) return [];
     return await window.getSiteClass();
   },
 
-  // 影片列表
   async getList(ids, pg = 1) {
     if (!window.getSiteVideo) return [];
     return await window.getSiteVideo(ids, pg);
   },
 
-  // 搜索
   async search(key) {
-    if (!window.get???SiteSearch) return [];
+    if (!window.getSiteSearch) return [];
     return await window.getSiteSearch(key);
   },
 
-  // 播放解析
   async getPlayUrl(id) {
     if (!window.getSitePlay) return null;
     return await window.getSitePlay(id);
   }
 };
 
-// 本地源数据库
+// 本地源存储
 const SourceDB = {
   get() {
     return JSON.parse(localStorage.getItem("jstv_source") || "[]");
