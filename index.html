@@ -1,25 +1,193 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>五子棋 Pro</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JSTV Web 网页版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/video.js@8.16.1/dist/video-js.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/video.js@8.16.1/dist/video.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
+    <script>
+        tailwind.config={theme:{extend:{colors:{primary:"#2563eb",darkBg:"#0b101c"}}}}
+    </script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:#0b101c;color:#e5e7eb;}
+        .glass{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:12px;}
+        .glass-dark{background:rgba(0,0,0,0.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.06);}
+        ::-webkit-scrollbar{width:6px;height:6px;}
+        ::-webkit-scrollbar-thumb{background:#374151;border-radius:3px;}
+        .video-js{border-radius:12px;overflow:hidden;}
+    </style>
 </head>
 <body>
+    <!-- 顶部导航 -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-dark px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2 text-lg font-bold text-white">
+                <i class="ri-tv-fill text-primary"></i>
+                <span>JSTV Web</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="openSourceModal()" class="px-3 py-1 rounded-lg glass text-sm"><i class="ri-link"></i> 源配置</button>
+                <button onclick="openSearch()" class="px-3 py-1 rounded-lg glass text-sm"><i class="ri-search-line"></i> 搜索</button>
+            </div>
+        </div>
+    </header>
 
-<h1>五子棋 Pro</h1>
+    <!-- 播放器 -->
+    <main class="pt-20 px-3 max-w-7xl mx-auto">
+        <div class="glass-dark p-2 mb-4">
+            <video id="player" class="video-js w-full h-[45vh]"></video>
+        </div>
 
-<div class="controls">
-    <button onclick="restart()">重新开始</button>
-    <button onclick="undo()">悔棋</button>
-    <button onclick="toggleAI()">AI: 开/关</button>
-</div>
+        <!-- 分类标签 -->
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-4">
+            <button class="tab-btn active px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="vod">点播</button>
+            <button class="tab-btn px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="live">直播</button>
+            <button class="tab-btn px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="history">历史</button>
+            <button class="tab-btn px-4 py-2 rounded-lg glass-dark whitespace-nowrap" data-type="collect">收藏</button>
+        </div>
 
-<p id="status">当前回合：黑棋</p>
+        <!-- 内容容器 -->
+        <div id="contentWrap" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div class="col-span-full text-center py-16 text-gray-400">请先添加 JS 解析源，开始使用</div>
+        </div>
+    </main>
 
-<canvas id="board"></canvas>
+    <!-- 配置弹窗 -->
+    <div id="sourceModal" class="fixed inset-0 bg-black/80 z-[999] hidden items-center justify-center p-4">
+        <div class="w-full max-w-lg glass-dark p-5 rounded-xl">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-base font-semibold">解析源管理</h3>
+                <button onclick="closeSourceModal()" class="text-xl"><i class="ri-close-line"></i></button>
+            </div>
+            <textarea id="sourceInput" class="w-full bg-black/40 border border-gray-700 rounded-lg p-3 h-24 text-sm outline-none" placeholder="粘贴 JSTV/TVbox 远程JS链接"></textarea>
+            <div class="flex gap-2 mt-3">
+                <button onclick="addSource()" class="flex-1 bg-primary py-2 rounded-lg">添加并加载</button>
+                <button onclick="clearAllSource()" class="px-4 bg-red-500/60 py-2 rounded-lg">清空</button>
+            </div>
+            <div class="mt-3 max-h-40 overflow-auto" id="sourceList"></div>
+        </div>
+    </div>
 
-<script src="game.js"></script>
+    <!-- 搜索弹窗 -->
+    <div id="searchModal" class="fixed inset-0 bg-black/80 z-[999] hidden items-center justify-center p-4">
+        <div class="w-full max-w-lg glass-dark p-5 rounded-xl">
+            <div class="flex gap-2">
+                <input id="searchKey" class="flex-1 bg-black/40 border border-gray-700 rounded-lg px-3 py-2 outline-none" placeholder="输入影片名称">
+                <button onclick="doSearch()" class="bg-primary px-4 rounded-lg">搜索</button>
+            </div>
+            <button onclick="closeSearch()" class="mt-3 w-full py-2 glass rounded-lg">关闭</button>
+        </div>
+    </div>
+
+    <script src="./catvod-core.js"></script>
+    <script>
+        // 播放器初始化
+        const player = videojs('player',{
+            autoplay:false,
+            controls:true,
+            fluid:true,
+            playbackRates:[0.5,1,1.25,1.5,2,2.5,3],
+            responsive:true
+        });
+
+        // 弹窗控制
+        function openSourceModal(){
+            document.getElementById('sourceModal').classList.remove('hidden');
+            document.getElementById('sourceModal').style.display='flex';
+            renderSourceList();
+        }
+        function closeSourceModal(){
+            document.getElementById('sourceModal').classList.add('hidden');
+            document.getElementById('sourceModal').style.display='none';
+        }
+        function openSearch(){
+            document.getElementById('searchModal').classList.remove('hidden');
+            document.getElementById('searchModal').style.display='flex';
+        }
+        function closeSearch(){
+            document.getElementById('searchModal').classList.add('hidden');
+            document.getElementById('searchModal').style.display='none';
+        }
+
+        // 源管理
+        async function addSource(){
+            const val = document.getElementById('sourceInput').value.trim();
+            if(!val)return alert('请输入有效源地址');
+            const ok = await CatVodCore.loadConfig(val);
+            if(ok){
+                SourceDB.add(val);
+                alert('加载成功');
+                renderSourceList();
+                closeSourceModal();
+            }else{
+                alert('源加载失败，请检查链接');
+            }
+        }
+        function renderSourceList(){
+            const list = SourceDB.get();
+            let html = '';
+            list.forEach((item,idx)=>{
+                html += `<div class="flex items-center justify-between py-2 border-b border-gray-800 text-sm"><div class="truncate flex-1">${item}</div><button onclick="delSource(${idx})" class="text-red-400 ml-2">删除</button></div>`;
+            });
+            document.getElementById('sourceList').innerHTML = html;
+        }
+        function delSource(idx){
+            SourceDB.del(idx);
+            renderSourceList();
+        }
+        function clearAllSource(){
+            localStorage.removeItem('jstv_source');
+            renderSourceList();
+        }
+
+        // 搜索
+        async function doSearch(){
+            const key = document.getElementById('searchKey').value.trim();
+            if(!key)return;
+            const res = await CatVodCore.search(key);
+            renderVideoList(res);
+            closeSearch();
+        }
+
+        // 渲染列表
+        function renderVideoList(arr){
+            const wrap = document.getElementById('contentWrap');
+            if(!arr||arr.length===0){
+                wrap.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400">暂无数据</div>';
+                return;
+            }
+            let html = '';
+            arr.forEach(item=>{
+                html += `
+                <div class="glass-dark rounded-lg overflow-hidden p-2" onclick="playItem('${item.id||''}')">
+                    <div class="aspect-[3/4] bg-gray-800 rounded mb-2 flex items-center justify-center text-xs">封面</div>
+                    <div class="text-sm line-clamp-1">${item.name||'未知影片'}</div>
+                </div>
+                `;
+            });
+            wrap.innerHTML = html;
+        }
+
+        // 播放
+        async function playItem(id){
+            const playRes = await CatVodCore.getPlayUrl(id);
+            if(playRes&&playRes.url){
+                player.src({src:playRes.url,type:playRes.url.includes('.m3u8')?'application/x-mpegURL':'video/mp4'});
+                player.play();
+            }
+        }
+
+        // 标签切换
+        document.querySelectorAll('.tab-btn').forEach(btn=>{
+            btn.onclick=function(){
+                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active','bg-primary/30'));
+                this.classList.add('active','bg-primary/30');
+            }
+        });
+    </script>
 </body>
 </html>
