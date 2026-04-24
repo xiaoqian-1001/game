@@ -1,14 +1,27 @@
-// CatVod 通用解析内核 - 适配JSTV/TVbox标准源
+// 修复跨域 & iOS 兼容版 CatVod 内核
 const CatVodCore = {
   configList: [],
   currentConfig: null,
 
-  // 加载远程JS配置
+  // 加载远程JS配置（用cors代理绕过跨域）
   async loadConfig(url) {
     try {
-      const res = await fetch(url);
+      // 1. 先用cors代理获取JS内容
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error("代理请求失败");
       const jsCode = await res.text();
-      window.eval(jsCode);
+
+      // 2. 用沙箱方式执行JS，避免直接eval被拦截
+      const script = document.createElement('script');
+      script.textContent = jsCode;
+      document.body.appendChild(script);
+      document.body.removeChild(script);
+
+      // 3. 验证核心函数是否加载成功
+      if (typeof window.getSiteClass !== 'function') {
+        throw new Error("脚本加载成功，但未找到核心函数");
+      }
       return true;
     } catch (e) {
       console.error("配置加载失败", e);
