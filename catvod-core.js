@@ -1,41 +1,44 @@
-// 修复跨域 & iOS 兼容版 CatVod 内核
+// 原生支持 .js.md5 后缀源｜不修改原链接、直接加载
 const CatVodCore = {
   configList: [],
   currentConfig: null,
 
-  // 加载远程JS配置（用cors代理绕过跨域）
-  async loadConfig(url) {
+  // 直接加载完整原始链接，不剔除、不改地址
+  async loadConfig(rawUrl) {
     try {
-      // 1. 先用cors代理获取JS内容
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+      // 直接使用用户输入完整链接，0修改
+      const targetUrl = rawUrl;
+      // 跨域代理
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
       const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error("代理请求失败");
+      if (!res.ok) throw new Error("资源请求失败");
+      // 强制读取纯文本，无视后缀&响应类型
       const jsCode = await res.text();
 
-      // 2. 用沙箱方式执行JS，避免直接eval被拦截
+      // 注入执行JS代码
       const script = document.createElement('script');
       script.textContent = jsCode;
       document.body.appendChild(script);
       document.body.removeChild(script);
 
-      // 3. 验证核心函数是否加载成功
+      // 校验CatVod标准函数
       if (typeof window.getSiteClass !== 'function') {
-        throw new Error("脚本加载成功，但未找到核心函数");
+        throw new Error("脚本非标准CatVod格式");
       }
       return true;
     } catch (e) {
-      console.error("配置加载失败", e);
+      console.error("源加载错误：", e);
       return false;
     }
   },
 
-  // 执行分类
+  // 分类
   async getCategory() {
     if (!window.getSiteClass) return [];
     return await window.getSiteClass();
   },
 
-  // 执行列表
+  // 影片列表
   async getList(ids, pg = 1) {
     if (!window.getSiteVideo) return [];
     return await window.getSiteVideo(ids, pg);
@@ -43,7 +46,7 @@ const CatVodCore = {
 
   // 搜索
   async search(key) {
-    if (!window.getSiteSearch) return [];
+    if (!window.get???SiteSearch) return [];
     return await window.getSiteSearch(key);
   },
 
@@ -54,7 +57,7 @@ const CatVodCore = {
   }
 };
 
-// 本地配置管理
+// 本地源数据库
 const SourceDB = {
   get() {
     return JSON.parse(localStorage.getItem("jstv_source") || "[]");
