@@ -1,646 +1,161 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>JSTV Web</title>
-<link href="https://cdn.jsdelivr.net/npm/video.js@8.16.1/dist/video-js.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/video.js@8.16.1/dist/video.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiraPlay Pro</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#07090f;
-  --s1:#0d1119;
-  --s2:#111622;
-  --s3:#161d2e;
-  --border:rgba(255,255,255,0.06);
-  --border2:rgba(255,255,255,0.12);
-  --accent:#4a8cff;
-  --accent-glow:rgba(74,140,255,0.25);
-  --cyan:#00d4e8;
-  --text:#cdd5e8;
-  --muted:#4e5a78;
-  --red:#ff4466;
-  --font-display:'Syne',sans-serif;
-  --font-body:'Noto Sans SC',sans-serif;
-}
-html{font-size:15px;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
-
-body::before{
-content:’’;position:fixed;inset:0;
-background-image:linear-gradient(rgba(74,140,255,0.025) 1px,transparent 1px),
-linear-gradient(90deg,rgba(74,140,255,0.025) 1px,transparent 1px);
-background-size:40px 40px;pointer-events:none;z-index:0;
-}
-.top-glow{position:fixed;top:-150px;left:50%;transform:translateX(-50%);width:700px;height:350px;
-background:radial-gradient(ellipse,rgba(74,140,255,0.1) 0%,transparent 70%);pointer-events:none;z-index:0;}
-
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(–s3);border-radius:2px;}
-
-/* NAV */
-header{
-position:fixed;top:0;left:0;right:0;z-index:100;
-background:rgba(7,9,15,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-border-bottom:1px solid var(–border);padding:0 16px;height:56px;
-display:flex;align-items:center;
-}
-.nav-inner{width:100%;max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
-.logo{display:flex;align-items:center;gap:9px;font-family:var(–font-display);font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:.03em;text-decoration:none;}
-.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(–accent),var(–cyan));border-radius:7px;
-display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px var(–accent-glow);}
-.nav-actions{display:flex;gap:7px;}
-.nav-btn{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;border:1px solid var(–border2);
-background:var(–s2);color:var(–text);font-size:.78rem;cursor:pointer;transition:all .2s;font-family:var(–font-body);}
-.nav-btn:hover{background:var(–s3);border-color:var(–accent);color:#fff;box-shadow:0 0 10px var(–accent-glow);}
-.nav-btn svg{width:13px;height:13px;flex-shrink:0;}
-
-/* MAIN */
-main{padding-top:64px;max-width:1300px;margin:0 auto;padding-left:12px;padding-right:12px;position:relative;z-index:1;}
-
-/* PLAYER */
-.player-wrap{
-margin-top:10px;margin-bottom:14px;
-background:var(–s1);border:1px solid var(–border);border-radius:14px;overflow:hidden;
-box-shadow:0 8px 40px rgba(0,0,0,0.6);position:relative;
-}
-.player-wrap::after{
-content:’’;position:absolute;top:0;left:0;right:0;height:1px;
-background:linear-gradient(90deg,transparent,var(–accent),var(–cyan),transparent);
-opacity:.5;pointer-events:none;
-}
-.video-js{width:100% !important;height:46vw !important;max-height:420px !important;min-height:180px !important;}
-.vjs-big-play-button{
-background:rgba(74,140,255,0.85) !important;border:none !important;
-border-radius:50% !important;width:54px !important;height:54px !important;line-height:54px !important;
-top:50% !important;left:50% !important;transform:translate(-50%,-50%) !important;
-box-shadow:0 0 24px var(–accent-glow) !important;
-}
-.vjs-control-bar{background:linear-gradient(transparent,rgba(0,0,0,0.9)) !important;padding:0 8px !important;}
-
-.now-playing{
-padding:9px 14px;background:var(–s2);border-top:1px solid var(–border);
-display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(–muted);
-}
-.now-playing b{color:var(–text);font-weight:500;}
-.now-dot{width:6px;height:6px;background:var(–accent);border-radius:50%;
-box-shadow:0 0 8px var(–accent);flex-shrink:0;opacity:0;transition:opacity .3s;}
-.now-dot.on{opacity:1;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-
-/* STATUS */
-.status-bar{
-display:flex;align-items:center;justify-content:space-between;
-padding:7px 12px;background:var(–s1);border:1px solid var(–border);border-radius:9px;margin-bottom:12px;
-font-size:.75rem;gap:8px;
-}
-.status-left{display:flex;align-items:center;gap:7px;min-width:0;}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(–muted);flex-shrink:0;transition:background .3s;}
-.sdot.ok{background:#22d16e;box-shadow:0 0 8px rgba(34,209,110,0.5);}
-.sdot.loading{background:#f59e0b;animation:pulse 1s infinite;}
-.smsg{color:var(–muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.stag{padding:2px 7px;background:var(–s3);border:1px solid var(–border2);border-radius:4px;
-color:var(–muted);font-size:.7rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;}
-
-/* TABS */
-.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;-ms-overflow-style:none;scrollbar-width:none;}
-.tabs::-webkit-scrollbar{display:none;}
-.tab-btn{
-padding:6px 14px;border-radius:7px;border:1px solid var(–border);background:var(–s1);
-color:var(–muted);font-size:.8rem;white-space:nowrap;cursor:pointer;transition:all .2s;font-family:var(–font-body);
-}
-.tab-btn:hover{color:var(–text);border-color:var(–border2);}
-.tab-btn.active{
-background:linear-gradient(135deg,rgba(74,140,255,0.18),rgba(0,212,232,0.08));
-border-color:var(–accent);color:#fff;box-shadow:0 0 12px var(–accent-glow);
-}
-
-/* GRID */
-#contentWrap{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding-bottom:36px;}
-@media(min-width:460px){#contentWrap{grid-template-columns:repeat(3,1fr);}}
-@media(min-width:680px){#contentWrap{grid-template-columns:repeat(4,1fr);}}
-@media(min-width:960px){#contentWrap{grid-template-columns:repeat(5,1fr);}}
-@media(min-width:1200px){#contentWrap{grid-template-columns:repeat(6,1fr);}}
-
-.empty-state{grid-column:1/-1;text-align:center;padding:60px 16px;color:var(–muted);}
-.empty-icon{font-size:2.8rem;margin-bottom:10px;opacity:.5;}
-.empty-state p{font-size:.88rem;line-height:1.8;}
-
-/* CARD */
-.card{background:var(–s1);border:1px solid var(–border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative;}
-.card:hover{transform:translateY(-4px);border-color:var(–border2);box-shadow:0 12px 28px rgba(0,0,0,0.55);}
-.card-thumb{aspect-ratio:2/3;background:linear-gradient(160deg,var(–s2),var(–s3));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-.card-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s;}
-.card:hover .card-thumb img{transform:scale(1.06);}
-.thumb-placeholder{display:flex;flex-direction:column;align-items:center;gap:5px;color:var(–muted);font-size:.68rem;opacity:.7;}
-.thumb-placeholder svg{width:26px;height:26px;}
-.card-overlay{position:absolute;inset:0;background:rgba(74,140,255,0.12);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
-.card:hover .card-overlay{opacity:1;}
-.play-circle{width:38px;height:38px;background:rgba(74,140,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px var(–accent-glow);}
-.card-badge{position:absolute;top:5px;right:5px;padding:2px 5px;background:rgba(0,0,0,0.72);border-radius:4px;font-size:.62rem;color:var(–cyan);}
-.card-fav{position:absolute;top:5px;left:5px;width:22px;height:22px;background:rgba(0,0,0,0.6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;cursor:pointer;opacity:0;transition:opacity .2s;}
-.card:hover .card-fav{opacity:1;}
-.card-info{padding:7px 8px 9px;}
-.card-name{font-size:.78rem;line-height:1.4;color:var(–text);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.card-meta{font-size:.66rem;color:var(–muted);margin-top:3px;}
-
-/* SKELETON */
-.skel-card{background:var(–s1);border:1px solid var(–border);border-radius:10px;overflow:hidden;}
-.skeleton{background:linear-gradient(90deg,var(–s2) 25%,var(–s3) 50%,var(–s2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
-@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.skel-thumb{aspect-ratio:2/3;}
-.skel-line{height:9px;border-radius:4px;margin:8px 8px 4px;}
-
-/* MODAL */
-.modal-bg{
-position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-z-index:999;display:none;align-items:center;justify-content:center;padding:14px;
-}
-.modal-bg.show{display:flex;animation:fIn .18s;}
-@keyframes fIn{from{opacity:0;}to{opacity:1;}}
-.modal{
-width:100%;max-width:500px;background:var(–s1);border:1px solid var(–border2);border-radius:16px;padding:20px;
-box-shadow:0 20px 60px rgba(0,0,0,0.85),0 0 40px var(–accent-glow);
-animation:sUp .22s;position:relative;
-}
-@keyframes sUp{from{transform:translateY(18px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.modal::before{content:’’;position:absolute;top:0;left:0;right:0;height:1px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,transparent,var(–accent),var(–cyan),transparent);opacity:.4;}
-.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.modal-title{font-family:var(–font-display);font-size:.98rem;font-weight:700;color:#fff;}
-.mclose{width:27px;height:27px;border-radius:6px;background:var(–s2);border:1px solid var(–border);cursor:pointer;
-display:flex;align-items:center;justify-content:center;color:var(–muted);transition:all .2s;font-size:.95rem;}
-.mclose:hover{color:#fff;border-color:var(–border2);}
-
-/* FORM */
-.flabel{font-size:.76rem;color:var(–muted);margin-bottom:5px;display:block;}
-textarea,input[type=text]{
-width:100%;background:rgba(0,0,0,0.35);border:1px solid var(–border2);border-radius:8px;
-padding:9px 11px;color:var(–text);font-size:.8rem;outline:none;font-family:var(–font-body);
-transition:border-color .2s;resize:none;
-}
-textarea:focus,input[type=text]:focus{border-color:var(–accent);box-shadow:0 0 0 3px var(–accent-glow);}
-textarea{height:85px;}
-
-.btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:.8rem;font-family:var(–font-body);
-transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;}
-.btn-primary{background:linear-gradient(135deg,var(–accent),#3a6fd8);color:#fff;box-shadow:0 4px 14px var(–accent-glow);}
-.btn-primary:hover{filter:brightness(1.08);}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
-.btn-ghost{background:var(–s2);color:var(–muted);border:1px solid var(–border);}
-.btn-ghost:hover{color:var(–text);border-color:var(–border2);}
-.btn-danger{background:rgba(255,68,102,0.12);color:var(–red);border:1px solid rgba(255,68,102,0.28);}
-.btn-danger:hover{background:rgba(255,68,102,0.22);}
-.btn-row{display:flex;gap:8px;margin-top:11px;}
-.btn-row .btn{flex:1;}
-
-.alert{padding:7px 11px;border-radius:7px;font-size:.76rem;margin-top:9px;display:none;}
-.alert-warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.28);color:#f59e0b;}
-.alert-err{background:rgba(255,68,102,0.09);border:1px solid rgba(255,68,102,0.28);color:var(–red);}
-
-.builtin-box{
-display:flex;align-items:center;gap:9px;padding:9px 11px;
-background:linear-gradient(135deg,rgba(74,140,255,0.07),rgba(0,212,232,0.04));
-border:1px solid rgba(74,140,255,0.22);border-radius:9px;margin-bottom:13px;
-}
-.builtin-badge{padding:2px 7px;background:var(–accent);border-radius:4px;font-size:.65rem;color:#fff;white-space:nowrap;flex-shrink:0;}
-.builtin-url{font-size:.7rem;color:var(–muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
-
-.src-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(–border);}
-.src-item:last-child{border:none;}
-.src-url{flex:1;font-size:.73rem;color:var(–muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.src-del{font-size:.7rem;color:var(–red);cursor:pointer;padding:2px 7px;border-radius:4px;transition:background .2s;flex-shrink:0;}
-.src-del:hover{background:rgba(255,68,102,0.12);}
-
-/* EPISODES */
-.ep-inner{max-height:55vh;overflow-y:auto;}
-.ep-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px;}
-@media(min-width:380px){.ep-grid{grid-template-columns:repeat(5,1fr);}}
-.ep-btn{
-padding:6px 3px;border-radius:6px;border:1px solid var(–border);background:var(–s2);
-color:var(–muted);font-size:.72rem;cursor:pointer;transition:all .18s;text-align:center;font-family:var(–font-body);
-}
-.ep-btn:hover,.ep-btn.active{background:var(–accent);border-color:var(–accent);color:#fff;}
-
-/* SEARCH */
-.search-row{display:flex;gap:8px;}
-.search-row input{flex:1;}
-
-/* SPINNER */
-.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg);}}
+body { background:#0b0f1a; color:#fff; }
+.card:hover { transform: scale(1.05); transition: .2s; }
+.scroll::-webkit-scrollbar { display:none; }
 </style>
-
 </head>
-<body>
-<div class="top-glow"></div>
 
-<!-- NAV -->
+<body class="p-4">
 
-<header>
-  <div class="nav-inner">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 2l-5 5-5-5"/></svg>
-      </div>
-      JSTV Web
-    </div>
-    <div class="nav-actions">
-      <button class="nav-btn" onclick="openSourceModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        源管理
-      </button>
-      <button class="nav-btn" onclick="openSearch()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        搜索
-      </button>
-    </div>
-  </div>
-</header>
+<h1 class="text-2xl mb-4">🎬 MiraPlay Pro</h1>
 
-<!-- MAIN -->
-
-<main>
-  <!-- 播放器 -->
-  <div class="player-wrap">
-    <video id="player" class="video-js vjs-default-skin vjs-big-play-centered"></video>
-    <div class="now-playing">
-      <div class="now-dot" id="nowDot"></div>
-      <span id="nowTitle" style="color:var(--muted)">暂无播放内容</span>
-    </div>
-  </div>
-
-  <!-- 状态栏 -->
-
-  <div class="status-bar">
-    <div class="status-left">
-      <div class="sdot" id="sdot"></div>
-      <span class="smsg" id="smsg">正在初始化…</span>
-    </div>
-    <span class="stag" id="stag">—</span>
-  </div>
-
-  <!-- 主分类标签 -->
-
-  <div class="tabs" id="mainTabs">
-    <button class="tab-btn active" onclick="switchTab(this,'vod')">🎬 点播</button>
-    <button class="tab-btn" onclick="switchTab(this,'live')">📡 直播</button>
-    <button class="tab-btn" onclick="switchTab(this,'history')">🕐 历史</button>
-    <button class="tab-btn" onclick="switchTab(this,'collect')">⭐ 收藏</button>
-  </div>
-
-  <!-- 子分类标签（动态插入） -->
-
-  <div class="tabs" id="subTabs" style="display:none;margin-top:-4px;"></div>
-
-  <!-- 内容 -->
-
-  <div id="contentWrap">
-    <div class="empty-state">
-      <div class="empty-icon">📺</div>
-      <p>正在连接内置源…<br><small style="font-size:.72rem;opacity:.55;">首次加载需数秒，请稍候</small></p>
-    </div>
-  </div>
-</main>
-
-<!-- 源管理弹窗 -->
-
-<div id="sourceModal" class="modal-bg">
-  <div class="modal">
-    <div class="modal-hd">
-      <span class="modal-title">播放源管理</span>
-      <button class="mclose" onclick="closeSourceModal()">✕</button>
-    </div>
-    <div class="builtin-box">
-      <span class="builtin-badge">内置</span>
-      <span class="builtin-url">ghfast.top / 4TVBox/Cat / index.js.md5</span>
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22d16e" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
-    </div>
-    <label class="flabel">添加自定义解析源（JSTV / TVBox JS 链接）</label>
-    <textarea id="sourceInput" placeholder="粘贴远程 JS 链接或 .md5 后缀地址…"></textarea>
-    <div class="alert alert-warn" id="loadingTip">⏳ 正在加载，请稍候…</div>
-    <div class="alert alert-err" id="errorLog"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" id="addBtn" onclick="addSource()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        添加并加载
-      </button>
-      <button class="btn btn-danger" onclick="clearAllSource()">清空自定义</button>
-    </div>
-    <div id="sourceList" style="margin-top:12px;max-height:130px;overflow-y:auto;"></div>
-  </div>
+<!-- 源 -->
+<div class="flex gap-2 mb-3">
+<input id="source" class="flex-1 p-2 rounded text-black" placeholder="输入源链接">
+<button onclick="loadSource()" class="bg-blue-500 px-4 rounded">加载</button>
 </div>
 
-<!-- 搜索弹窗 -->
-
-<div id="searchModal" class="modal-bg">
-  <div class="modal">
-    <div class="modal-hd">
-      <span class="modal-title">搜索影片</span>
-      <button class="mclose" onclick="closeSearch()">✕</button>
-    </div>
-    <div class="search-row">
-      <input type="text" id="searchKey" placeholder="输入影片名称…" onkeydown="if(event.key==='Enter')doSearch()">
-      <button class="btn btn-primary" id="searchBtn" onclick="doSearch()" style="white-space:nowrap;flex-shrink:0;padding:8px 16px;">搜索</button>
-    </div>
-    <button class="btn btn-ghost" onclick="closeSearch()" style="margin-top:10px;width:100%;">关闭</button>
-  </div>
+<!-- 搜索 -->
+<div class="flex gap-2 mb-4">
+<input id="wd" class="flex-1 p-2 rounded text-black" placeholder="搜索影片">
+<button onclick="search()" class="bg-green-500 px-4 rounded">搜索</button>
 </div>
 
-<!-- 剧集弹窗 -->
-
-<div id="epModal" class="modal-bg">
-  <div class="modal">
-    <div class="modal-hd">
-      <span class="modal-title" id="epTitle">选择剧集</span>
-      <button class="mclose" onclick="closeEpModal()">✕</button>
-    </div>
-    <div class="ep-inner">
-      <div class="ep-grid" id="epGrid"></div>
-    </div>
-  </div>
+<!-- 推荐 -->
+<div>
+<h2 class="mb-2">🔥 推荐</h2>
+<div id="hot" class="flex gap-3 overflow-x-auto scroll"></div>
 </div>
 
-<script src="./catvod-core.js"></script>
+<!-- 搜索结果 -->
+<div class="mt-4">
+<h2 class="mb-2">🔍 结果</h2>
+<div id="list" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
+</div>
+
+<!-- 播放 -->
+<div class="mt-6">
+<video id="video" controls class="w-full rounded"></video>
+<div id="routes" class="mt-2 flex gap-2 flex-wrap"></div>
+</div>
 
 <script>
-// ── 常量 ───────────────────────────────────────────
-const BUILTIN_SOURCE = 'https://ghfast.top/https://raw.githubusercontent.com/4TVBox/Cat/refs/heads/main/index.js.md5';
+let sites=[], api=""
+const jx = [
+"https://jx.jsonplayer.com/player/?url=",
+"https://jx.aidouer.net/?url="
+]
 
-// ── 播放器 ─────────────────────────────────────────
-const player = videojs('player', {
-  autoplay: false, controls: true, fluid: true,
-  playbackRates: [0.5, 1, 1.25, 1.5, 2, 2.5, 3],
-  responsive: true,
-  html5: { vhs: { overrideNative: true } }
-});
-
-// ── 状态 ───────────────────────────────────────────
-let currentTab = 'vod';
-let currentItem = null;
-let historyList = JSON.parse(localStorage.getItem('jstv_history') || '[]');
-let collectList = JSON.parse(localStorage.getItem('jstv_collect') || '[]');
-
-// ── 状态栏 ─────────────────────────────────────────
-function setStatus(state, msg, tag) {
-  const dot = document.getElementById('sdot');
-  dot.className = 'sdot' + (state === 'ok' ? ' ok' : state === 'loading' ? ' loading' : '');
-  document.getElementById('smsg').textContent = msg;
-  if (tag !== undefined) document.getElementById('stag').textContent = tag || '—';
+async function loadSource(){
+let url=document.getElementById("source").value
+let res=await fetch(url)
+let data=await res.json()
+sites=data.sites||[]
+api=sites[0]?.api
+alert("加载成功："+sites.length+"个站")
 }
 
-// ── 本地存储 ───────────────────────────────────────
-const SourceDB = {
-  get() { return JSON.parse(localStorage.getItem('jstv_source') || '[]'); },
-  add(url) { const a = this.get(); if (!a.includes(url)) { a.push(url); localStorage.setItem('jstv_source', JSON.stringify(a)); } },
-  del(i) { const a = this.get(); a.splice(i, 1); localStorage.setItem('jstv_source', JSON.stringify(a)); }
-};
-
-// ── 初始化内置源 ───────────────────────────────────
-async function initBuiltin() {
-  setStatus('loading', '正在连接内置源…', '内置 · 4TVBox/Cat');
-  showSkeletons();
-  const ok = await safeCall(() => CatVodCore.loadConfig(BUILTIN_SOURCE));
-  if (ok) {
-    setStatus('ok', '内置源已就绪', '4TVBox/Cat · 内置');
-    await loadVodList();
-  } else {
-    setStatus('', '内置源连接失败，可手动添加源', '离线');
-    showEmpty('内置源暂时无法连接<br>请检查网络，或点击右上角「源管理」添加其他源');
-  }
+async function search(){
+let wd=document.getElementById("wd").value
+let url=api.includes("?")?api+wd:api+"?ac=detail&wd="+wd
+let res=await fetch(url)
+let data=await res.json()
+let list=data.list||[]
+render(list)
+renderHot(list)
 }
 
-// ── 点播列表 ───────────────────────────────────────
-async function loadVodList(catId) {
-  showSkeletons();
-  const cats = await safeCall(() => CatVodCore.getCategories()) || [];
-  if (cats.length) renderSubTabs(cats, catId);
-  const id = catId || (cats[0] && (cats[0].id || cats[0]));
-  const vods = id ? await safeCall(() => CatVodCore.getVodList(id)) : [];
-  renderCards(vods || []);
+function render(list){
+let el=document.getElementById("list")
+el.innerHTML=""
+list.forEach(v=>{
+let d=document.createElement("div")
+d.className="card bg-gray-800 p-2 rounded cursor-pointer"
+d.innerHTML=`
+<img src="${v.vod_pic}" class="w-full h-40 object-cover rounded">
+<div class="text-sm mt-1">${v.vod_name}</div>
+`
+d.onclick=()=>showDetail(v)
+el.appendChild(d)
+})
 }
 
-// ── 子分类 ─────────────────────────────────────────
-function renderSubTabs(cats, activeId) {
-  const el = document.getElementById('subTabs');
-  el.style.display = 'flex';
-  el.innerHTML = cats.map((c, i) => {
-    const id = c.id || c;
-    const name = c.name || c;
-    const isActive = activeId ? id === activeId : i === 0;
-    return `<button class="tab-btn${isActive ? ' active' : ''}" onclick="selectCat(this,'${esc(id)}')">${name}</button>`;
-  }).join('');
-}
-function selectCat(btn, id) {
-  document.getElementById('subTabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  loadVodList(id);
+function renderHot(list){
+let el=document.getElementById("hot")
+el.innerHTML=""
+list.slice(0,10).forEach(v=>{
+let d=document.createElement("div")
+d.className="w-32 flex-shrink-0 cursor-pointer"
+d.innerHTML=`
+<img src="${v.vod_pic}" class="h-40 w-full object-cover rounded">
+<div class="text-xs">${v.vod_name}</div>
+`
+d.onclick=()=>showDetail(v)
+el.appendChild(d)
+})
 }
 
-// ── 渲染卡片 ───────────────────────────────────────
-function renderCards(arr) {
-  const wrap = document.getElementById('contentWrap');
-  if (!arr || !arr.length) { showEmpty(); return; }
-  wrap.innerHTML = arr.map(item => {
-    const isFav = collectList.some(c => c.id === item.id);
-    return `
-    <div class="card" onclick="openItem(${esc(JSON.stringify(item))})">
-      <div class="card-thumb">
-        ${item.pic
-          ? `<img src="${escAttr(item.pic)}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=thumb-placeholder><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'2\\' y=\\'7\\' width=\\'20\\' height=\\'15\\' rx=\\'2\\'/><path d=\\'M17 2l-5 5-5-5\\'/></svg><span>无封面</span></div>'">`
-          : `<div class="thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 2l-5 5-5-5"/></svg><span>无封面</span></div>`
-        }
-        <div class="card-overlay">
-          <div class="play-circle"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg></div>
-        </div>
-        ${item.remarks ? `<div class="card-badge">${escHtml(item.remarks)}</div>` : ''}
-        <div class="card-fav" onclick="event.stopPropagation();toggleCollect(${esc(JSON.stringify(item))},this)">${isFav ? '⭐' : '☆'}</div>
-      </div>
-      <div class="card-info">
-        <div class="card-name">${escHtml(item.name || '未知')}</div>
-        ${item.year || item.area ? `<div class="card-meta">${[item.year, item.area].filter(Boolean).join(' · ')}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
+function showDetail(v){
+saveHistory(v)
+let routes=parseRoutes(v.vod_play_url)
+renderRoutes(routes)
+play(routes[0].url)
 }
 
-// ── 打开影片 ───────────────────────────────────────
-async function openItem(item) {
-  if (typeof item === 'string') { try { item = JSON.parse(item); } catch { return; } }
-  currentItem = item;
-  setStatus('loading', '获取播放信息…', '');
-  const detail = await safeCall(() => CatVodCore.getVodDetail(item.id || item.vod_id));
-  const eps = detail && (detail.episodes || detail.urls || []);
-  if (eps && eps.length > 1) {
-    showEpModal(item.name || '选集', eps);
-  } else {
-    const play = await safeCall(() => CatVodCore.getPlayUrl(item.id || item.vod_id));
-    if (play && play.url) {
-      doPlay(play.url, item.name || '未知');
-      addHistory(item);
-    } else {
-      setStatus('', '获取播放地址失败', '');
-    }
-  }
+function parseRoutes(str){
+return str.split("#").map(i=>{
+let [name,url]=i.split("$")
+return {name,url}
+})
 }
 
-function showEpModal(title, eps) {
-  document.getElementById('epTitle').textContent = title;
-  document.getElementById('epGrid').innerHTML = eps.map((ep, i) =>
-    `<button class="ep-btn" onclick="playEp(this,'${escAttr(ep.url || ep.playUrl || '')}','${escAttr(ep.name || (i+1))}')">${ep.name || (i + 1)}</button>`
-  ).join('');
-  document.getElementById('epModal').classList.add('show');
-}
-function playEp(btn, url, label) {
-  if (!url) return;
-  document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  doPlay(url, (currentItem?.name || '') + ' ' + label);
-  addHistory(currentItem);
-  closeEpModal();
-}
-function closeEpModal() { document.getElementById('epModal').classList.remove('show'); }
-
-// ── 播放 ───────────────────────────────────────────
-function doPlay(url, title) {
-  const type = url.includes('.m3u8') ? 'application/x-mpegURL' : 'video/mp4';
-  player.src({ src: url, type });
-  player.play();
-  document.getElementById('nowTitle').textContent = title;
-  document.getElementById('nowTitle').style.color = 'var(--text)';
-  document.getElementById('nowDot').classList.add('on');
-  setStatus('ok', '正在播放：' + title.slice(0, 30), '');
+function renderRoutes(routes){
+let el=document.getElementById("routes")
+el.innerHTML=""
+routes.forEach(r=>{
+let b=document.createElement("button")
+b.className="bg-gray-700 px-3 py-1 rounded"
+b.innerText=r.name
+b.onclick=()=>play(r.url)
+el.appendChild(b)
+})
 }
 
-// ── 收藏 & 历史 ────────────────────────────────────
-function addHistory(item) {
-  if (!item) return;
-  historyList = historyList.filter(h => h.id !== item.id);
-  historyList.unshift(item);
-  if (historyList.length > 60) historyList = historyList.slice(0, 60);
-  localStorage.setItem('jstv_history', JSON.stringify(historyList));
-}
-function toggleCollect(item, btn) {
-  if (typeof item === 'string') { try { item = JSON.parse(item); } catch { return; } }
-  const idx = collectList.findIndex(c => c.id === item.id);
-  if (idx >= 0) { collectList.splice(idx, 1); if (btn) btn.textContent = '☆'; }
-  else { collectList.unshift(item); if (btn) btn.textContent = '⭐'; }
-  localStorage.setItem('jstv_collect', JSON.stringify(collectList));
+function play(url){
+let video=document.getElementById("video")
+
+if(!url.includes(".m3u8")){
+url=jx[0]+url
+video.src=url
+video.play()
+return
 }
 
-// ── 标签切换 ───────────────────────────────────────
-function switchTab(btn, type) {
-  document.querySelectorAll('#mainTabs .tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentTab = type;
-  document.getElementById('subTabs').style.display = 'none';
-  document.getElementById('subTabs').innerHTML = '';
-  if (type === 'vod') { loadVodList(); return; }
-  if (type === 'live') { loadLive(); return; }
-  if (type === 'history') { renderCards(historyList); return; }
-  if (type === 'collect') { renderCards(collectList); return; }
+if(Hls.isSupported()){
+let hls=new Hls()
+hls.loadSource(url)
+hls.attachMedia(video)
+}else{
+video.src=url
+}
+video.play()
 }
 
-async function loadLive() {
-  showSkeletons();
-  const list = await safeCall(() => CatVodCore.getLiveList()) || [];
-  renderCards(list);
+function saveHistory(v){
+let h=JSON.parse(localStorage.getItem("his")||"[]")
+h.unshift(v)
+localStorage.setItem("his",JSON.stringify(h))
 }
-
-// ── 搜索 ───────────────────────────────────────────
-async function doSearch() {
-  const key = document.getElementById('searchKey').value.trim();
-  if (!key) return;
-  const btn = document.getElementById('searchBtn');
-  btn.innerHTML = '<span class="spinner"></span>';
-  btn.disabled = true;
-  const res = await safeCall(() => CatVodCore.search(key)) || [];
-  btn.innerHTML = '搜索'; btn.disabled = false;
-  renderCards(res);
-  closeSearch();
-}
-
-// ── 源管理 ─────────────────────────────────────────
-async function addSource() {
-  const val = document.getElementById('sourceInput').value.trim();
-  if (!val) { alert('请输入有效源地址'); return; }
-  const btn = document.getElementById('addBtn');
-  const tip = document.getElementById('loadingTip');
-  const err = document.getElementById('errorLog');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> 加载中…';
-  tip.style.display = 'block'; err.style.display = 'none';
-  const ok = await safeCall(() => CatVodCore.loadConfig(val));
-  tip.style.display = 'none';
-  btn.disabled = false;
-  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> 添加并加载';
-  if (ok) {
-    SourceDB.add(val);
-    setStatus('ok', '自定义源加载成功', val.slice(0, 28) + '…');
-    renderSourceList();
-    closeSourceModal();
-    await loadVodList();
-  } else {
-    err.textContent = '❌ 加载失败，请检查链接是否有效或网络是否畅通';
-    err.style.display = 'block';
-  }
-}
-function renderSourceList() {
-  const list = SourceDB.get();
-  const el = document.getElementById('sourceList');
-  if (!list.length) { el.innerHTML = '<div style="font-size:.72rem;color:var(--muted);padding:6px 0;">暂无自定义源</div>'; return; }
-  el.innerHTML = list.map((item, i) =>
-    `<div class="src-item"><span class="src-url">${item}</span><span class="src-del" onclick="delSource(${i})">删除</span></div>`
-  ).join('');
-}
-function delSource(i) { SourceDB.del(i); renderSourceList(); }
-function clearAllSource() {
-  if (!confirm('确定清空所有自定义源？')) return;
-  localStorage.removeItem('jstv_source');
-  renderSourceList();
-}
-
-// ── 弹窗 ───────────────────────────────────────────
-function openSourceModal() { document.getElementById('sourceModal').classList.add('show'); renderSourceList(); }
-function closeSourceModal() {
-  document.getElementById('sourceModal').classList.remove('show');
-  document.getElementById('errorLog').style.display = 'none';
-}
-function openSearch() {
-  document.getElementById('searchModal').classList.add('show');
-  setTimeout(() => document.getElementById('searchKey').focus(), 120);
-}
-function closeSearch() { document.getElementById('searchModal').classList.remove('show'); }
-
-['sourceModal','searchModal','epModal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('show');
-  });
-});
-
-// ── 骨架 & 空态 ────────────────────────────────────
-function showSkeletons(n = 12) {
-  document.getElementById('contentWrap').innerHTML = Array(n).fill(0).map(() =>
-    `<div class="skel-card"><div class="skel-thumb skeleton"></div><div class="skel-line skeleton" style="width:68%;"></div><div class="skel-line skeleton" style="width:42%;height:7px;"></div></div>`
-  ).join('');
-}
-function showEmpty(msg = '暂无内容') {
-  document.getElementById('contentWrap').innerHTML =
-    `<div class="empty-state"><div class="empty-icon">📭</div><p>${msg}</p></div>`;
-}
-
-// ── 工具 ───────────────────────────────────────────
-async function safeCall(fn) { try { return await fn(); } catch { return null; } }
-function esc(s) { return "'" + String(s).replace(/'/g, "\\'") + "'"; }
-function escHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function escAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-// ── 启动 ───────────────────────────────────────────
-initBuiltin();
 </script>
 
 </body>
