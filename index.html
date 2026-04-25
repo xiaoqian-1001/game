@@ -1,213 +1,784 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MiraPlay Ultra</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-<style>
-body { background:#0b0f1a; color:#fff; }
-.card:hover { transform:scale(1.05); transition:.2s; }
-.scroll::-webkit-scrollbar{display:none;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纯白放置 · 文字挂机</title>
+    <style>
+        :root{
+            --bg:#ffffff;
+            --txt:#222;
+            --border:#eee;
+            --btn-bg:#fff;
+            --btn-txt:#222;
+            --log-txt:#666;
+        }
+        .dark{
+            --bg:#121212;
+            --txt:#e5e5e5;
+            --border:#2b2b2b;
+            --btn-bg:#1f1f1f;
+            --btn-txt:#eee;
+            --log-txt:#aaa;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--txt);
+            font-family: "PingFang SC", "Microsoft Yahei", sans-serif;
+            line-height: 2;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        h1 {
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 26px;
+        }
+        .info-bar {
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+        .tab-wrap {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .tab-btn {
+            border: 1px solid var(--border);
+            background: var(--btn-bg);
+            color: var(--btn-txt);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--border);
+        }
+        .panel {
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            min-height: 140px;
+        }
+        .hide { display: none; }
+        button {
+            border: 1px solid var(--border);
+            background: var(--btn-bg);
+            color: var(--btn-txt);
+            padding: 3px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 3px;
+        }
+        button:hover {
+            background: var(--border);
+        }
+        .log-area {
+            max-height: 180px;
+            overflow: auto;
+            font-size: 13px;
+            color: var(--log-txt);
+            margin-top: 10px;
+        }
+        .line {
+            height: 1px;
+            background: var(--border);
+            margin: 12px 0;
+        }
+        .speed-box { margin: 8px 0; }
+        .code-box{margin-top:10px;display:flex;gap:6px;align-items:center;}
+        #codeInput{padding:4px 8px;border:1px solid var(--border);background:var(--btn-bg);color:var(--txt);border-radius:4px;}
+        /* 品质特效文字 */
+        .c-white { color: #999; }
+        .c-green { color: #39b54a; }
+        .c-blue  { color: #2d8cf0; }
+        .c-purple{ color: #9254de; }
+        .c-orange{ color: #ff7d00; font-weight:bold; }
+        .c-red{color:#f53f3f;font-weight:bold;}
+        .c-gold{color:#ffc107;font-weight:bold;}
+        .crit-text{color:#ff4444;font-weight:bold;}
+        .drop-text{color:#4cd964;}
+        .boss-text{color:#9b59b6;font-weight:bold;}
+        .skin-tag{font-size:12px;padding:2px 6px;border-radius:4px;background:var(--border);margin-left:6px;}
+        .god-weapon{color:#ff7d00;font-weight:bold;text-shadow:0 0 4px #ff9500;}
+    </style>
 </head>
+<body>
+    <h1>纯白放置 · 文字挂机</h1>
 
-<body class="p-4">
+    <div class="info-bar">
+        等级：<span id="pLv">1</span>
+        ｜ 经验：<span id="pExp">0</span>/<span id="pExpMax">120</span>
+        ｜ 金币：<span id="pGold">0</span>
+        ｜ 钻石：<span id="pDia">50</span>
+        <br>
+        层数：<span id="pFloor">1</span>
+        ｜ 战力：<span id="pPower">0</span>
+        ｜ <button onclick="getOfflineReward()">领取离线收益</button>
+        <button onclick="toggleTheme()">切换明暗主题</button>
+        <button onclick="toggleAfk()">自动挂机：<span id="afkStatus">开启</span></button>
+        <div class="speed-box">
+            战斗倍速：
+            <button onclick="setSpeed(1)">1倍</button>
+            <button onclick="setSpeed(2)">2倍</button>
+            <button onclick="setSpeed(5)">5倍</button>
+            <span id="nowSpeed">当前：1倍</span>
+        </div>
+        <div>
+            自动穿戴：<button onclick="toggleAutoEquip()">开关</button>
+            <span id="autoEquipStatus">关闭</span>
+            ｜ 自动拾取：
+            <select id="autoPickQuality" onchange="save()">
+                <option value="0">全部</option>
+                <option value="1">优秀及以上</option>
+                <option value="2">精良及以上</option>
+            </select>
+        </div>
+        <!-- 兑换码区域 -->
+        <div class="code-box">
+            <input id="codeInput" placeholder="输入兑换码" type="text">
+            <button onclick="useCode()">立即兑换</button>
+        </div>
+        <div class="c-red line"></div>
+        <div class="boss-text">每日强敌｜糊涂（法斗）</div>
+        <div id="hutuDailyAttr"></div>
+        <div id="hutuDailyTalent"></div>
+    </div>
 
-<h1 class="text-2xl mb-4">🚀 MiraPlay Ultra</h1>
+    <div class="panel">
+        <div>当前敌人：<span id="mName">荒野小怪</span></div>
+        <div>敌人血量：<span id="mHp">120</span> / <span id="mHpMax">120</span></div>
+        <div class="line"></div>
+        <div class="log-area" id="battleLog"></div>
+    </div>
 
-<div class="flex gap-2 mb-3">
-<input id="source" class="flex-1 p-2 rounded text-black"
-placeholder="输入源（支持 md5 / json）">
-<button onclick="loadSource()" class="bg-blue-500 px-4 rounded">加载</button>
-</div>
+    <div class="tab-wrap">
+        <button class="tab-btn active" onclick="switchTab('attr')">属性</button>
+        <button class="tab-btn" onclick="switchTab('equip')">装备</button>
+        <button class="tab-btn" onclick="switchTab('pet')">宠物</button>
+        <button class="tab-btn" onclick="switchTab('talent')">天赋</button>
+        <button class="tab-btn" onclick="switchTab('gacha')">抽卡</button>
+        <button class="tab-btn" onclick="switchTab('tower')">爬塔</button>
+        <button class="tab-btn" onclick="switchTab('ach')">成就</button>
+    </div>
 
-<div class="flex gap-2 mb-4">
-<input id="wd" class="flex-1 p-2 rounded text-black"
-placeholder="搜索影片">
-<button onclick="search()" class="bg-green-500 px-4 rounded">搜索</button>
-</div>
+    <div class="panel" id="tabAttr">
+        <div>力量：<span id="sStr">10</span> <button onclick="upAttr('str')">升级(60金)</button></div>
+        <div>防御：<span id="sDef">5</span> <button onclick="upAttr('def')">升级(60金)</button></div>
+        <div>生命：<span id="sHp">100</span> <button onclick="upAttr('hp')">升级(60金)</button></div>
+        <div>暴击：<span id="sCrit">5</span>% <button onclick="upAttr('crit')">升级(90金)</button></div>
+        <div>金币加成：<span id="sGoldAdd">0</span>%</div>
+        <div>全伤害加成：<span id="sDmgAdd">0</span>%</div>
+    </div>
 
-<div id="status" class="text-sm text-gray-400 mb-2"></div>
+    <div class="panel hide" id="tabEquip">
+        <div>武器：<span id="eqWep">无</span></div>
+        <div>防具：<span id="eqArm">无</span></div>
+        <div>饰品：<span id="eqAcc">无</span></div>
+        <div>套装效果：<span id="setBonus">无</span></div>
+        <div class="line"></div>
+        <div>背包装备：<span id="eqBagNum">0</span></div>
+        <div>
+            <button onclick="strengthenEq()">一键强化全部+1</button>
+            <button onclick="filterEquip('all')">全部</button>
+            <button onclick="filterEquip('green')">优秀+</button>
+        </div>
+        <div>
+            <button onclick="clearLowEquip()">分解白绿</button>
+            <button onclick="sortEquip()">整理</button>
+            <button onclick="autoEquipBest()">最优穿戴</button>
+        </div>
+        <div class="line"></div>
+        <div id="eqList"></div>
+    </div>
 
-<div id="list" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
+    <div class="panel hide" id="tabPet">
+        <div>出战宠物：<span id="petNow">无</span></div>
+        <div>宠物加成：<span id="petBuff">暂无</span></div>
+        <div class="line"></div>
+        <div>
+            <button onclick="petLvUp()">出战宠物升级(100金)</button>
+            <button onclick="petRefine()">宠物洗练(30钻石)</button>
+            <button onclick="changePetSkin()">切换皮肤</button>
+        </div>
+        <div class="line"></div>
+        <div id="petList"></div>
+    </div>
 
-<video id="video" controls class="w-full mt-4 rounded"></video>
-<div id="routes" class="flex gap-2 mt-2 flex-wrap"></div>
+    <div class="panel hide" id="tabTalent">
+        <div>天赋点数：<span id="talentPoint">0</span></div>
+        <div class="line"></div>
+        <div><strong>战斗系</strong></div>
+        <div>【强攻】伤害+3%/点 <button onclick="addTalent(1)">加点</button> 已点：<span id="t1">0</span></div>
+        <div>【狂暴】暴击+2%/点 <button onclick="addTalent(2)">加点</button> 已点：<span id="t2">0</span></div>
+        <div>【破甲】无视防御+2%/点 <button onclick="addTalent(3)">加点</button> 已点：<span id="t3">0</span></div>
+        <div class="line"></div>
+        <div><strong>生存系</strong></div>
+        <div>【铁壁】防御+2%/点 <button onclick="addTalent(4)">加点</button> 已点：<span id="t4">0</span></div>
+        <div>【活力】生命+4%/点 <button onclick="addTalent(5)">加点</button> 已点：<span id="t5">0</span></div>
+        <div>【再生】每秒回血+0.5%/点 <button onclick="addTalent(6)">加点</button> 已点：<span id="t6">0</span></div>
+        <div class="line"></div>
+        <div><strong>财富系</strong></div>
+        <div>【贪婪】金币+4%/点 <button onclick="addTalent(7)">加点</button> 已点：<span id="t7">0</span></div>
+        <div>【博学】经验+3%/点 <button onclick="addTalent(8)">加点</button> 已点：<span id="t8">0</span></div>
+        <div>【幸运】掉率+2%/点 <button onclick="addTalent(9)">加点</button> 已点：<span id="t9">0</span></div>
+    </div>
+
+    <div class="panel hide" id="tabGacha">
+        <div>装备/宠物混合卡池</div>
+        <div class="line"></div>
+        <div>单抽(10钻) <button onclick="gacha1()">抽取</button></div>
+        <div>十连(90钻) <button onclick="gacha10()">十连抽取</button></div>
+    </div>
+
+    <div class="panel hide" id="tabTower">
+        <div>当前层数：<span id="twFloor">1</span> 无尽模式</div>
+        <div>普通BOSS：<button onclick="fightBoss()">挑战</button></div>
+        <div class="line"></div>
+        <div class="c-red">⚠️ 每日无限挑战强敌</div>
+        <div>超强BOSS · 糊涂（法斗）
+        <button onclick="fightHutu()">今日决战</button></div>
+        <div id="twReward"></div>
+    </div>
+
+    <div class="panel hide" id="tabAch">
+        <div id="achList"></div>
+    </div>
 
 <script>
-// ===== 核心配置 =====
-let sites=[]
-let apis=[]
-let currentApiIndex=0
+// 基础全局
+let saveKey = "whiteIdleFullSave";
+let lastOnline = Date.now();
+let battleTimer = null;
+let battleSpeed = 1;
+let filterQuality = "all";
+let filterType = "all";
+let autoEquipEnabled = false;
+let darkMode = false;
+let afkMode = true;
 
-const proxies=[
-"https://api.allorigins.win/raw?url=",
-"https://cors.isomorphic-git.org/",
-"https://thingproxy.freeboard.io/fetch/"
-]
+// 兑换码列表 & 已兑换记录
+const codeList = {
+    "xiaoduwudi": "duShiDaDao"
+};
+let usedCode = [];
 
-const jxList=[
-"https://jx.jsonplayer.com/player/?url=",
-"https://jx.aidouer.net/?url="
-]
+// 每日糊涂随机池
+const hutuAttrPool = [
+    "超高攻击｜伤害提升120%",
+    "钢铁皮囊｜受到伤害降低60%",
+    "极速连击｜攻击频率大幅加快",
+    "狂暴嗜血｜残血伤害翻倍",
+    "绝对防御｜固定减伤800点",
+    "魔力增幅｜技能伤害暴涨",
+    "肉体硬化｜生命上限+300%"
+];
+const hutuTalentPool = [
+    "【撕裂】普攻附带持续流血",
+    "【威慑】降低玩家全部暴击",
+    "【铁壁】永久免伤护盾",
+    "【狂怒】每掉血提升攻击力",
+    "【自愈】每秒大量回血",
+    "【压制】削弱玩家全部加成",
+    "【必杀】低血量秒杀一击"
+];
 
-// ===== 通用请求（自动换代理）=====
-async function smartFetch(url){
-for(let p of proxies){
-try{
-let res=await fetch(p+encodeURIComponent(url))
-if(res.ok) return await res.text()
-}catch(e){}
-}
-throw "全部代理失败"
-}
+// 宠物皮肤库
+const petSkinList = ["原版","纯白简约","暗夜暗影","黄金至尊","复古怀旧"];
+// 装备品质称号
+const qualityName = {
+    "c-white":"【普通】","c-green":"【优秀】","c-blue":"【精良】",
+    "c-purple":"【史诗】","c-orange":"【传说】"
+};
+const qualityRank = {"c-white":0,"c-green":1,"c-blue":2,"c-purple":3,"c-orange":4};
 
-// ===== 加载源 =====
-async function loadSource(){
-let url=document.getElementById("source").value
-setStatus("⏳ 加载中...")
+// 套装
+const setList = [
+    {name:"纯白套",cnt:3,atk:15,def:10},
+    {name:"暗夜套",cnt:3,dmg:20,crit:5},
+    {name:"大地套",cnt:3,hp:30,gold:10}
+];
 
-try{
-let text=await smartFetch(url)
+// 游戏数据
+let d = {
+    lv:1,exp:0,expMax:120,
+    gold:0,dia:50,power:0,
+    str:10,def:5,hp:100,crit:5,
+    dmgAdd:0,goldAdd:0,
+    armorPen:0,hpRegen:0,expAdd:0,dropAdd:0,
+    floor:1,bossCd:0,
+    monster:{name:"荒野小怪",hp:120,maxHp:120},
+    equip:{wep:null,arm:null,acc:null},
+    bag:[],
+    pets:[],petNow:null,petSkinIdx:0,
+    lastHutuDay:0,
+    talent:{point:0,t1:0,t2:0,t3:0,t4:0,t5:0,t6:0,t7:0,t8:0,t9:0},
+    ach:{kill:0,floor:1,gacha:0,clearEquip:0}
+};
 
-let data
-try{
-data=JSON.parse(text)
-}catch{
-data=eval(text.replace("var rule=",""))
-}
+// 基础宠物库
+const petLib = [
+    {name:"小灰兔",lv:1,dmg:1,gold:2},{name:"林间狼",lv:1,dmg:3,def:1},
+    {name:"森林熊",lv:1,hp:5,def:2},{name:"暗影猫",lv:1,crit:2,dmg:2},
+    {name:"金羽鸟",lv:1,gold:5,dmg:1},{name:"铁壳龟",lv:1,def:3,hp:3},
+    {name:"雷霆虎",lv:1,dmg:4,crit:1},{name:"幽影蛇",lv:1,dmg:2,armorPen:2},
+    {name:"圣光鹿",lv:1,hpRegen:1,gold:3},
+    {name:"混沌龙",lv:1,dmg:5,def:2,hp:5},
+    {name:"糊涂【法斗】",lv:1,dmg:8,def:5,hp:10,crit:3,gold:8,hpRegen:2}
+];
 
-sites=data.sites||[]
-apis=sites.map(s=>s.api).filter(Boolean)
+// ---------- 兑换码系统 ----------
+function useCode(){
+    let input = document.getElementById("codeInput").value.trim().toLowerCase();
+    if(!input){
+        log("<span class='c-red'>请输入兑换码</span>");
+        return;
+    }
+    if(usedCode.includes(input)){
+        log("<span class='c-red'>该兑换码已使用过</span>");
+        return;
+    }
+    if(!codeList[input]){
+        log("<span class='c-red'>兑换码错误</span>");
+        return;
+    }
 
-setStatus("✅ 成功加载 "+apis.length+" 个接口")
-
-}catch(e){
-setStatus("❌ 加载失败："+e)
-}
-}
-
-// ===== 搜索（自动换源）=====
-async function search(){
-let wd=document.getElementById("wd").value
-if(!apis.length) return alert("先加载源")
-
-for(let i=0;i<apis.length;i++){
-let api=apis[i]
-
-try{
-let url=api.includes("?")?api+wd:api+"?ac=detail&wd="+wd
-let text=await smartFetch(url)
-let data=JSON.parse(text)
-
-if(data.list?.length){
-render(data.list)
-setStatus("✅ 使用接口："+api)
-return
-}
-
-}catch(e){}
-}
-
-setStatus("❌ 所有接口搜索失败")
-}
-
-// ===== 渲染 =====
-function render(list){
-let el=document.getElementById("list")
-el.innerHTML=""
-
-list.forEach(v=>{
-let d=document.createElement("div")
-d.className="card bg-gray-800 p-2 rounded cursor-pointer"
-d.innerHTML=`
-<img src="${v.vod_pic}" class="h-40 w-full object-cover rounded">
-<div class="text-sm mt-1">${v.vod_name}</div>
-`
-d.onclick=()=>openDetail(v)
-el.appendChild(d)
-})
-}
-
-// ===== 详情 =====
-function openDetail(v){
-let routes=parseRoutes(v.vod_play_url)
-renderRoutes(routes)
-playAuto(routes)
-}
-
-// ===== 线路解析 =====
-function parseRoutes(str){
-return str.split("#").map(i=>{
-let [name,url]=i.split("$")
-return {name,url}
-})
-}
-
-// ===== 渲染线路 =====
-function renderRoutes(routes){
-let el=document.getElementById("routes")
-el.innerHTML=""
-routes.forEach(r=>{
-let b=document.createElement("button")
-b.className="bg-gray-700 px-2 py-1 rounded"
-b.innerText=r.name
-b.onclick=()=>play(r.url)
-el.appendChild(b)
-})
+    // 发放：传世杜氏大刀
+    if(input === "xiaoduwudi"){
+        let godWeapon = {
+            name:"传世杜氏大刀",
+            c:"c-orange",
+            type:"wep",
+            set:"",
+            str:15,
+            atk:888,
+            isGod:true
+        };
+        d.bag.push(godWeapon);
+        usedCode.push(input);
+        log("<span class='god-weapon'>兑换成功！获得神器【传世杜氏大刀】</span>");
+        document.getElementById("codeInput").value = "";
+        upUI();
+    }
 }
 
-// ===== 自动播放（失败换线路）=====
-async function playAuto(routes){
-for(let r of routes){
-let ok=await tryPlay(r.url)
-if(ok){
-setStatus("▶️ 播放："+r.name)
-return
-}
-}
-setStatus("❌ 全部线路失败")
-}
-
-// ===== 播放尝试 =====
-function tryPlay(url){
-return new Promise(resolve=>{
-let video=document.getElementById("video")
-
-if(!url.includes(".m3u8")){
-url=jxList[0]+url
-video.src=url
-video.onloadeddata=()=>resolve(true)
-video.onerror=()=>resolve(false)
-video.play()
-return
+// 初始化每日糊涂随机
+function initDailyHutu(){
+    let today = new Date().getDate();
+    if(today !== d.lastHutuDay){
+        d.lastHutuDay = today;
+        d.hutuAttr = hutuAttrPool[Math.floor(Math.random()*hutuAttrPool.length)];
+        d.hutuTalent = hutuTalentPool[Math.floor(Math.random()*hutuTalentPool.length)];
+    }
+    document.getElementById("hutuDailyAttr").innerText="今日属性："+d.hutuAttr;
+    document.getElementById("hutuDailyTalent").innerText="今日特长："+d.hutuTalent;
 }
 
-if(Hls.isSupported()){
-let hls=new Hls()
-hls.loadSource(url)
-hls.attachMedia(video)
-hls.on(Hls.Events.MANIFEST_PARSED,()=>resolve(true))
-hls.on(Hls.Events.ERROR,()=>resolve(false))
-}else{
-video.src=url
-video.onloadeddata=()=>resolve(true)
-video.onerror=()=>resolve(false)
+// 主题、挂机
+function toggleTheme(){
+    darkMode = !darkMode;
+    document.body.classList.toggle("dark",darkMode);
+    save();
+}
+function toggleAfk(){
+    afkMode = !afkMode;
+    document.getElementById("afkStatus").innerText = afkMode?"开启":"关闭";
+    save();
 }
 
-video.play()
-})
+// 标签、倍速
+function switchTab(name){
+    document.querySelectorAll(".panel").forEach(x=>x.classList.add("hide"));
+    document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"));
+    event.target.classList.add("active");
+    let map = {attr:"tabAttr",equip:"tabEquip",pet:"tabPet",talent:"tabTalent",gacha:"tabGacha",tower:"tabTower",ach:"tabAch"};
+    document.getElementById(map[name]).classList.remove("hide");
+}
+function setSpeed(num){
+    battleSpeed = num;
+    document.getElementById("nowSpeed").innerText = `当前：${num}倍`;
+    restartBattleLoop();
+}
+function restartBattleLoop(){
+    clearInterval(battleTimer);
+    battleTimer = setInterval(fight, 1000 / battleSpeed);
+}
+function toggleAutoEquip(){
+    autoEquipEnabled = !autoEquipEnabled;
+    document.getElementById("autoEquipStatus").innerText = autoEquipEnabled ? "开启" : "关闭";
+    log(`自动穿戴已${autoEquipEnabled ? "开启" : "关闭"}`);save();
 }
 
-// ===== 状态 =====
-function setStatus(msg){
-document.getElementById("status").innerText=msg
+// 装备强化+特效
+function strengthenEq(){
+    let cnt = 0;
+    [d.equip.wep,d.equip.arm,d.equip.acc].forEach(e=>{
+        if(e){
+            e.str = (e.str||0)+1;
+            e.atk = Math.floor(e.atk*1.08);
+            e.def = Math.floor(e.def*1.08);
+            e.add = Math.floor(e.add*1.08);
+            cnt++;
+        }
+    });
+    d.gold -= cnt*30;
+    if(cnt>0) log(`<span class="drop-text">装备强化+1，共${cnt}件</span>`);
+    upUI();
 }
+function checkSet(){
+    let setNames = [];
+    [d.equip.wep,d.equip.arm,d.equip.acc].filter(Boolean).forEach(e=>{
+        if(e.set) setNames.push(e.set);
+    });
+    let res = "无";
+    for(let s of setList){
+        let num = setNames.filter(x=>x===s.name).length;
+        if(num >= s.cnt) res = `<span class="c-orange">${s.name}全套激活</span>`;
+    }
+    document.getElementById("setBonus").innerHTML = res;
+}
+
+// 宠物皮肤
+function changePetSkin(){
+    if(!d.petNow) return log("未出战宠物");
+    d.petSkinIdx = (d.petSkinIdx + 1) % petSkinList.length;
+    log(`宠物皮肤切换为：${petSkinList[d.petSkinIdx]}`);
+    upUI();
+}
+// 宠物升级洗练
+function petLvUp(){
+    if(!d.petNow) return log("未出战宠物");
+    if(d.gold < 100) return log("金币不足");
+    d.gold -= 100;
+    d.petNow.lv++;
+    d.petNow.dmg = (d.petNow.dmg||0)+1;
+    d.petNow.def = (d.petNow.def||0)+1;
+    log(`<span class="c-gold">${d.petNow.name} 升级至Lv.${d.petNow.lv}</span>`);
+    upUI();
+}
+function petRefine(){
+    if(!d.petNow) return log("未出战宠物");
+    if(d.dia < 30) return log("钻石不足");
+    d.dia -= 30;
+    d.petNow.dmg = Math.floor(Math.random()*6);
+    d.petNow.def = Math.floor(Math.random()*4);
+    d.petNow.gold = Math.floor(Math.random()*5);
+    log(`<span class="c-purple">宠物洗练完成，词条随机刷新</span>`);
+    upUI();
+}
+
+// BOSS战斗
+function fightBoss(){
+    let bossHp = d.floor * 1800;
+    let dmg = Math.floor(d.str*3);
+    if(dmg < bossHp/25) return log("战力不足");
+    d.gold += d.floor*1000;
+    d.dia += Math.floor(d.floor*8);
+    d.talent.point += 1;
+    log(`<span class="boss-text">普通BOSS击杀，层数+1</span>`);
+    nextFloor();upUI();
+}
+function fightHutu(){
+    let mul = d.hutuAttr.includes("超高攻击") ? 2.2 : 1;
+    let defMul = d.hutuAttr.includes("钢铁皮囊") ? 0.4 : 1;
+    let bossHp = d.floor * 8000 * defMul;
+    let dmg = Math.floor(d.str * mul);
+    if(dmg < bossHp/35) return log("<span class='c-red'>战力严重不足，无法战胜今日糊涂</span>");
+    let rewardGold = 30000 + d.floor * 2000;
+    let rewardDia = 800 + d.floor * 20;
+    d.gold += rewardGold;
+    d.dia += rewardDia;
+    log(`<span class="c-red">✅ 击败今日糊涂！获得大量资源</span>`);
+    upUI();
+}
+
+// 工具
+function filterEquip(qua){filterQuality=qua;upEquipUI();}
+function filterType(tp){filterType=tp;upEquipUI();}
+function randQuality(){
+    let r=Math.random()*100,s=0;
+    let qArr = [
+        {n:"普通",c:"c-white",w:55},{n:"优秀",c:"c-green",w:25},
+        {n:"精良",c:"c-blue",w:12},{n:"史诗",c:"c-purple",w:6},
+        {n:"传说",c:"c-orange",w:2}
+    ];
+    for(let q of qArr){s+=q.w;if(r<s)return q;}
+    return qArr[0];
+}
+function log(txt){
+    let el=document.getElementById("battleLog");
+    el.innerHTML+=`<div>${txt}</div>`;
+    el.scrollTop=el.scrollHeight;
+}
+
+// UI渲染
+function upUI(){
+    document.getElementById("pLv").innerText=d.lv;
+    document.getElementById("pExp").innerText=d.exp;
+    document.getElementById("pExpMax").innerText=d.expMax;
+    document.getElementById("pGold").innerText=d.gold;
+    document.getElementById("pDia").innerText=d.dia;
+    document.getElementById("pFloor").innerText=d.floor;
+    document.getElementById("sStr").innerText=d.str;
+    document.getElementById("sDef").innerText=d.def;
+    document.getElementById("sHp").innerText=d.hp;
+    document.getElementById("sCrit").innerText=d.crit;
+    document.getElementById("sDmgAdd").innerText=d.dmgAdd;
+    document.getElementById("sGoldAdd").innerText=d.goldAdd;
+    document.getElementById("mName").innerText=d.monster.name;
+    document.getElementById("mHp").innerText=Math.max(0,Math.floor(d.monster.hp));
+    document.getElementById("mHpMax").innerText=d.monster.maxHp;
+    document.getElementById("talentPoint").innerText=d.talent.point;
+    ["t1","t2","t3","t4","t5","t6","t7","t8","t9"].forEach(k=>document.getElementById(k).innerText=d.talent[k]);
+
+    d.power=Math.floor(d.str*2+d.def*1.5+d.hp/10+(d.equip.wep?.atk||0)+(d.equip.arm?.def||0)+(d.equip.acc?.add||0));
+    document.getElementById("pPower").innerText=d.power;
+
+    upEquipUI();checkSet();upPetUI();upAchUI();save();
+}
+function getFilteredEquip(){
+    let list=[...d.bag];
+    if(filterQuality==="green")list=list.filter(e=>e.c!=="c-white");
+    if(filterQuality==="blue")list=list.filter(e=>e.c!=="c-white"&&e.c!=="c-green");
+    return list;
+}
+function upEquipUI(){
+    let w=d.equip.wep,a=d.equip.arm,ac=d.equip.acc;
+    let wHtml = w?.isGod 
+        ? `<span class="god-weapon">【神器】${w.name}+${w.str||0} 攻击${w.atk}</span>`
+        : `<span class="${w?.c}">${qualityName[w?.c]}${w.name}+${w.str||0} 攻击${w.atk}</span>`;
+    document.getElementById("eqWep").innerText=w ? wHtml : "无";
+    document.getElementById("eqArm").innerText=a?`<span class="${a.c}">${qualityName[a.c]}${a.name}+${a.str||0} 防御${a.def}</span>`:"无";
+    document.getElementById("eqAcc").innerText=ac?`<span class="${ac.c}">${qualityName[ac.c]}${ac.name}+${ac.str||0} 加成${ac.add}</span>`:"无";
+    document.getElementById("eqBagNum").innerText=d.bag.length;
+    let list=getFilteredEquip(),html="";
+    list.forEach(e=>{
+        let i=d.bag.indexOf(e);
+        let nameHtml = e.isGod 
+            ? `<span class="god-weapon">【神器】${e.name}</span>`
+            : `<span class="${e.c}">${qualityName[e.c]}${e.name}</span>`;
+        html+=nameHtml+`<button onclick="wearEquip(${i})">穿戴</button>`;
+    });
+    document.getElementById("eqList").innerHTML=html||"暂无";
+}
+function wearEquip(idx){
+    let e=d.bag[idx];
+    if(e.type==="wep"){if(d.equip.wep)d.bag.push(d.equip.wep);d.equip.wep=e;}
+    if(e.type==="arm"){if(d.equip.arm)d.bag.push(d.equip.arm);d.equip.arm=e;}
+    if(e.type==="acc"){if(d.equip.acc)d.bag.push(d.equip.acc);d.equip.acc=e;}
+    d.bag.splice(idx,1);
+    let tip = e.isGod ? "神器" : qualityName[e.c];
+    log(`穿戴${tip}${e.name}`);
+    upUI();
+}
+function autoEquipBest(){
+    ["wep","arm","acc"].forEach(t=>{
+        let best=null,bi=-1;
+        d.bag.forEach((e,i)=>{if(e.type!==t)return;let s=getEquipScore(e);if(!best||s>getEquipScore(best)){best=e;bi=i;}});
+        if(best){
+            if(t==="wep"&&d.equip.wep)d.bag.push(d.equip.wep);
+            if(t==="arm"&&d.equip.arm)d.bag.push(d.equip.arm);
+            if(t==="acc"&&d.equip.acc)d.bag.push(d.equip.acc);
+            if(t==="wep")d.equip.wep=best;
+            if(t==="arm")d.equip.arm=best;
+            if(t==="acc")d.equip.acc=best;
+            d.bag.splice(bi,1);
+            let tip = best.isGod ? "神器" : qualityName[best.c];
+            log(`<span class="drop-text">自动穿戴${tip}${best.name}</span>`);
+        }
+    });upUI();
+}
+function getEquipScore(e){
+    let base = qualityRank[e.c]*100+(e.atk||0)+(e.def||0)+(e.add||0)*5;
+    if(e.isGod) base += 9999;
+    return base;
+}
+function clearLowEquip(){
+    let cnt=0;d.bag=d.bag.filter(e=>{if(e.c==="c-white"||e.c==="c-green"){cnt++;return false;}return true;});
+    d.gold+=cnt*25;d.ach.clearEquip+=cnt;log(`<span class="c-white">分解${cnt}件低端装备</span>`);upUI();
+}
+function sortEquip(){
+    let r={"c-orange":5,"c-purple":4,"c-blue":3,"c-green":2,"c-white":1};
+    d.bag.sort((a,b)=>{
+        let sa = a.isGod ? 999 : r[a.c];
+        let sb = b.isGod ? 999 : r[b.c];
+        return sb - sa;
+    });
+    log(`<span class="c-blue">装备整理完成</span>`);upUI();
+}
+function upPetUI(){
+    let n=d.petNow;
+    let skinTag = n ? `<span class="skin-tag">皮肤：${petSkinList[d.petSkinIdx]}</span>` : "";
+    document.getElementById("petNow").innerHTML=n?`${n.name} Lv.${n.lv}${skinTag}`:"无";
+    let buf="无";
+    if(n)buf=`伤害+${n.dmg||0}% 防御+${n.def||0}% 金币+${n.gold||0}%`;
+    document.getElementById("petBuff").innerText=buf;
+    let html="";
+    d.pets.forEach((p,i)=>{html+=`<div>${p.name} Lv.${p.lv}<button onclick="setPet(${i})">出战</button></div>`;});
+    document.getElementById("petList").innerHTML=html||"暂无";
+}
+function setPet(i){d.petNow=d.pets[i];log(`出战${d.petNow.name}`);upUI();}
+
+// 天赋、抽卡、属性
+function addTalent(t){
+    if(d.talent.point<=0)return log("天赋点不足");
+    d.talent.point--;
+    switch(t){
+        case1:d.talent.t1++,d.dmgAdd+=3;break;case2:d.talent.t2++,d.crit+=2;break;
+        case3:d.talent.t3++,d.armorPen+=2;break;case4:d.talent.t4++,d.def*=1.02;break;
+        case5:d.talent.t5++,d.hp*=1.04;break;case6:d.talent.t6++,d.hpRegen+=0.5;break;
+        case7:d.talent.t7++,d.goldAdd+=4;break;case8:d.talent.t8++,d.expAdd+=3;break;
+        case9:d.talent.t9++,d.dropAdd+=2;break;
+    }upUI();
+}
+function gacha1(){if(d.dia<10)return log("钻石不足");d.dia-=10;doGacha();}
+function gacha10(){if(d.dia<90)return log("钻石不足");d.dia-=90;for(let i=0;i<10;i++)doGacha();}
+function doGacha(){
+    d.ach.gacha++;let q=randQuality();
+    if(Math.random()>0.6){
+        let p=petLib[Math.floor(Math.random()*petLib.length)];
+        d.pets.push({...p});log(`抽到宠物【<span class="${q.c}">${p.name}</span>】`);
+    }else{
+        let t=["wep","arm","acc"][Math.floor(Math.random()*3)];
+        let s=["纯白套","暗夜套","大地套"][Math.floor(Math.random()*3)];
+        let eq={name:q.n+(t==="wep"?"武器":t==="arm"?"防具":"饰品"),c:q.c,type:t,set:s,str:0,
+            atk:t==="wep"?Math.floor(10+d.floor*3):0,
+            def:t==="arm"?Math.floor(6+d.floor*2):0,
+            add:t==="acc"?Math.floor(1.5+d.floor):0
+        };
+        d.bag.push(eq);log(`抽到装备【<span class="${q.c}">${qualityName[q.c]}${eq.name}</span>】`);
+    }upUI();
+}
+function upAttr(t){
+    let cost=t==="crit"?90:60;if(d.gold<cost)return log("金币不足");
+    d.gold-=cost;
+    if(t==="str")d.str+=6;if(t==="def")d.def+=4;
+    if(t==="hp")d.hp+=25;if(t==="crit")d.crit+=2;
+    upUI();
+}
+
+// 战斗
+function fight(){
+    if(!afkMode) return;
+    let atk=Math.floor(d.str*(1+d.dmgAdd/100+(d.petNow?.dmg||0)/100)+(d.equip.wep?.atk||0));
+    let cri=Math.random()*100<(d.crit+(d.petNow?.crit||0));
+    let hurt=cri?atk*2:atk;hurt*=(1-d.armorPen/100);
+    d.monster.hp-=hurt;
+    log(`造成${Math.floor(hurt)}伤害 ${cri?"<span class='crit-text'>【暴击】</span>":""}`);
+
+    if(d.hpRegen>0||d.petNow?.hpRegen){
+        let regen=Math.floor(d.hp*(d.hpRegen+(d.petNow?.hpRegen||0))/100);
+        d.hp+=regen;
+    }
+    if(d.monster.hp<=0){
+        d.ach.kill++;
+        let gold=Math.floor((12*d.floor*3.5)*(1+d.goldAdd/100+(d.petNow?.gold||0)/100));
+        let exp=Math.floor(18*d.floor*2.8*(1+d.expAdd/100));
+        d.gold+=gold;d.exp+=exp;
+        while(d.exp>=d.expMax){
+            d.exp-=d.expMax;d.lv++;
+            d.expMax=Math.floor(d.expMax*1.22);
+            d.talent.point++;
+            log(`<span class="c-gold">升级！获得1点天赋点</span>`);
+        }
+        let drop=0.35+d.dropAdd/100;
+        if(Math.random()<drop){
+            let q=randQuality();
+            let minQ=parseInt(document.getElementById("autoPickQuality").value);
+            if(qualityRank[q.c]>=minQ){
+                let t=["wep","arm","acc"][Math.floor(Math.random()*3)];
+                let s=["纯白套","暗夜套","大地套"][Math.floor(Math.random()*3)];
+                let eq={name:q.n+(t==="wep"?"武器":t==="arm"?"防具":"饰品"),c:q.c,type:t,set:s,str:0,
+                    atk:t==="wep"?Math.floor(8+d.floor*2.5):0,
+                    def:t==="arm"?Math.floor(5+d.floor*1.8):0,
+                    add:t==="acc"?Math.floor(1.5+d.floor*0.6):0
+                };
+                d.bag.push(eq);
+                if(autoEquipEnabled)autoEquipBest();
+            }
+        }
+        nextMonster();
+        if(d.ach.kill>=d.floor*15)nextFloor();
+    }
+    upUI();
+}
+function nextMonster(){
+    let n=["荒野小怪","林间野兽","暗影魔物","荒原守卫","深渊猎手"];
+    let idx=Math.min(Math.floor(d.floor/4),4);
+    let hp=Math.floor(100+d.floor*45);
+    d.monster={name:n[idx],hp,maxHp:hp};
+}
+function nextFloor(){d.floor++;d.ach.floor=d.floor;}
+
+// 超长离线收益
+function getOfflineReward(){
+    let now=Date.now();
+    let diff=Math.floor((now-lastOnline)/1000);
+    lastOnline=now;
+    if(diff<10)return log("离线时间过短");
+    let maxOfflineTime = 86400;
+    if(diff>maxOfflineTime)diff=maxOfflineTime;
+    let goldMul = 4.5;
+    let expMul = 3.2;
+    d.gold+=Math.floor(diff*d.floor*0.6*goldMul);
+    d.exp+=Math.floor(diff*d.floor*0.4*expMul);
+    log(`<span class="c-green">离线结算｜时长${Math.floor(diff/60)}分钟，高额收益已领取</span>`);
+    upUI();
+}
+function upAchUI(){
+    let html=`
+    <div>击杀怪物：${d.ach.kill}</div>
+    <div>最高层数：${d.ach.floor}</div>
+    <div>抽卡次数：${d.ach.gacha}</div>
+    <div>分解装备：${d.ach.clearEquip}</div>
+    `;
+    document.getElementById("achList").innerHTML=html;
+}
+
+// 存档
+function save(){
+    localStorage.setItem(saveKey,JSON.stringify({
+        d,lastOnline,battleSpeed,autoEquipEnabled,darkMode,afkMode,
+        autoPickQuality:document.getElementById("autoPickQuality").value,
+        usedCode:usedCode
+    }));
+}
+function load(){
+    let s=localStorage.getItem(saveKey);if(!s)return;
+    let obj=JSON.parse(s);
+    d=obj.d;lastOnline=obj.lastOnline;
+    battleSpeed=obj.battleSpeed||1;
+    autoEquipEnabled=obj.autoEquipEnabled||false;
+    darkMode=obj.darkMode||false;
+    afkMode=obj.afkMode??true;
+    usedCode = obj.usedCode || [];
+    document.body.classList.toggle("dark",darkMode);
+    document.getElementById("autoEquipStatus").innerText=autoEquipEnabled?"开启":"关闭";
+    document.getElementById("afkStatus").innerText=afkMode?"开启":"关闭";
+    if(obj.autoPickQuality)document.getElementById("autoPickQuality").value=obj.autoPickQuality;
+}
+
+// 初始化
+load();
+initDailyHutu();
+upUI();
+document.getElementById("nowSpeed").innerText=`当前：${battleSpeed}倍`;
+restartBattleLoop();
+setInterval(save,15000);
 </script>
-
 </body>
 </html>
