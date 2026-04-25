@@ -3,115 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MiraPlay Pro</title>
+<title>MiraPlay Ultra</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
 body { background:#0b0f1a; color:#fff; }
-.card:hover { transform: scale(1.05); transition: .2s; }
-.scroll::-webkit-scrollbar { display:none; }
+.card:hover { transform:scale(1.05); transition:.2s; }
+.scroll::-webkit-scrollbar{display:none;}
 </style>
 </head>
 
 <body class="p-4">
 
-<h1 class="text-2xl mb-4">🎬 MiraPlay Pro</h1>
+<h1 class="text-2xl mb-4">🚀 MiraPlay Ultra</h1>
 
-<!-- 源 -->
 <div class="flex gap-2 mb-3">
-<input id="source" class="flex-1 p-2 rounded text-black" placeholder="输入源链接">
+<input id="source" class="flex-1 p-2 rounded text-black"
+placeholder="输入源（支持 md5 / json）">
 <button onclick="loadSource()" class="bg-blue-500 px-4 rounded">加载</button>
 </div>
 
-<!-- 搜索 -->
 <div class="flex gap-2 mb-4">
-<input id="wd" class="flex-1 p-2 rounded text-black" placeholder="搜索影片">
+<input id="wd" class="flex-1 p-2 rounded text-black"
+placeholder="搜索影片">
 <button onclick="search()" class="bg-green-500 px-4 rounded">搜索</button>
 </div>
 
-<!-- 推荐 -->
-<div>
-<h2 class="mb-2">🔥 推荐</h2>
-<div id="hot" class="flex gap-3 overflow-x-auto scroll"></div>
-</div>
+<div id="status" class="text-sm text-gray-400 mb-2"></div>
 
-<!-- 搜索结果 -->
-<div class="mt-4">
-<h2 class="mb-2">🔍 结果</h2>
 <div id="list" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
-</div>
 
-<!-- 播放 -->
-<div class="mt-6">
-<video id="video" controls class="w-full rounded"></video>
-<div id="routes" class="mt-2 flex gap-2 flex-wrap"></div>
-</div>
+<video id="video" controls class="w-full mt-4 rounded"></video>
+<div id="routes" class="flex gap-2 mt-2 flex-wrap"></div>
 
 <script>
-let sites=[], api=""
-const jx = [
+// ===== 核心配置 =====
+let sites=[]
+let apis=[]
+let currentApiIndex=0
+
+const proxies=[
+"https://api.allorigins.win/raw?url=",
+"https://cors.isomorphic-git.org/",
+"https://thingproxy.freeboard.io/fetch/"
+]
+
+const jxList=[
 "https://jx.jsonplayer.com/player/?url=",
 "https://jx.aidouer.net/?url="
 ]
 
+// ===== 通用请求（自动换代理）=====
+async function smartFetch(url){
+for(let p of proxies){
+try{
+let res=await fetch(p+encodeURIComponent(url))
+if(res.ok) return await res.text()
+}catch(e){}
+}
+throw "全部代理失败"
+}
+
+// ===== 加载源 =====
 async function loadSource(){
 let url=document.getElementById("source").value
-let res=await fetch(url)
-let data=await res.json()
-sites=data.sites||[]
-api=sites[0]?.api
-alert("加载成功："+sites.length+"个站")
+setStatus("⏳ 加载中...")
+
+try{
+let text=await smartFetch(url)
+
+let data
+try{
+data=JSON.parse(text)
+}catch{
+data=eval(text.replace("var rule=",""))
 }
 
+sites=data.sites||[]
+apis=sites.map(s=>s.api).filter(Boolean)
+
+setStatus("✅ 成功加载 "+apis.length+" 个接口")
+
+}catch(e){
+setStatus("❌ 加载失败："+e)
+}
+}
+
+// ===== 搜索（自动换源）=====
 async function search(){
 let wd=document.getElementById("wd").value
+if(!apis.length) return alert("先加载源")
+
+for(let i=0;i<apis.length;i++){
+let api=apis[i]
+
+try{
 let url=api.includes("?")?api+wd:api+"?ac=detail&wd="+wd
-let res=await fetch(url)
-let data=await res.json()
-let list=data.list||[]
-render(list)
-renderHot(list)
+let text=await smartFetch(url)
+let data=JSON.parse(text)
+
+if(data.list?.length){
+render(data.list)
+setStatus("✅ 使用接口："+api)
+return
 }
 
+}catch(e){}
+}
+
+setStatus("❌ 所有接口搜索失败")
+}
+
+// ===== 渲染 =====
 function render(list){
 let el=document.getElementById("list")
 el.innerHTML=""
+
 list.forEach(v=>{
 let d=document.createElement("div")
 d.className="card bg-gray-800 p-2 rounded cursor-pointer"
 d.innerHTML=`
-<img src="${v.vod_pic}" class="w-full h-40 object-cover rounded">
+<img src="${v.vod_pic}" class="h-40 w-full object-cover rounded">
 <div class="text-sm mt-1">${v.vod_name}</div>
 `
-d.onclick=()=>showDetail(v)
+d.onclick=()=>openDetail(v)
 el.appendChild(d)
 })
 }
 
-function renderHot(list){
-let el=document.getElementById("hot")
-el.innerHTML=""
-list.slice(0,10).forEach(v=>{
-let d=document.createElement("div")
-d.className="w-32 flex-shrink-0 cursor-pointer"
-d.innerHTML=`
-<img src="${v.vod_pic}" class="h-40 w-full object-cover rounded">
-<div class="text-xs">${v.vod_name}</div>
-`
-d.onclick=()=>showDetail(v)
-el.appendChild(d)
-})
-}
-
-function showDetail(v){
-saveHistory(v)
+// ===== 详情 =====
+function openDetail(v){
 let routes=parseRoutes(v.vod_play_url)
 renderRoutes(routes)
-play(routes[0].url)
+playAuto(routes)
 }
 
+// ===== 线路解析 =====
 function parseRoutes(str){
 return str.split("#").map(i=>{
 let [name,url]=i.split("$")
@@ -119,24 +148,41 @@ return {name,url}
 })
 }
 
+// ===== 渲染线路 =====
 function renderRoutes(routes){
 let el=document.getElementById("routes")
 el.innerHTML=""
 routes.forEach(r=>{
 let b=document.createElement("button")
-b.className="bg-gray-700 px-3 py-1 rounded"
+b.className="bg-gray-700 px-2 py-1 rounded"
 b.innerText=r.name
 b.onclick=()=>play(r.url)
 el.appendChild(b)
 })
 }
 
-function play(url){
+// ===== 自动播放（失败换线路）=====
+async function playAuto(routes){
+for(let r of routes){
+let ok=await tryPlay(r.url)
+if(ok){
+setStatus("▶️ 播放："+r.name)
+return
+}
+}
+setStatus("❌ 全部线路失败")
+}
+
+// ===== 播放尝试 =====
+function tryPlay(url){
+return new Promise(resolve=>{
 let video=document.getElementById("video")
 
 if(!url.includes(".m3u8")){
-url=jx[0]+url
+url=jxList[0]+url
 video.src=url
+video.onloadeddata=()=>resolve(true)
+video.onerror=()=>resolve(false)
 video.play()
 return
 }
@@ -145,16 +191,21 @@ if(Hls.isSupported()){
 let hls=new Hls()
 hls.loadSource(url)
 hls.attachMedia(video)
+hls.on(Hls.Events.MANIFEST_PARSED,()=>resolve(true))
+hls.on(Hls.Events.ERROR,()=>resolve(false))
 }else{
 video.src=url
-}
-video.play()
+video.onloadeddata=()=>resolve(true)
+video.onerror=()=>resolve(false)
 }
 
-function saveHistory(v){
-let h=JSON.parse(localStorage.getItem("his")||"[]")
-h.unshift(v)
-localStorage.setItem("his",JSON.stringify(h))
+video.play()
+})
+}
+
+// ===== 状态 =====
+function setStatus(msg){
+document.getElementById("status").innerText=msg
 }
 </script>
 
