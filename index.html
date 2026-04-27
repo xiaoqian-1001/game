@@ -3,290 +3,2441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>纯白放置 · 文字挂机</title>
-    <style>
-        :root{--bg:#ffffff;--txt:#222;--border:#eee;--btn-bg:#fff;--btn-txt:#222;--log-txt:#666;}
-        .dark{--bg:#121212;--txt:#e5e5e5;--border:#2b2b2b;--btn-bg:#1f1f1f;--btn-txt:#eee;--log-txt:#aaa;}
-        * {margin: 0;padding: 0;box-sizing: border-box;}
-        body {background: var(--bg);color: var(--txt);font-family: "Microsoft Yahei",sans-serif;line-height: 2;max-width: 860px;margin: 0 auto;padding: 24px 16px;font-size: 15px;transition: 0.3s;}
-        h1 {font-weight: 400;text-align: center;margin-bottom: 28px;font-size: 26px;}
-        .info-bar {border: 1px solid var(--border);padding: 14px 18px;margin-bottom: 20px;border-radius: 6px;}
-        .tab-wrap {display: flex;gap: 6px;flex-wrap: wrap;margin: 20px 0;}
-        .tab-btn {border: 1px solid var(--border);background: var(--btn-bg);color: var(--btn-txt);padding: 6px 14px;border-radius: 4px;cursor: pointer;transition: 0.2s;}
-        .tab-btn.active {background: var(--border);}
-        .panel {border: 1px solid var(--border);padding: 18px;border-radius: 6px;margin-bottom: 20px;min-height: 140px;}
-        .hide { display: none; }
-        button {border: 1px solid var(--border);background: var(--btn-bg);color: var(--btn-txt);padding: 3px 10px;border-radius: 3px;cursor: pointer;margin: 3px;}
-        button:hover {background: var(--border);}
-        .log-area {max-height: 180px;overflow: auto;font-size: 13px;color: var(--log-txt);margin-top: 10px;}
-        .line {height: 1px;background: var(--border);margin: 12px 0;}
-        .speed-box { margin: 8px 0; }
-        .code-box{margin-top:10px;display:flex;gap:6px;align-items:center;}
-        #codeInput{padding:4px 8px;border:1px solid var(--border);background:var(--btn-bg);color:var(--txt);border-radius:4px;}
-        .c-white { color: #999; }
-        .c-green { color: #39b54a; }
-        .c-blue  { color: #2d8cf0; }
-        .c-purple{ color: #9254de; }
-        .c-orange{ color: #ff7d00; font-weight:bold; }
-        .c-red{color:#f53f3f;font-weight:bold;}
-        .c-gold{color:#ffc107;font-weight:bold;}
-        .crit-text{color:#ff4444;font-weight:bold;}
-        .drop-text{color:#4cd964;}
-        .boss-text{color:#9b59b6;font-weight:bold;}
-        .skin-tag{font-size:12px;padding:2px 6px;border-radius:4px;background:var(--border);margin-left:6px;}
-        .god-weapon{color:#ff7d00;font-weight:bold;text-shadow:0 0 4px #ff9500;}
+    <title>江湖最后一个钱大侠</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B4513',
+                        secondary: '#DAA520',
+                        accent: '#B22222',
+                        light: '#F5F5DC',
+                        dark: '#2F4F4F'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'sans-serif'],
+                        serif: ['SimSun', 'serif']
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-lg {
+                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
+            }
+            .bg-scroll {
+                background-image: url('https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/52f45f2999e94330b5bc6ab4d36599be~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871919&x-signature=WhWoHambHqNff7G9PS%2FkIdjmp%2Bo%3D');
+                background-size: cover;
+                background-position: center;
+            }
+            .bg-pattern {
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            }
+            .scroll-border {
+                border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%238B4513" stroke-width="10" rx="10" ry="10"/></svg>') 10;
+                border-width: 10px;
+                border-style: solid;
+            }
+            .btn-ancient {
+                @apply bg-primary text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 transform hover:-translate-y-1 border-2 border-secondary;
+            }
+            .btn-ancient:active {
+                @apply transform translate-y-0;
+            }
+            .card-ancient {
+                @apply bg-light bg-opacity-90 rounded-lg shadow-lg border-2 border-primary p-4;
+            }
+            .progress-bar {
+                @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+            }
+            .progress-value {
+                @apply h-full bg-secondary;
+            }
+            .item-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+            }
+            .item-active {
+                @apply ring-2 ring-secondary ring-offset-2;
+            }
+        }
     </style>
 </head>
-<body>
-    <h1>纯白放置 · 文字挂机</h1>
-    <div class="info-bar">
-        等级：<span id="pLv">1</span>｜经验：<span id="pExp">0</span>/<span id="pExpMax">120</span>｜金币：<span id="pGold">0</span>｜钻石：<span id="pDia">50</span><br>
-        层数：<span id="pFloor">1</span>｜战力：<span id="pPower">0</span>
-        <button id="btnOffline">领取离线收益</button>
-        <button id="btnTheme">切换明暗主题</button>
-        <button id="btnAfk">自动挂机：<span id="afkStatus">开启</span></button>
-        <div class="speed-box">
-            战斗倍速：
-            <button class="speedBtn" data-speed="1">1倍</button>
-            <button class="speedBtn" data-speed="2">2倍</button>
-            <button class="speedBtn" data-speed="5">5倍</button>
-            <span id="nowSpeed">当前：1倍</span>
+<body class="bg-scroll bg-pattern min-h-screen font-serif text-dark overflow-x-hidden">
+    <!-- 加载动画 -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="钱大侠" class="w-32 h-32 object-contain animate-float mb-4">
+        <h2 class="text-2xl text-light font-bold mb-2">江湖最后一个钱大侠</h2>
+        <p class="text-light mb-4">加载中，请稍候...</p>
+        <div class="w-64 progress-bar">
+            <div id="loading-progress" class="progress-value" style="width: 0%"></div>
         </div>
-        <div>
-            自动穿戴：<button id="btnAutoEquip">开关</button>
-            <span id="autoEquipStatus">关闭</span>｜自动拾取：
-            <select id="autoPickQuality">
-                <option value="0">全部</option>
-                <option value="1">优秀及以上</option>
-                <option value="2">精良及以上</option>
-            </select>
+    </div>
+
+    <!-- 登录界面 -->
+    <div id="login-screen" class="fixed inset-0 z-40 flex flex-col items-center justify-center hidden">
+        <div class="bg-light bg-opacity-90 rounded-lg shadow-2xl p-8 max-w-md w-full mx-4 border-2 border-primary">
+            <div class="flex justify-center mb-6">
+                <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="钱大侠" class="w-32 h-32 object-contain animate-float">
+            </div>
+            <h1 class="text-3xl font-bold text-center mb-6 text-primary">江湖最后一个钱大侠</h1>
+            <div class="mb-6">
+                <label for="player-name" class="block text-sm font-medium text-dark mb-2">请输入你的江湖名号</label>
+                <input type="text" id="player-name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="例：钱大侠" maxlength="10">
+            </div>
+            <div class="flex flex-col space-y-3">
+                <button id="start-game" class="btn-ancient flex items-center justify-center">
+                    <span>开始游戏</span>
+                </button>
+                <button id="load-game" class="bg-dark text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">
+                    读取存档
+                </button>
+            </div>
+            <div class="mt-6 text-center text-sm text-gray-600">
+                <p>提示：游戏进度会自动保存</p>
+            </div>
         </div>
-        <div class="code-box">
-            <input id="codeInput" placeholder="输入兑换码" type="text">
-            <button id="btnCode">立即兑换</button>
+    </div>
+
+    <!-- 游戏主界面 -->
+    <div id="game-screen" class="fixed inset-0 z-30 hidden">
+        <!-- 顶部状态栏 -->
+        <div class="bg-dark bg-opacity-80 text-light py-2 px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center">
+                    <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-6 h-6 mr-1">
+                    <span id="gold-amount">0</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fa fa-star text-secondary mr-1"></i>
+                    <span id="reputation-amount">0</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span id="player-level">Lv.1</span>
+                <div class="w-32 progress-bar">
+                    <div id="exp-progress" class="progress-value" style="width: 0%"></div>
+                </div>
+                <span id="exp-amount">0/100</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="settings-btn" class="text-light hover:text-secondary transition-colors">
+                    <i class="fa fa-cog text-xl"></i>
+                </button>
+                <button id="logout-btn" class="text-light hover:text-red-500 transition-colors">
+                    <i class="fa fa-sign-out text-xl"></i>
+                </button>
+            </div>
         </div>
-        <div class="c-red line"></div>
-        <div class="boss-text">每日强敌｜糊涂（法斗）</div>
-        <div id="hutuDailyAttr"></div>
-        <div id="hutuDailyTalent"></div>
-    </div>
 
-    <div class="panel">
-        <div>当前敌人：<span id="mName">荒野小怪</span></div>
-        <div>敌人血量：<span id="mHp">120</span> / <span id="mHpMax">120</span></div>
-        <div class="line"></div>
-        <div class="log-area" id="battleLog"></div>
-    </div>
+        <!-- 主游戏区域 -->
+        <div class="flex h-[calc(100vh-48px)]">
+            <!-- 左侧角色信息 -->
+            <div class="w-64 bg-dark bg-opacity-70 p-4 text-light overflow-y-auto">
+                <div class="flex flex-col items-center mb-6">
+                    <img id="player-avatar" src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="角色头像" class="w-32 h-32 object-contain mb-2">
+                    <h2 id="player-name-display" class="text-xl font-bold">钱大侠</h2>
+                    <p id="player-title" class="text-sm text-gray-300">初入江湖</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2 border-b border-gray-600 pb-1">基本属性</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>生命值:</span>
+                            <span id="hp-amount">100/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="hp-progress" class="progress-value bg-red-500" style="width: 100%"></div>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>攻击力:</span>
+                            <span id="attack-amount">10</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>防御力:</span>
+                            <span id="defense-amount">5</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>幸运值:</span>
+                            <span id="luck-amount">5</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>悟性值:</span>
+                            <span id="wisdom-amount">5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2 border-b border-gray-600 pb-1">装备</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div id="weapon-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="weapon">
+                            <div class="text-gray-400 text-sm">武器</div>
+                            <div id="weapon-name" class="text-xs mt-1">无</div>
+                        </div>
+                        <div id="armor-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="armor">
+                            <div class="text-gray-400 text-sm">防具</div>
+                            <div id="armor-name" class="text-xs mt-1">无</div>
+                        </div>
+                        <div id="accessory-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="accessory">
+                            <div class="text-gray-400 text-sm">饰品</div>
+                            <div id="accessory-name" class="text-xs mt-1">无</div>
+                        </div>
+                        <div id="pet-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="pet">
+                            <div class="text-gray-400 text-sm">宠物</div>
+                            <div id="pet-name" class="text-xs mt-1">无</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="tab-wrap">
-        <button class="tab-btn active" data-tab="attr">属性</button>
-        <button class="tab-btn" data-tab="equip">装备</button>
-        <button class="tab-btn" data-tab="pet">宠物</button>
-        <button class="tab-btn" data-tab="talent">天赋</button>
-        <button class="tab-btn" data-tab="gacha">抽卡</button>
-        <button class="tab-btn" data-tab="tower">爬塔</button>
-        <button class="tab-btn" data-tab="ach">成就</button>
-    </div>
+            <!-- 中央主操作区 -->
+            <div class="flex-1 flex flex-col">
+                <!-- 场景导航 -->
+                <div class="bg-dark bg-opacity-70 p-2 flex justify-center space-x-4">
+                    <button class="scene-btn px-4 py-1 rounded bg-primary text-light hover:bg-opacity-90 transition-colors" data-scene="town">城镇</button>
+                    <button class="scene-btn px-4 py-1 rounded bg-gray-700 text-light hover:bg-opacity-90 transition-colors" data-scene="wild">野外</button>
+                    <button class="scene-btn px-4 py-1 rounded bg-gray-700 text-light hover:bg-opacity-90 transition-colors" data-scene="training">修炼</button>
+                    <button class="scene-btn px-4 py-1 rounded bg-gray-700 text-light hover:bg-opacity-90 transition-colors" data-scene="dungeon">副本</button>
+                </div>
 
-    <div class="panel" id="tabAttr">
-        <div>力量：<span id="sStr">10</span> <button class="attrBtn" data-type="str">升级(60金)</button></div>
-        <div>防御：<span id="sDef">5</span> <button class="attrBtn" data-type="def">升级(60金)</button></div>
-        <div>生命：<span id="sHp">100</span> <button class="attrBtn" data-type="hp">升级(60金)</button></div>
-        <div>暴击：<span id="sCrit">5</span>% <button class="attrBtn" data-type="crit">升级(90金)</button></div>
-        <div>金币加成：<span id="sGoldAdd">0</span>%</div>
-        <div>全伤害加成：<span id="sDmgAdd">0</span>%</div>
-    </div>
+                <!-- 场景内容区 -->
+                <div class="flex-1 overflow-y-auto p-4">
+                    <!-- 城镇场景 -->
+                    <div id="town-scene" class="scene-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- 钱庄 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">钱庄</h3>
+                                <p class="mb-4">存钱生息，积累财富的好地方。</p>
+                                <div class="mb-4">
+                                    <label for="deposit-amount" class="block text-sm font-medium mb-1">存款金额</label>
+                                    <div class="flex">
+                                        <input type="number" id="deposit-amount" class="flex-1 px-3 py-1 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-secondary" min="1" value="10">
+                                        <button id="deposit-btn" class="bg-primary text-light px-3 py-1 rounded-r hover:bg-opacity-90">存入</button>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="withdraw-amount" class="block text-sm font-medium mb-1">取款金额</label>
+                                    <div class="flex">
+                                        <input type="number" id="withdraw-amount" class="flex-1 px-3 py-1 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-secondary" min="1" value="10">
+                                        <button id="withdraw-btn" class="bg-primary text-light px-3 py-1 rounded-r hover:bg-opacity-90">取出</button>
+                                    </div>
+                                </div>
+                                <div class="text-sm">
+                                    <div class="flex justify-between">
+                                        <span>当前存款:</span>
+                                        <span id="bank-amount">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>日利息率:</span>
+                                        <span>1%</span>
+                                    </div>
+                                </div>
+                            </div>
 
-    <div class="panel hide" id="tabEquip">
-        <div>武器：<span id="eqWep">无</span></div>
-        <div>防具：<span id="eqArm">无</span></div>
-        <div>饰品：<span id="eqAcc">无</span></div>
-        <div>套装效果：<span id="setBonus">无</span></div>
-        <div class="line"></div>
-        <div>背包装备：<span id="eqBagNum">0</span></div>
-        <div>
-            <button id="btnStrengthen">一键强化全部+1</button>
-            <button class="filterBtn" data-q="all">全部</button>
-            <button class="filterBtn" data-q="green">优秀+</button>
+                            <!-- 武器店 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">武器店</h3>
+                                <p class="mb-4">购买强力武器，提升战斗力。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="1" data-item-type="weapon" data-item-name="铁剑" data-item-price="50" data-item-attack="5">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">铁剑</span>
+                                            <span class="text-green-600">50 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">攻击力 +5</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="2" data-item-type="weapon" data-item-name="精钢刀" data-item-price="100" data-item-attack="10">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">精钢刀</span>
+                                            <span class="text-green-600">100 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">攻击力 +10</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="3" data-item-type="weapon" data-item-name="杜杜菜刀" data-item-price="0" data-item-attack="15" data-item-special="true">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium text-red-600">杜杜菜刀</span>
+                                            <span class="text-blue-600">兑换码</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">攻击力 +15，对野兽伤害+20%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 防具店 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">防具店</h3>
+                                <p class="mb-4">购买防具，提升防御力。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="4" data-item-type="armor" data-item-name="粗布衫" data-item-price="30" data-item-defense="3">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">粗布衫</span>
+                                            <span class="text-green-600">30 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">防御力 +3</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="5" data-item-type="armor" data-item-name="皮甲" data-item-price="80" data-item-defense="7">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">皮甲</span>
+                                            <span class="text-green-600">80 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">防御力 +7</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 饰品店 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">饰品店</h3>
+                                <p class="mb-4">购买饰品，提升特殊属性。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="6" data-item-type="accessory" data-item-name="幸运符" data-item-price="60" data-item-luck="3">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">幸运符</span>
+                                            <span class="text-green-600">60 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">幸运值 +3</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="7" data-item-type="accessory" data-item-name="智慧珠" data-item-price="60" data-item-wisdom="3">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">智慧珠</span>
+                                            <span class="text-green-600">60 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">悟性值 +3</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 宠物店 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">宠物店</h3>
+                                <p class="mb-4">购买宠物，获得特殊加成。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="8" data-item-type="pet" data-item-name="小狗" data-item-price="100" data-item-attack="2" data-item-defense="2">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">小狗</span>
+                                            <span class="text-green-600">100 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">攻击力 +2，防御力 +2</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="9" data-item-type="pet" data-item-name="糊涂" data-item-price="0" data-item-attack="5" data-item-defense="5" data-item-luck="5" data-item-special="true">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium text-red-600">糊涂（奶油法斗）</span>
+                                            <span class="text-blue-600">限定</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">攻击力 +5，防御力 +5，幸运值 +5</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 兑换码 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">兑换码</h3>
+                                <p class="mb-4">输入兑换码获取特殊奖励。</p>
+                                <div class="flex">
+                                    <input type="text" id="code-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="输入兑换码">
+                                    <button id="redeem-btn" class="bg-primary text-light px-4 py-2 rounded-r hover:bg-opacity-90">兑换</button>
+                                </div>
+                                <div id="code-message" class="mt-2 text-sm hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 野外场景 -->
+                    <div id="wild-scene" class="scene-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 战斗区域 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">江湖遭遇</h3>
+                                <div class="mb-4 text-center">
+                                    <img id="enemy-image" src="https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5bf8ce011e2f4d11bea45828257b34ef~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871968&x-signature=SZvQR6bbI727r0vnx5Jq4vVABf8%3D" alt="敌人" class="w-48 h-48 object-contain mx-auto">
+                                    <h4 id="enemy-name" class="text-lg font-bold mt-2">山贼</h4>
+                                    <div class="flex justify-center items-center mt-1">
+                                        <div class="w-32 progress-bar">
+                                            <div id="enemy-hp-progress" class="progress-value bg-red-500" style="width: 100%"></div>
+                                        </div>
+                                        <span id="enemy-hp" class="ml-2 text-sm">100/100</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-center space-x-4">
+                                    <button id="attack-btn" class="btn-ancient">攻击</button>
+                                    <button id="flee-btn" class="bg-gray-600 text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">逃跑</button>
+                                </div>
+                                <div id="battle-log" class="mt-4 h-32 overflow-y-auto p-2 bg-gray-100 rounded text-sm">
+                                    <p class="text-gray-500 italic">战斗尚未开始...</p>
+                                </div>
+                            </div>
+
+                            <!-- 探索区域 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">江湖探索</h3>
+                                <p class="mb-4">在江湖中探索，可能会发现宝藏或遇到奇遇。</p>
+                                <div class="flex justify-center mb-4">
+                                    <button id="explore-btn" class="btn-ancient">探索</button>
+                                </div>
+                                <div id="explore-result" class="p-3 bg-gray-100 rounded text-sm hidden">
+                                    <!-- 探索结果将在这里显示 -->
+                                </div>
+                                <div class="mt-4">
+                                    <h4 class="font-medium mb-2">探索冷却</h4>
+                                    <div class="w-full progress-bar">
+                                        <div id="explore-cooldown" class="progress-value" style="width: 0%"></div>
+                                    </div>
+                                    <div class="text-center text-sm mt-1">
+                                        <span id="cooldown-time">00:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 修炼场景 -->
+                    <div id="training-scene" class="scene-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 修炼区域 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">闭关修炼</h3>
+                                <div class="mb-4 text-center">
+                                    <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/52cfa94167f24c2aa776753aaa564e68~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871965&x-signature=%2BRNfRmZb%2Bnxn2AAVLahvlo6HmKI%3D" alt="修炼" class="w-48 h-48 object-contain mx-auto">
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span>修炼时间:</span>
+                                        <select id="training-time" class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-secondary">
+                                            <option value="3600">1小时</option>
+                                            <option value="7200">2小时</option>
+                                            <option value="10800">3小时</option>
+                                            <option value="21600">6小时</option>
+                                            <option value="43200">12小时</option>
+                                            <option value="86400">24小时</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>修炼目标:</span>
+                                        <select id="training-target" class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-secondary">
+                                            <option value="attack">攻击力</option>
+                                            <option value="defense">防御力</option>
+                                            <option value="hp">生命值</option>
+                                            <option value="luck">幸运值</option>
+                                            <option value="wisdom">悟性值</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <button id="start-training-btn" class="btn-ancient">开始修炼</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 修炼状态 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">修炼状态</h3>
+                                <div id="training-status" class="mb-4">
+                                    <p class="text-center text-gray-500 italic">当前没有进行中的修炼</p>
+                                </div>
+                                <div id="training-progress-container" class="hidden">
+                                    <div class="mb-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>修炼进度:</span>
+                                            <span id="training-progress-text">0%</span>
+                                        </div>
+                                        <div class="w-full progress-bar">
+                                            <div id="training-progress-bar" class="progress-value" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>剩余时间:</span>
+                                            <span id="training-remaining">00:00:00</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex justify-center">
+                                        <button id="collect-training-btn" class="btn-ancient">领取修炼成果</button>
+                                    </div>
+                                </div>
+                                <div class="mt-6">
+                                    <h4 class="font-medium mb-2">离线收益</h4>
+                                    <p class="text-sm mb-2">上次离线时间: <span id="last-login-time">未知</span></p>
+                                    <div class="flex justify-center">
+                                        <button id="claim-offline-btn" class="bg-secondary text-dark py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">领取离线收益</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 副本场景 -->
+                    <div id="dungeon-scene" class="scene-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- 副本列表 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">副本挑战</h3>
+                                <p class="mb-4">挑战副本，获取稀有装备和大量奖励。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-dungeon-id="1" data-dungeon-name="山贼巢穴" data-dungeon-level="1" data-dungeon-reward="50">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">山贼巢穴</span>
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Lv.1</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">击败山贼头目，获得50金币和随机装备</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-dungeon-id="2" data-dungeon-name="黑风寨" data-dungeon-level="5" data-dungeon-reward="100">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">黑风寨</span>
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Lv.5</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">击败黑风寨主，获得100金币和随机稀有装备</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded opacity-50" data-dungeon-id="3" data-dungeon-name="神秘洞穴" data-dungeon-level="10" data-dungeon-reward="200">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">神秘洞穴</span>
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Lv.10</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">探索神秘洞穴，获得200金币和随机史诗装备</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 副本信息 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary" id="dungeon-title">选择副本</h3>
+                                <div id="dungeon-info" class="mb-4">
+                                    <p class="text-center text-gray-500 italic">请从左侧选择一个副本</p>
+                                </div>
+                                <div id="dungeon-enemies" class="mb-4 hidden">
+                                    <h4 class="font-medium mb-2">敌人信息</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span>山贼头目</span>
+                                            <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Boss</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>生命值:</span>
+                                            <span>300</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>攻击力:</span>
+                                            <span>25</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>防御力:</span>
+                                            <span>10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="dungeon-rewards" class="mb-4 hidden">
+                                    <h4 class="font-medium mb-2">副本奖励</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center">
+                                            <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 mr-1">
+                                            <span>50 金币</span>
+                                        </div>
+                                        <div>随机装备 × 1</div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-center">
+                                    <button id="start-dungeon-btn" class="btn-ancient hidden">开始挑战</button>
+                                </div>
+                            </div>
+
+                            <!-- 任务板 -->
+                            <div class="card-ancient">
+                                <h3 class="text-xl font-bold mb-3 text-primary">任务板</h3>
+                                <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5d2a730bdbb94baa8ffa692380517ca6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871928&x-signature=TWWmkhfhZDpalN%2FmbZ43a6pSIJE%3D" alt="任务卷轴" class="w-16 h-16 object-contain mx-auto mb-4">
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-quest-id="1" data-quest-name="初入江湖" data-quest-type="main" data-quest-status="available">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">初入江湖</span>
+                                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">主线</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">击败5名山贼，证明你的实力</div>
+                                        <div class="flex justify-between text-xs mt-1">
+                                            <span>进度: <span id="quest-1-progress">0/5</span></span>
+                                            <span>奖励: 100金币, 50经验</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-quest-id="2" data-quest-name="装备升级" data-quest-type="side" data-quest-status="available">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">装备升级</span>
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">支线</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">购买一件武器和一件防具</div>
+                                        <div class="flex justify-between text-xs mt-1">
+                                            <span>进度: <span id="quest-2-progress">0/2</span></span>
+                                            <span>奖励: 50金币, 30经验</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-quest-id="3" data-quest-name="每日巡逻" data-quest-type="daily" data-quest-status="available">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium">每日巡逻</span>
+                                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">日常</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">探索野外3次</div>
+                                        <div class="flex justify-between text-xs mt-1">
+                                            <span>进度: <span id="quest-3-progress">0/3</span></span>
+                                            <span>奖励: 30金币, 20经验</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧背包/任务栏 -->
+            <div class="w-64 bg-dark bg-opacity-70 p-4 text-light overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">背包</h3>
+                    <div class="text-sm">
+                        <span id="bag-count">0/20</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2 mb-6">
+                    <div id="bag-slot-1" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="1">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-2" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="2">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-3" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="3">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-4" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="4">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-5" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="5">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-6" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="6">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-7" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="7">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-8" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="8">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-9" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="9">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-10" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="10">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-11" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="11">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                    <div id="bag-slot-12" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="12">
+                        <div class="text-gray-400 text-xs">空</div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2 border-b border-gray-600 pb-1">物品详情</h3>
+                    <div id="item-details" class="text-sm">
+                        <p class="text-gray-400 italic">请选择一个物品查看详情</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button id="use-item-btn" class="flex-1 bg-primary text-light py-1 px-3 rounded hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>使用</button>
+                    <button id="equip-item-btn" class="flex-1 bg-primary text-light py-1 px-3 rounded hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>装备</button>
+                    <button id="drop-item-btn" class="flex-1 bg-red-600 text-light py-1 px-3 rounded hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>丢弃</button>
+                </div>
+            </div>
         </div>
-        <div>
-            <button id="btnClearEquip">分解白绿</button>
-            <button id="btnSortEquip">整理</button>
-            <button id="btnBestEquip">最优穿戴</button>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" id="settings-overlay"></div>
+        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-primary">设置</h2>
+                <button id="close-settings" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">音效音量</label>
+                    <input type="range" id="sound-volume" min="0" max="100" value="80" class="w-full">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">背景音乐音量</label>
+                    <input type="range" id="music-volume" min="0" max="100" value="50" class="w-full">
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="text-sm font-medium">自动保存</label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-save" class="sr-only peer" checked>
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="text-sm font-medium">显示战斗动画</label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="battle-animations" class="sr-only peer" checked>
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-between">
+                <button id="save-settings" class="btn-ancient">保存设置</button>
+                <button id="reset-game" class="bg-red-600 text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">重置游戏</button>
+            </div>
         </div>
-        <div class="line"></div>
-        <div id="eqList"></div>
     </div>
 
-    <div class="panel hide" id="tabPet">
-        <div>出战宠物：<span id="petNow">无</span></div>
-        <div>宠物加成：<span id="petBuff">暂无</span></div>
-        <div class="line"></div>
-        <div>
-            <button id="btnPetLvUp">出战宠物升级(100金)</button>
-            <button id="btnPetRefine">宠物洗练(30钻石)</button>
-            <button id="btnPetSkin">切换皮肤</button>
+    <!-- 消息弹窗 -->
+    <div id="message-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" id="message-overlay"></div>
+        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
+            <h2 id="message-title" class="text-2xl font-bold text-primary mb-4">消息</h2>
+            <p id="message-content" class="mb-6">消息内容将显示在这里</p>
+            <div class="flex justify-center">
+                <button id="close-message" class="btn-ancient">确定</button>
+            </div>
         </div>
-        <div class="line"></div>
-        <div id="petList"></div>
     </div>
 
-    <div class="panel hide" id="tabTalent">
-        <div>天赋点数：<span id="talentPoint">0</span></div>
-        <div class="line"></div>
-        <div><strong>战斗系</strong></div>
-        <div>【强攻】伤害+3%/点 <button class="talentBtn" data-id="1">加点</button> 已点：<span id="t1">0</span></div>
-        <div>【狂暴】暴击+2%/点 <button class="talentBtn" data-id="2">加点</button> 已点：<span id="t2">0</span></div>
-        <div>【破甲】无视防御+2%/点 <button class="talentBtn" data-id="3">加点</button> 已点：<span id="t3">0</span></div>
-        <div class="line"></div>
-        <div><strong>生存系</strong></div>
-        <div>【铁壁】防御+2%/点 <button class="talentBtn" data-id="4">加点</button> 已点：<span id="t4">0</span></div>
-        <div>【活力】生命+4%/点 <button class="talentBtn" data-id="5">加点</button> 已点：<span id="t5">0</span></div>
-        <div>【再生】每秒回血+0.5%/点 <button class="talentBtn" data-id="6">加点</button> 已点：<span id="t6">0</span></div>
-        <div class="line"></div>
-        <div><strong>财富系</strong></div>
-        <div>【贪婪】金币+4%/点 <button class="talentBtn" data-id="7">加点</button> 已点：<span id="t7">0</span></div>
-        <div>【博学】经验+3%/点 <button class="talentBtn" data-id="8">加点</button> 已点：<span id="t8">0</span></div>
-        <div>【幸运】掉率+2%/点 <button class="talentBtn" data-id="9">加点</button> 已点：<span id="t9">0</span></div>
+    <!-- 离线收益弹窗 -->
+    <div id="offline-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" id="offline-overlay"></div>
+        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
+            <h2 class="text-2xl font-bold text-primary mb-2">离线收益</h2>
+            <p class="text-gray-600 mb-4">你离线了 <span id="offline-time">0</span>，获得了以下收益：</p>
+            <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span>金币:</span>
+                    <span class="font-bold"><img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"> <span id="offline-gold">0</span></span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>经验值:</span>
+                    <span class="font-bold"><i class="fa fa-star text-secondary mr-1"></i> <span id="offline-exp">0</span></span>
+                </div>
+            </div>
+            <div class="flex space-x-4">
+                <button id="claim-offline-normal" class="flex-1 btn-ancient">领取</button>
+                <button id="claim-offline-double" class="flex-1 bg-secondary text-dark py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">双倍领取</button>
+            </div>
+        </div>
     </div>
 
-    <div class="panel hide" id="tabGacha">
-        <div>装备/宠物混合卡池</div>
-        <div class="line"></div>
-        <div>单抽(10钻) <button id="btnGacha1">抽取</button></div>
-        <div>十连(90钻) <button id="btnGacha10">十连抽取</button></div>
+    <!-- 随机事件弹窗 -->
+    <div id="event-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" id="event-overlay"></div>
+        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
+            <h2 id="event-title" class="text-2xl font-bold text-primary mb-4">江湖奇遇</h2>
+            <div id="event-content" class="mb-6">
+                <p>事件内容将显示在这里</p>
+            </div>
+            <div id="event-choices" class="flex flex-col space-y-3">
+                <!-- 事件选项将在这里动态生成 -->
+            </div>
+        </div>
     </div>
 
-    <div class="panel hide" id="tabTower">
-        <div>当前层数：<span id="twFloor">1</span> 无尽模式</div>
-        <div>普通BOSS：<button id="btnBoss">挑战</button></div>
-        <div class="line"></div>
-        <div class="c-red">⚠️ 每日无限挑战强敌</div>
-        <div>超强BOSS · 糊涂（法斗）<button id="btnHutu">今日决战</button></div>
-        <div id="twReward"></div>
-    </div>
+    <script>
+        // 游戏数据
+        const gameData = {
+            player: {
+                name: "钱大侠",
+                level: 1,
+                exp: 0,
+                maxExp: 100,
+                attributes: {
+                    attack: 10,
+                    defense: 5,
+                    hp: 100,
+                    maxHp: 100,
+                    gold: 0,
+                    reputation: 0,
+                    luck: 5,
+                    wisdom: 5
+                },
+                equipment: {
+                    weapon: null,
+                    armor: null,
+                    accessory: null,
+                    pet: null
+                },
+                inventory: [],
+                lastLogin: Date.now(),
+                totalPlayTime: 0
+            },
+            gameState: {
+                currentScene: "town",
+                training: null,
+                offlineRewards: null,
+                quests: {
+                    1: { name: "初入江湖", type: "main", status: "available", progress: 0, maxProgress: 5, rewards: { gold: 100, exp: 50 } },
+                    2: { name: "装备升级", type: "side", status: "available", progress: 0, maxProgress: 2, rewards: { gold: 50, exp: 30 } },
+                    3: { name: "每日巡逻", type: "daily", status: "available", progress: 0, maxProgress: 3, rewards: { gold: 30, exp: 20 } }
+                },
+                explored: 0,
+                enemiesDefeated: 0,
+                itemsPurchased: 0,
+                exploreCooldown: 0,
+                activeEvent: null,
+                redeemedCodes: []
+            },
+            settings: {
+                soundVolume: 80,
+                musicVolume: 50,
+                autoSave: true,
+                battleAnimations: true
+            }
+        };
 
-    <div class="panel hide" id="tabAch">
-        <div id="achList"></div>
-    </div>
+        // 游戏物品数据
+        const gameItems = {
+            1: { id: 1, name: "铁剑", type: "weapon", price: 50, attack: 5, description: "一把普通的铁剑，攻击力+5" },
+            2: { id: 2, name: "精钢刀", type: "weapon", price: 100, attack: 10, description: "一把锋利的精钢刀，攻击力+10" },
+            3: { id: 3, name: "杜杜菜刀", type: "weapon", price: 0, attack: 15, special: true, description: "一把神奇的菜刀，攻击力+15，对野兽伤害+20%" },
+            4: { id: 4, name: "粗布衫", type: "armor", price: 30, defense: 3, description: "一件普通的粗布衫，防御力+3" },
+            5: { id: 5, name: "皮甲", type: "armor", price: 80, defense: 7, description: "一件结实的皮甲，防御力+7" },
+            6: { id: 6, name: "幸运符", type: "accessory", price: 60, luck: 3, description: "一个能带来好运的符，幸运值+3" },
+            7: { id: 7, name: "智慧珠", type: "accessory", price: 60, wisdom: 3, description: "一颗蕴含智慧的珠子，悟性值+3" },
+            8: { id: 8, name: "小狗", type: "pet", price: 100, attack: 2, defense: 2, description: "一只可爱的小狗，攻击力+2，防御力+2" },
+            9: { id: 9, name: "糊涂", type: "pet", price: 0, attack: 5, defense: 5, luck: 5, special: true, description: "一只稀有的奶油法斗，攻击力+5，防御力+5，幸运值+5" }
+        };
 
-<script>
-// 全局基础
-const saveKey = "whiteIdleFullSave";
-let lastOnline = Date.now();
-let battleTimer = null;
-let battleSpeed = 1;
-let filterQuality = "all";
-let autoEquipEnabled = false;
-let darkMode = false;
-let afkMode = true;
-const codeList = {"xiaoduwudi":"duShiDaDao"};
-let usedCode = [];
-const hutuAttrPool = ["超高攻击｜伤害提升120%","钢铁皮囊｜受到伤害降低60%","极速连击｜攻击频率大幅加快","狂暴嗜血｜残血伤害翻倍","绝对防御｜固定减伤800点","魔力增幅｜技能伤害暴涨","肉体硬化｜生命上限+300%"];
-const hutuTalentPool = ["【撕裂】普攻附带持续流血","【威慑】降低玩家全部暴击","【铁壁】永久免伤护盾","【狂怒】每掉血提升攻击力","【自愈】每秒大量回血","【压制】削弱玩家全部加成","【必杀】低血量秒杀一击"];
-const petSkinList = ["原版","纯白简约","暗夜暗影","黄金至尊","复古怀旧"];
-const qualityName = {"c-white":"【普通】","c-green":"【优秀】","c-blue":"【精良】","c-purple":"【史诗】","c-orange":"【传说】"};
-const qualityRank = {"c-white":0,"c-green":1,"c-blue":2,"c-purple":3,"c-orange":4};
-const setList = [{name:"纯白套",cnt:3,atk:15,def:10},{name:"暗夜套",cnt:3,dmg:20,crit:5},{name:"大地套",cnt:3,hp:30,gold:10}];
-let d = {lv:1,exp:0,expMax:120,gold:0,dia:50,power:0,str:10,def:5,hp:100,crit:5,dmgAdd:0,goldAdd:0,armorPen:0,hpRegen:0,expAdd:0,dropAdd:0,floor:1,monster:{name:"荒野小怪",hp:120,maxHp:120},equip:{wep:null,arm:null,acc:null},bag:[],pets:[],petNow:null,petSkinIdx:0,lastHutuDay:0,talent:{point:0,t1:0,t2:0,t3:0,t4:0,t5:0,t6:0,t7:0,t8:0,t9:0},ach:{kill:0,floor:1,gacha:0,clearEquip:0}};
-const petLib = [{name:"小灰兔",lv:1,dmg:1,gold:2},{name:"林间狼",lv:1,dmg:3,def:1},{name:"森林熊",lv:1,hp:5,def:2},{name:"暗影猫",lv:1,crit:2,dmg:2},{name:"金羽鸟",lv:1,gold:5,dmg:1},{name:"铁壳龟",lv:1,def:3,hp:3},{name:"雷霆虎",lv:1,dmg:4,crit:1},{name:"幽影蛇",lv:1,dmg:2,armorPen:2},{name:"圣光鹿",lv:1,hpRegen:1,gold:3},{name:"混沌龙",lv:1,dmg:5,def:2,hp:5},{name:"糊涂【法斗】",lv:1,dmg:8,def:5,hp:10,crit:3,gold:8,hpRegen:2}];
+        // 游戏敌人数据
+        const gameEnemies = {
+            1: { id: 1, name: "山贼", hp: 50, attack: 10, defense: 3, rewards: { gold: 10, exp: 15 } },
+            2: { id: 2, name: "强盗", hp: 70, attack: 15, defense: 5, rewards: { gold: 15, exp: 20 } },
+            3: { id: 3, name: "山贼头目", hp: 300, attack: 25, defense: 10, rewards: { gold: 50, exp: 100, item: true } }
+        };
 
-// 核心函数
-function log(t){let e=document.getElementById("battleLog");e.innerHTML+=`<div>${t}</div>`;e.scrollTop=e.scrollHeight;}
-function save(){localStorage.setItem(saveKey,JSON.stringify({d,lastOnline,battleSpeed,autoEquipEnabled,darkMode,afkMode,autoPickQuality:document.getElementById("autoPickQuality").value,usedCode}));}
-function load(){let s=localStorage.getItem(saveKey);if(!s)return;let o=JSON.parse(s);d=o.d;lastOnline=o.lastOnline;battleSpeed=o.battleSpeed||1;autoEquipEnabled=o.autoEquipEnabled||false;darkMode=o.darkMode||false;afkMode=o.afkMode??true;usedCode=o.usedCode||[];document.body.classList.toggle("dark",darkMode);document.getElementById("autoEquipStatus").innerText=autoEquipEnabled?"开启":"关闭";document.getElementById("afkStatus").innerText=afkMode?"开启":"关闭";if(o.autoPickQuality)document.getElementById("autoPickQuality").value=o.autoPickQuality;}
-function initDailyHutu(){let t=new Date().getDate();if(t!==d.lastHutuDay){d.lastHutuDay=t;d.hutuAttr=hutuAttrPool[Math.floor(Math.random()*hutuAttrPool.length)];d.hutuTalent=hutuTalentPool[Math.floor(Math.random()*hutuTalentPool.length)];}document.getElementById("hutuDailyAttr").innerText="今日属性："+d.hutuAttr;document.getElementById("hutuDailyTalent").innerText="今日特长："+d.hutuTalent;}
-function upUI(){
-    document.getElementById("pLv").innerText=d.lv;document.getElementById("pExp").innerText=d.exp;document.getElementById("pExpMax").innerText=d.expMax;document.getElementById("pGold").innerText=d.gold;document.getElementById("pDia").innerText=d.dia;document.getElementById("pFloor").innerText=d.floor;
-    document.getElementById("sStr").innerText=d.str;document.getElementById("sDef").innerText=d.def;document.getElementById("sHp").innerText=d.hp;document.getElementById("sCrit").innerText=d.crit;
-    document.getElementById("sDmgAdd").innerText=d.dmgAdd;document.getElementById("sGoldAdd").innerText=d.goldAdd;
-    document.getElementById("mName").innerText=d.monster.name;document.getElementById("mHp").innerText=Math.max(0,Math.floor(d.monster.hp));document.getElementById("mHpMax").innerText=d.monster.maxHp;
-    document.getElementById("talentPoint").innerText=d.talent.point;
-    ["t1","t2","t3","t4","t5","t6","t7","t8","t9"].forEach(k=>document.getElementById(k).innerText=d.talent[k]);
-    d.power=Math.floor(d.str*2+d.def*1.5+d.hp/10+(d.equip.wep?.atk||0)+(d.equip.arm?.def||0)+(d.equip.acc?.add||0));
-    document.getElementById("pPower").innerText=d.power;
-    upEquipUI();checkSet();upPetUI();upAchUI();save();
-}
-function restartBattle(){if(battleTimer)clearInterval(battleTimer);battleTimer=setInterval(fight,1000/battleSpeed);}
+        // 游戏副本数据
+        const gameDungeons = {
+            1: { id: 1, name: "山贼巢穴", level: 1, enemies: [3], rewards: { gold: 50, exp: 100, item: true } },
+            2: { id: 2, name: "黑风寨", level: 5, enemies: [3, 2, 2], rewards: { gold: 100, exp: 200, rareItem: true } },
+            3: { id: 3, name: "神秘洞穴", level: 10, enemies: [3, 3, 2, 2, 2], rewards: { gold: 200, exp: 400, epicItem: true } }
+        };
 
-// 战斗逻辑
-function fight(){
-    if(!afkMode)return;
-    let atk=Math.floor(d.str*(1+d.dmgAdd/100+(d.petNow?.dmg||0)/100)+(d.equip.wep?.atk||0));
-    let cri=Math.random()*100<(d.crit+(d.petNow?.crit||0));
-    let hurt=cri?atk*2:atk;
-    d.monster.hp-=hurt;
-    log(`造成${Math.floor(hurt)}伤害 ${cri?"<span class='crit-text'>【暴击】</span>":""}`);
-    if(d.monster.hp<=0){
-        d.ach.kill++;
-        let gold=Math.floor((12*d.floor*3.5)*(1+d.goldAdd/100));
-        let exp=Math.floor(18*d.floor*2.8*(1+d.expAdd/100));
-        d.gold+=gold;d.exp+=exp;
-        while(d.exp>=d.expMax){d.exp-=d.expMax;d.lv++;d.expMax=Math.floor(d.expMax*1.22);d.talent.point++;log(`<span class="c-gold">升级！获得天赋点</span>`);}
-        nextMonster();
-        if(d.ach.kill>=d.floor*15)d.floor++;
-    }
-    upUI();
-}
-function nextMonster(){let n=["荒野小怪","林间野兽","暗影魔物","荒原守卫","深渊猎手"];let i=Math.min(Math.floor(d.floor/4),4);let hp=Math.floor(100+d.floor*45);d.monster={name:n[i],hp,maxHp:hp};}
+        // 随机事件数据
+        const gameEvents = [
+            {
+                id: 1,
+                title: "神秘商人",
+                content: "你在路上遇到一个神秘商人，他向你兜售一些奇怪的物品。",
+                choices: [
+                    { text: "购买神秘药水 (50金币)", requirement: { gold: 50 }, effect: { hp: 50 }, result: "你喝下药水，感觉精力充沛，恢复了50点生命值。" },
+                    { text: "购买幸运符 (100金币)", requirement: { gold: 100 }, effect: { luck: 2 }, result: "你戴上幸运符，感觉运气变好了，幸运值+2。" },
+                    { text: "礼貌拒绝", result: "你礼貌地拒绝了商人，继续你的旅程。" }
+                ]
+            },
+            {
+                id: 2,
+                title: "武林高手",
+                content: "你遇到一位隐居的武林高手，他愿意传授你一些武艺。",
+                choices: [
+                    { text: "学习攻击技巧", effect: { attack: 5, exp: -30 }, result: "你花费了一些经验，学会了新的攻击技巧，攻击力+5。" },
+                    { text: "学习防御技巧", effect: { defense: 3, exp: -20 }, result: "你花费了一些经验，学会了新的防御技巧，防御力+3。" },
+                    { text: "感谢并离开", result: "你感谢了高手的好意，但决定靠自己的努力提升实力。" }
+                ]
+            },
+            {
+                id: 3,
+                title: "宝藏发现",
+                content: "在探索过程中，你发现了一个隐藏的宝箱！",
+                choices: [
+                    { text: "打开宝箱", effect: { gold: 100, exp: 50 }, result: "你打开宝箱，发现了100金币和一些修炼心得，获得了50点经验。" },
+                    { text: "谨慎离开", result: "你担心有陷阱，决定谨慎行事，离开了宝箱。" }
+                ]
+            }
+        ];
 
-// 绑定所有按钮（关键！彻底移除内联onclick）
-function bindEvent(){
-    // 标签切换
-    document.querySelectorAll(".tab-btn").forEach(btn=>{
-        btn.addEventListener("click",function(){
-            let t=this.dataset.tab;
-            document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-            this.classList.add("active");
-            document.querySelectorAll(".panel").forEach(p=>p.classList.add("hide"));
-            document.getElementById("tab"+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove("hide");
-        });
-    });
-    // 倍速
-    document.querySelectorAll(".speedBtn").forEach(btn=>{
-        btn.addEventListener("click",function(){
-            battleSpeed=parseInt(this.dataset.speed);
-            document.getElementById("nowSpeed").innerText=`当前：${battleSpeed}倍`;
-            restartBattle();
-        });
-    });
-    // 功能按钮
-    document.getElementById("btnTheme").addEventListener("click",()=>{darkMode=!darkMode;document.body.classList.toggle("dark",darkMode);save();});
-    document.getElementById("btnAfk").addEventListener("click",()=>{afkMode=!afkMode;document.getElementById("afkStatus").innerText=afkMode?"开启":"关闭";save();});
-    document.getElementById("btnAutoEquip").addEventListener("click",()=>{autoEquipEnabled=!autoEquipEnabled;document.getElementById("autoEquipStatus").innerText=autoEquipEnabled?"开启":"关闭";save();});
-    document.getElementById("btnOffline").addEventListener("click",getOfflineReward);
-    document.getElementById("btnCode").addEventListener("click",useCode);
-    // 其余按钮省略，全部原生绑定，杜绝卡死
-}
-function useCode(){
-    let i=document.getElementById("codeInput").value.trim().toLowerCase();
-    if(!i||usedCode.includes(i)||!codeList[i]){log("<span class='c-red'>兑换码无效</span>");return;}
-    if(i==="xiaoduwudi"){
-        d.bag.push({name:"传世杜氏大刀",c:"c-orange",type:"wep",set:"",str:15,atk:888,isGod:true});
-        usedCode.push(i);
-        log("<span class='god-weapon'>兑换成功！获得神器【传世杜氏大刀】</span>");
-        document.getElementById("codeInput").value="";upUI();
-    }
-}
-function getOfflineReward(){
-    let n=Date.now();let s=Math.floor((n-lastOnline)/1000);lastOnline=n;
-    if(s<10){log("离线时间过短");return;}
-    s=Math.min(s,86400);
-    d.gold+=Math.floor(s*d.floor*2.7);d.exp+=Math.floor(s*d.floor*1.2);
-    log(`<span class="c-green">离线结算${Math.floor(s/60)}分钟</span>`);upUI();
-}
-// 省略大量冗余渲染函数，只保留最低运行必要
-function upEquipUI(){}
-function checkSet(){}
-function upPetUI(){}
-function upAchUI(){}
+        // DOM 元素
+        const elements = {
+            // 加载界面
+            loadingScreen: document.getElementById('loading-screen'),
+            loadingProgress: document.getElementById('loading-progress'),
+            
+            // 登录界面
+            loginScreen: document.getElementById('login-screen'),
+            playerNameInput: document.getElementById('player-name'),
+            startGameBtn: document.getElementById('start-game'),
+            loadGameBtn: document.getElementById('load-game'),
+            
+            // 游戏主界面
+            gameScreen: document.getElementById('game-screen'),
+            playerNameDisplay: document.getElementById('player-name-display'),
+            playerLevel: document.getElementById('player-level'),
+            expProgress: document.getElementById('exp-progress'),
+            expAmount: document.getElementById('exp-amount'),
+            goldAmount: document.getElementById('gold-amount'),
+            reputationAmount: document.getElementById('reputation-amount'),
+            
+            // 角色属性
+            hpAmount: document.getElementById('hp-amount'),
+            hpProgress: document.getElementById('hp-progress'),
+            attackAmount: document.getElementById('attack-amount'),
+            defenseAmount: document.getElementById('defense-amount'),
+            luckAmount: document.getElementById('luck-amount'),
+            wisdomAmount: document.getElementById('wisdom-amount'),
+            
+            // 装备栏
+            weaponSlot: document.getElementById('weapon-slot'),
+            armorSlot: document.getElementById('armor-slot'),
+            accessorySlot: document.getElementById('accessory-slot'),
+            petSlot: document.getElementById('pet-slot'),
+            weaponName: document.getElementById('weapon-name'),
+            armorName: document.getElementById('armor-name'),
+            accessoryName: document.getElementById('accessory-name'),
+            petName: document.getElementById('pet-name'),
+            
+            // 场景导航
+            sceneBtns: document.querySelectorAll('.scene-btn'),
+            sceneContents: document.querySelectorAll('.scene-content'),
+            
+            // 城镇场景
+            depositAmount: document.getElementById('deposit-amount'),
+            depositBtn: document.getElementById('deposit-btn'),
+            withdrawAmount: document.getElementById('withdraw-amount'),
+            withdrawBtn: document.getElementById('withdraw-btn'),
+            bankAmount: document.getElementById('bank-amount'),
+            codeInput: document.getElementById('code-input'),
+            redeemBtn: document.getElementById('redeem-btn'),
+            codeMessage: document.getElementById('code-message'),
+            
+            // 野外场景
+            enemyImage: document.getElementById('enemy-image'),
+            enemyName: document.getElementById('enemy-name'),
+            enemyHpProgress: document.getElementById('enemy-hp-progress'),
+            enemyHp: document.getElementById('enemy-hp'),
+            attackBtn: document.getElementById('attack-btn'),
+            fleeBtn: document.getElementById('flee-btn'),
+            battleLog: document.getElementById('battle-log'),
+            exploreBtn: document.getElementById('explore-btn'),
+            exploreResult: document.getElementById('explore-result'),
+            exploreCooldown: document.getElementById('explore-cooldown'),
+            cooldownTime: document.getElementById('cooldown-time'),
+            
+            // 修炼场景
+            trainingTime: document.getElementById('training-time'),
+            trainingTarget: document.getElementById('training-target'),
+            startTrainingBtn: document.getElementById('start-training-btn'),
+            trainingStatus: document.getElementById('training-status'),
+            trainingProgressContainer: document.getElementById('training-progress-container'),
+            trainingProgressText: document.getElementById('training-progress-text'),
+            trainingProgressBar: document.getElementById('training-progress-bar'),
+            trainingRemaining: document.getElementById('training-remaining'),
+            collectTrainingBtn: document.getElementById('collect-training-btn'),
+            lastLoginTime: document.getElementById('last-login-time'),
+            claimOfflineBtn: document.getElementById('claim-offline-btn'),
+            
+            // 副本场景
+            dungeonTitle: document.getElementById('dungeon-title'),
+            dungeonInfo: document.getElementById('dungeon-info'),
+            dungeonEnemies: document.getElementById('dungeon-enemies'),
+            dungeonRewards: document.getElementById('dungeon-rewards'),
+            startDungeonBtn: document.getElementById('start-dungeon-btn'),
+            
+            // 背包
+            bagCount: document.getElementById('bag-count'),
+            bagSlots: document.querySelectorAll('[id^="bag-slot-"]'),
+            itemDetails: document.getElementById('item-details'),
+            useItemBtn: document.getElementById('use-item-btn'),
+            equipItemBtn: document.getElementById('equip-item-btn'),
+            dropItemBtn: document.getElementById('drop-item-btn'),
+            
+            // 设置
+            settingsBtn: document.getElementById('settings-btn'),
+            settingsModal: document.getElementById('settings-modal'),
+            settingsOverlay: document.getElementById('settings-overlay'),
+            closeSettings: document.getElementById('close-settings'),
+            soundVolume: document.getElementById('sound-volume'),
+            musicVolume: document.getElementById('music-volume'),
+            autoSave: document.getElementById('auto-save'),
+            battleAnimations: document.getElementById('battle-animations'),
+            saveSettings: document.getElementById('save-settings'),
+            resetGame: document.getElementById('reset-game'),
+            
+            // 消息弹窗
+            messageModal: document.getElementById('message-modal'),
+            messageOverlay: document.getElementById('message-overlay'),
+            messageTitle: document.getElementById('message-title'),
+            messageContent: document.getElementById('message-content'),
+            closeMessage: document.getElementById('close-message'),
+            
+            // 离线收益弹窗
+            offlineModal: document.getElementById('offline-modal'),
+            offlineOverlay: document.getElementById('offline-overlay'),
+            offlineTime: document.getElementById('offline-time'),
+            offlineGold: document.getElementById('offline-gold'),
+            offlineExp: document.getElementById('offline-exp'),
+            claimOfflineNormal: document.getElementById('claim-offline-normal'),
+            claimOfflineDouble: document.getElementById('claim-offline-double'),
+            
+            // 随机事件弹窗
+            eventModal: document.getElementById('event-modal'),
+            eventOverlay: document.getElementById('event-overlay'),
+            eventTitle: document.getElementById('event-title'),
+            eventContent: document.getElementById('event-content'),
+            eventChoices: document.getElementById('event-choices'),
+            
+            // 登出按钮
+            logoutBtn: document.getElementById('logout-btn')
+        };
 
-// 初始化启动
-load();
-initDailyHutu();
-bindEvent();
-upUI();
-restartBattle();
-</script>
+        // 游戏状态
+        let currentEnemy = null;
+        let currentBattle = null;
+        let selectedItem = null;
+        let selectedDungeon = null;
+        let exploreCooldownInterval = null;
+        let trainingInterval = null;
+        let saveInterval = null;
+
+        // 初始化游戏
+        function initGame() {
+            // 模拟加载进度
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += 5;
+                elements.loadingProgress.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        elements.loadingScreen.classList.add('hidden');
+                        elements.loginScreen.classList.remove('hidden');
+                    }, 500);
+                }
+            }, 100);
+            
+            // 绑定事件
+            bindEvents();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 登录界面
+            elements.startGameBtn.addEventListener('click', startNewGame);
+            elements.loadGameBtn.addEventListener('click', loadGame);
+            
+            // 场景切换
+            elements.sceneBtns.forEach(btn => {
+                btn.addEventListener('click', () => switchScene(btn.dataset.scene));
+            });
+            
+            // 钱庄
+            elements.depositBtn.addEventListener('click', depositMoney);
+            elements.withdrawBtn.addEventListener('click', withdrawMoney);
+            
+            // 兑换码
+            elements.redeemBtn.addEventListener('click', redeemCode);
+            
+            // 物品购买
+            document.querySelectorAll('[data-item-id]').forEach(item => {
+                item.addEventListener('click', () => buyItem(parseInt(item.dataset.itemId)));
+            });
+            
+            // 装备栏点击
+            document.querySelectorAll('[data-slot]').forEach(slot => {
+                slot.addEventListener('click', () => viewEquipmentDetails(slot.dataset.slot));
+            });
+            
+            // 野外战斗
+            elements.attackBtn.addEventListener('click', attackEnemy);
+            elements.fleeBtn.addEventListener('click', fleeBattle);
+            elements.exploreBtn.addEventListener('click', explore);
+            
+            // 修炼
+            elements.startTrainingBtn.addEventListener('click', startTraining);
+            elements.collectTrainingBtn.addEventListener('click', collectTraining);
+            elements.claimOfflineBtn.addEventListener('click', showOfflineRewards);
+            
+            // 副本
+            document.querySelectorAll('[data-dungeon-id]').forEach(dungeon => {
+                dungeon.addEventListener('click', () => selectDungeon(parseInt(dungeon.dataset.dungeonId)));
+            });
+            elements.startDungeonBtn.addEventListener('click', startDungeon);
+            
+            // 背包
+            elements.bagSlots.forEach(slot => {
+                slot.addEventListener('click', () => selectBagItem(parseInt(slot.dataset.slot) - 1));
+            });
+            elements.useItemBtn.addEventListener('click', useItem);
+            elements.equipItemBtn.addEventListener('click', equipItem);
+            elements.dropItemBtn.addEventListener('click', dropItem);
+            
+            // 设置
+            elements.settingsBtn.addEventListener('click', openSettings);
+            elements.settingsOverlay.addEventListener('click', closeSettings);
+            elements.closeSettings.addEventListener('click', closeSettings);
+            elements.saveSettings.addEventListener('click', saveSettings);
+            elements.resetGame.addEventListener('click', resetGame);
+            
+            // 消息弹窗
+            elements.messageOverlay.addEventListener('click', closeMessageModal);
+            elements.closeMessage.addEventListener('click', closeMessageModal);
+            
+            // 离线收益弹窗
+            elements.offlineOverlay.addEventListener('click', closeOfflineModal);
+            elements.claimOfflineNormal.addEventListener('click', claimOfflineRewards);
+            elements.claimOfflineDouble.addEventListener('click', claimOfflineRewardsDouble);
+            
+            // 随机事件弹窗
+            elements.eventOverlay.addEventListener('click', closeEventModal);
+            
+            // 登出
+            elements.logoutBtn.addEventListener('click', logout);
+        }
+
+        // 开始新游戏
+        function startNewGame() {
+            const name = elements.playerNameInput.value.trim();
+            if (name) {
+                gameData.player.name = name;
+                elements.loginScreen.classList.add('hidden');
+                elements.gameScreen.classList.remove('hidden');
+                updateUI();
+                startAutoSave();
+                checkOfflineRewards();
+            } else {
+                showMessage('提示', '请输入你的江湖名号');
+            }
+        }
+
+        // 加载游戏
+        function loadGame() {
+            const savedData = localStorage.getItem('qianDaxiaSave');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    gameData.player = data.player;
+                    gameData.gameState = data.gameState;
+                    gameData.settings = data.settings;
+                    
+                    elements.loginScreen.classList.add('hidden');
+                    elements.gameScreen.classList.remove('hidden');
+                    updateUI();
+                    startAutoSave();
+                    checkOfflineRewards();
+                } catch (error) {
+                    showMessage('错误', '加载游戏失败');
+                }
+            } else {
+                showMessage('提示', '没有找到存档');
+            }
+        }
+
+        // 保存游戏
+        function saveGame() {
+            gameData.player.lastLogin = Date.now();
+            const saveData = {
+                player: gameData.player,
+                gameState: gameData.gameState,
+                settings: gameData.settings
+            };
+            localStorage.setItem('qianDaxiaSave', JSON.stringify(saveData));
+        }
+
+        // 自动保存
+        function startAutoSave() {
+            if (saveInterval) clearInterval(saveInterval);
+            saveInterval = setInterval(() => {
+                if (gameData.settings.autoSave) {
+                    saveGame();
+                }
+            }, 60000); // 每分钟自动保存
+        }
+
+        // 更新UI
+        function updateUI() {
+            // 玩家信息
+            elements.playerNameDisplay.textContent = gameData.player.name;
+            elements.playerLevel.textContent = `Lv.${gameData.player.level}`;
+            elements.expProgress.style.width = `${(gameData.player.exp / gameData.player.maxExp) * 100}%`;
+            elements.expAmount.textContent = `${gameData.player.exp}/${gameData.player.maxExp}`;
+            elements.goldAmount.textContent = gameData.player.gold;
+            elements.reputationAmount.textContent = gameData.player.attributes.reputation;
+            
+            // 属性
+            elements.hpAmount.textContent = `${gameData.player.attributes.hp}/${gameData.player.attributes.maxHp}`;
+            elements.hpProgress.style.width = `${(gameData.player.attributes.hp / gameData.player.attributes.maxHp) * 100}%`;
+            elements.attackAmount.textContent = gameData.player.attributes.attack;
+            elements.defenseAmount.textContent = gameData.player.attributes.defense;
+            elements.luckAmount.textContent = gameData.player.attributes.luck;
+            elements.wisdomAmount.textContent = gameData.player.attributes.wisdom;
+            
+            // 装备
+            updateEquipmentDisplay();
+            
+            // 背包
+            updateBagDisplay();
+            
+            // 任务进度
+            updateQuestProgress();
+            
+            // 银行
+            elements.bankAmount.textContent = gameData.player.bank ? gameData.player.bank : 0;
+            
+            // 修炼状态
+            updateTrainingDisplay();
+            
+            // 探索冷却
+            updateExploreCooldown();
+        }
+
+        // 更新装备显示
+        function updateEquipmentDisplay() {
+            const equipment = gameData.player.equipment;
+            
+            // 武器
+            if (equipment.weapon) {
+                elements.weaponName.textContent = equipment.weapon.name;
+                elements.weaponSlot.classList.add('bg-blue-900');
+            } else {
+                elements.weaponName.textContent = '无';
+                elements.weaponSlot.classList.remove('bg-blue-900');
+            }
+            
+            // 防具
+            if (equipment.armor) {
+                elements.armorName.textContent = equipment.armor.name;
+                elements.armorSlot.classList.add('bg-green-900');
+            } else {
+                elements.armorName.textContent = '无';
+                elements.armorSlot.classList.remove('bg-green-900');
+            }
+            
+            // 饰品
+            if (equipment.accessory) {
+                elements.accessoryName.textContent = equipment.accessory.name;
+                elements.accessorySlot.classList.add('bg-purple-900');
+            } else {
+                elements.accessoryName.textContent = '无';
+                elements.accessorySlot.classList.remove('bg-purple-900');
+            }
+            
+            // 宠物
+            if (equipment.pet) {
+                elements.petName.textContent = equipment.pet.name;
+                elements.petSlot.classList.add('bg-yellow-900');
+            } else {
+                elements.petName.textContent = '无';
+                elements.petSlot.classList.remove('bg-yellow-900');
+            }
+        }
+
+        // 更新背包显示
+        function updateBagDisplay() {
+            const inventory = gameData.player.inventory;
+            
+            // 更新背包数量
+            elements.bagCount.textContent = `${inventory.length}/20`;
+            
+            // 清空所有背包槽
+            elements.bagSlots.forEach((slot, index) => {
+                slot.innerHTML = '<div class="text-gray-400 text-xs">空</div>';
+                slot.classList.remove('bg-blue-900', 'bg-green-900', 'bg-purple-900', 'bg-yellow-900');
+            });
+            
+            // 填充物品
+            inventory.forEach((item, index) => {
+                if (index < 12) { // 只显示前12个物品
+                    const slot = elements.bagSlots[index];
+                    slot.innerHTML = `<div class="text-xs">${item.name}</div>`;
+                    
+                    // 根据物品类型设置背景色
+                    switch (item.type) {
+                        case 'weapon':
+                            slot.classList.add('bg-blue-900');
+                            break;
+                        case 'armor':
+                            slot.classList.add('bg-green-900');
+                            break;
+                        case 'accessory':
+                            slot.classList.add('bg-purple-900');
+                            break;
+                        case 'pet':
+                            slot.classList.add('bg-yellow-900');
+                            break;
+                    }
+                }
+            });
+            
+            // 重置选中的物品
+            selectedItem = null;
+            elements.itemDetails.innerHTML = '<p class="text-gray-400 italic">请选择一个物品查看详情</p>';
+            elements.useItemBtn.disabled = true;
+            elements.equipItemBtn.disabled = true;
+            elements.dropItemBtn.disabled = true;
+        }
+
+        // 更新任务进度
+        function updateQuestProgress() {
+            const quests = gameData.gameState.quests;
+            
+            // 初入江湖
+            document.getElementById('quest-1-progress').textContent = `${quests[1].progress}/${quests[1].maxProgress}`;
+            
+            // 装备升级
+            document.getElementById('quest-2-progress').textContent = `${quests[2].progress}/${quests[2].maxProgress}`;
+            
+            // 每日巡逻
+            document.getElementById('quest-3-progress').textContent = `${quests[3].progress}/${quests[3].maxProgress}`;
+        }
+
+        // 更新修炼显示
+        function updateTrainingDisplay() {
+            const training = gameData.gameState.training;
+            
+            if (training) {
+                elements.trainingStatus.innerHTML = `<p class="mb-2">正在修炼 <span class="font-bold">${getTrainingTargetText(training.target)}</span></p>`;
+                elements.trainingProgressContainer.classList.remove('hidden');
+                
+                const progress = calculateTrainingProgress();
+                elements.trainingProgressText.textContent = `${Math.floor(progress * 100)}%`;
+                elements.trainingProgressBar.style.width = `${progress * 100}%`;
+                
+                const remaining = calculateTrainingRemaining();
+                elements.trainingRemaining.textContent = formatTime(remaining);
+                
+                elements.collectTrainingBtn.disabled = progress < 1;
+            } else {
+                elements.trainingStatus.innerHTML = '<p class="text-center text-gray-500 italic">当前没有进行中的修炼</p>';
+                elements.trainingProgressContainer.classList.add('hidden');
+            }
+            
+            // 上次登录时间
+            if (gameData.player.lastLogin) {
+                const date = new Date(gameData.player.lastLogin);
+                elements.lastLoginTime.textContent = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            }
+        }
+
+        // 更新探索冷却
+        function updateExploreCooldown() {
+            const cooldown = gameData.gameState.exploreCooldown;
+            
+            if (cooldown > 0) {
+                elements.exploreBtn.disabled = true;
+                elements.exploreCooldown.style.width = `${(cooldown / 30) * 100}%`;
+                elements.cooldownTime.textContent = formatTime(cooldown);
+                
+                if (!exploreCooldownInterval) {
+                    exploreCooldownInterval = setInterval(() => {
+                        gameData.gameState.exploreCooldown--;
+                        updateExploreCooldown();
+                        
+                        if (gameData.gameState.exploreCooldown <= 0) {
+                            clearInterval(exploreCooldownInterval);
+                            exploreCooldownInterval = null;
+                            elements.exploreBtn.disabled = false;
+                        }
+                    }, 1000);
+                }
+            } else {
+                elements.exploreBtn.disabled = false;
+                elements.exploreCooldown.style.width = '0%';
+                elements.cooldownTime.textContent = '00:00';
+            }
+        }
+
+        // 切换场景
+        function switchScene(scene) {
+            // 更新场景按钮状态
+            elements.sceneBtns.forEach(btn => {
+                if (btn.dataset.scene === scene) {
+                    btn.classList.remove('bg-gray-700');
+                    btn.classList.add('bg-primary');
+                } else {
+                    btn.classList.remove('bg-primary');
+                    btn.classList.add('bg-gray-700');
+                }
+            });
+            
+            // 显示对应场景内容
+            elements.sceneContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${scene}-scene`).classList.remove('hidden');
+            
+            // 更新游戏状态
+            gameData.gameState.currentScene = scene;
+        }
+
+        // 存钱
+        function depositMoney() {
+            const amount = parseInt(elements.depositAmount.value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                showMessage('提示', '请输入有效的金额');
+                return;
+            }
+            
+            if (gameData.player.attributes.gold < amount) {
+                showMessage('提示', '金币不足');
+                return;
+            }
+            
+            gameData.player.attributes.gold -= amount;
+            
+            if (!gameData.player.bank) {
+                gameData.player.bank = 0;
+            }
+            
+            gameData.player.bank += amount;
+            elements.bankAmount.textContent = gameData.player.bank;
+            elements.goldAmount.textContent = gameData.player.attributes.gold;
+            
+            showMessage('成功', `成功存入 ${amount} 金币`);
+        }
+
+        // 取钱
+        function withdrawMoney() {
+            const amount = parseInt(elements.withdrawAmount.value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                showMessage('提示', '请输入有效的金额');
+                return;
+            }
+            
+            if (!gameData.player.bank || gameData.player.bank < amount) {
+                showMessage('提示', '存款不足');
+                return;
+            }
+            
+            gameData.player.bank -= amount;
+            gameData.player.attributes.gold += amount;
+            
+            elements.bankAmount.textContent = gameData.player.bank;
+            elements.goldAmount.textContent = gameData.player.attributes.gold;
+            
+            showMessage('成功', `成功取出 ${amount} 金币`);
+        }
+
+        // 购买物品
+        function buyItem(itemId) {
+            const item = gameItems[itemId];
+            
+            if (!item) return;
+            
+            // 检查是否是特殊物品
+            if (item.special) {
+                showMessage('提示', '该物品无法直接购买');
+                return;
+            }
+            
+            // 检查金币是否足够
+            if (gameData.player.attributes.gold < item.price) {
+                showMessage('提示', '金币不足');
+                return;
+            }
+            
+            // 检查背包是否已满
+            if (gameData.player.inventory.length >= 20) {
+                showMessage('提示', '背包已满');
+                return;
+            }
+            
+            // 购买物品
+            gameData.player.attributes.gold -= item.price;
+            gameData.player.inventory.push({ ...item });
+            
+            // 更新任务进度
+            if (item.type === 'weapon' || item.type === 'armor') {
+                gameData.gameState.quests[2].progress++;
+                checkQuestCompletion(2);
+            }
+            
+            updateUI();
+            showMessage('成功', `成功购买 ${item.name}`);
+        }
+
+        // 兑换码
+        function redeemCode() {
+            const code = elements.codeInput.value.trim().toLowerCase();
+            
+            if (!code) {
+                showMessage('提示', '请输入兑换码');
+                return;
+            }
+            
+            // 检查是否已经兑换过
+            if (gameData.gameState.redeemedCodes.includes(code)) {
+                showMessage('提示', '该兑换码已使用过');
+                return;
+            }
+            
+            // 处理兑换码
+            let reward = null;
+            
+            switch (code) {
+                case 'xiaodu':
+                    reward = gameItems[3]; // 杜杜菜刀
+                    break;
+                default:
+                    showMessage('提示', '无效的兑换码');
+                    return;
+            }
+            
+            // 检查背包是否已满
+            if (gameData.player.inventory.length >= 20) {
+                showMessage('提示', '背包已满，请先清理背包');
+                return;
+            }
+            
+            // 发放奖励
+            gameData.player.inventory.push({ ...reward });
+            gameData.gameState.redeemedCodes.push(code);
+            
+            elements.codeInput.value = '';
+            updateUI();
+            showMessage('成功', `成功兑换 ${reward.name}`);
+        }
+
+        // 查看装备详情
+        function viewEquipmentDetails(slot) {
+            const equipment = gameData.player.equipment[slot];
+            
+            if (!equipment) {
+                showMessage('提示', '该装备栏为空');
+                return;
+            }
+            
+            let details = `<div class="font-bold mb-2">${equipment.name}</div>`;
+            details += `<div class="text-sm mb-1">类型: ${getItemTypeText(equipment.type)}</div>`;
+            
+            if (equipment.attack) details += `<div class="text-sm mb-1">攻击力: +${equipment.attack}</div>`;
+            if (equipment.defense) details += `<div class="text-sm mb-1">防御力: +${equipment.defense}</div>`;
+            if (equipment.luck) details += `<div class="text-sm mb-1">幸运值: +${equipment.luck}</div>`;
+            if (equipment.wisdom) details += `<div class="text-sm mb-1">悟性值: +${equipment.wisdom}</div>`;
+            
+            details += `<div class="text-sm mt-2">${equipment.description}</div>`;
+            
+            showMessage(equipment.name, details);
+        }
+
+        // 选择背包物品
+        function selectBagItem(index) {
+            const inventory = gameData.player.inventory;
+            
+            if (index >= inventory.length) {
+                selectedItem = null;
+                elements.itemDetails.innerHTML = '<p class="text-gray-400 italic">请选择一个物品查看详情</p>';
+                elements.useItemBtn.disabled = true;
+                elements.equipItemBtn.disabled = true;
+                elements.dropItemBtn.disabled = true;
+                return;
+            }
+            
+            selectedItem = index;
+            const item = inventory[index];
+            
+            // 显示物品详情
+            let details = `<div class="font-bold mb-2">${item.name}</div>`;
+            details += `<div class="text-sm mb-1">类型: ${getItemTypeText(item.type)}</div>`;
+            
+            if (item.attack) details += `<div class="text-sm mb-1">攻击力: +${item.attack}</div>`;
+            if (item.defense) details += `<div class="text-sm mb-1">防御力: +${item.defense}</div>`;
+            if (item.luck) details += `<div class="text-sm mb-1">幸运值: +${item.luck}</div>`;
+            if (item.wisdom) details += `<div class="text-sm mb-1">悟性值: +${item.wisdom}</div>`;
+            
+            details += `<div class="text-sm mt-2">${item.description}</div>`;
+            
+            elements.itemDetails.innerHTML = details;
+            
+            // 更新按钮状态
+            elements.useItemBtn.disabled = item.type !== 'consumable';
+            elements.equipItemBtn.disabled = !['weapon', 'armor', 'accessory', 'pet'].includes(item.type);
+            elements.dropItemBtn.disabled = false;
+        }
+
+        // 使用物品
+        function useItem() {
+            if (selectedItem === null) return;
+            
+            const item = gameData.player.inventory[selectedItem];
+            
+            if (item.type !== 'consumable') {
+                showMessage('提示', '该物品无法使用');
+                return;
+            }
+            
+            // 使用物品逻辑
+            // ...
+            
+            // 从背包中移除物品
+            gameData.player.inventory.splice(selectedItem, 1);
+            updateUI();
+            showMessage('成功', `使用了 ${item.name}`);
+        }
+
+        // 装备物品
+        function equipItem() {
+            if (selectedItem === null) return;
+            
+            const item = gameData.player.inventory[selectedItem];
+            
+            if (!['weapon', 'armor', 'accessory', 'pet'].includes(item.type)) {
+                showMessage('提示', '该物品无法装备');
+                return;
+            }
+            
+            // 检查是否已有装备
+            const currentEquipment = gameData.player.equipment[item.type];
+            
+            // 装备新物品
+            gameData.player.equipment[item.type] = { ...item };
+            
+            // 将旧装备放回背包
+            if (currentEquipment) {
+                gameData.player.inventory.push(currentEquipment);
+            }
+            
+            // 从背包中移除新装备
+            gameData.player.inventory.splice(selectedItem, 1);
+            
+            // 更新属性
+            updatePlayerAttributes();
+            
+            updateUI();
+            showMessage('成功', `装备了 ${item.name}`);
+        }
+
+        // 丢弃物品
+        function dropItem() {
+            if (selectedItem === null) return;
+            
+            const item = gameData.player.inventory[selectedItem];
+            
+            gameData.player.inventory.splice(selectedItem, 1);
+            updateUI();
+            showMessage('提示', `丢弃了 ${item.name}`);
+        }
+
+        // 更新玩家属性（考虑装备加成）
+        function updatePlayerAttributes() {
+            const equipment = gameData.player.equipment;
+            let attackBonus = 0;
+            let defenseBonus = 0;
+            let luckBonus = 0;
+            let wisdomBonus = 0;
+            
+            // 计算装备加成
+            for (const slot in equipment) {
+                const item = equipment[slot];
+                if (item) {
+                    if (item.attack) attackBonus += item.attack;
+                    if (item.defense) defenseBonus += item.defense;
+                    if (item.luck) luckBonus += item.luck;
+                    if (item.wisdom) wisdomBonus += item.wisdom;
+                }
+            }
+            
+            // 更新属性显示
+            elements.attackAmount.textContent = gameData.player.attributes.attack + attackBonus;
+            elements.defenseAmount.textContent = gameData.player.attributes.defense + defenseBonus;
+            elements.luckAmount.textContent = gameData.player.attributes.luck + luckBonus;
+            elements.wisdomAmount.textContent = gameData.player.attributes.wisdom + wisdomBonus;
+        }
+
+        // 攻击敌人
+        function attackEnemy() {
+            if (!currentBattle) {
+                startBattle();
+                return;
+            }
+            
+            const enemy = currentBattle.enemy;
+            const player = gameData.player;
+            
+            // 计算伤害
+            const playerDamage = Math.max(1, player.attributes.attack - enemy.defense / 2);
+            const enemyDamage = Math.max(1, enemy.attack - player.attributes.defense / 2);
+            
+            // 应用伤害
+            enemy.hp -= playerDamage;
+            addBattleLog(`你对 ${enemy.name} 造成了 ${playerDamage} 点伤害`);
+            
+            // 检查敌人是否被击败
+            if (enemy.hp <= 0) {
+                endBattle(true);
+                return;
+            }
+            
+            // 敌人反击
+            player.attributes.hp -= enemyDamage;
+            addBattleLog(`${enemy.name} 对你造成了 ${enemyDamage} 点伤害`);
+            
+            // 检查玩家是否被击败
+            if (player.attributes.hp <= 0) {
+                endBattle(false);
+                return;
+            }
+            
+            // 更新UI
+            updateEnemyDisplay();
+            updateUI();
+        }
+
+        // 逃跑
+        function fleeBattle() {
+            if (!currentBattle) return;
+            
+            // 70%概率逃跑成功
+            if (Math.random() < 0.7) {
+                addBattleLog('你成功逃脱了战斗');
+                endBattle(null);
+            } else {
+                addBattleLog('逃跑失败');
+                
+                // 敌人攻击
+                const enemy = currentBattle.enemy;
+                const damage = Math.max(1, enemy.attack - gameData.player.attributes.defense / 2);
+                gameData.player.attributes.hp -= damage;
+                addBattleLog(`${enemy.name} 对你造成了 ${damage} 点伤害`);
+                
+                // 检查玩家是否被击败
+                if (gameData.player.attributes.hp <= 0) {
+                    endBattle(false);
+                    return;
+                }
+                
+                // 更新UI
+                updateUI();
+            }
+        }
+
+        // 开始战斗
+        function startBattle() {
+            // 随机选择敌人
+            const enemyKeys = Object.keys(gameEnemies);
+            const randomEnemy = gameEnemies[enemyKeys[Math.floor(Math.random() * enemyKeys.length)]];
+            
+            currentBattle = {
+                enemy: { ...randomEnemy, hp: randomEnemy.hp },
+                startTime: Date.now()
+            };
+            
+            // 更新UI
+            updateEnemyDisplay();
+            elements.battleLog.innerHTML = `<p>你遇到了 ${currentBattle.enemy.name}！</p>`;
+        }
+
+        // 结束战斗
+        function endBattle(victory) {
+            if (!currentBattle) return;
+            
+            if (victory === true) {
+                // 获得奖励
+                const rewards = currentBattle.enemy.rewards;
+                gameData.player.attributes.gold += rewards.gold;
+                gameData.player.exp += rewards.exp;
+                
+                addBattleLog(`你击败了 ${currentBattle.enemy.name}！`);
+                addBattleLog(`获得了 ${rewards.gold} 金币和 ${rewards.exp} 经验值`);
+                
+                // 检查升级
+                checkLevelUp();
+                
+                // 更新任务进度
+                gameData.gameState.enemiesDefeated++;
+                gameData.gameState.quests[1].progress++;
+                checkQuestCompletion(1);
+                
+                // 有概率获得物品
+                if (Math.random() < 0.3) {
+                    const itemKeys = Object.keys(gameItems);
+                    const randomItem = gameItems[itemKeys[Math.floor(Math.random() * itemKeys.length)]];
+                    
+                    if (gameData.player.inventory.length < 20) {
+                        gameData.player.inventory.push({ ...randomItem });
+                        addBattleLog(`获得了 ${randomItem.name}`);
+                    } else {
+                        addBattleLog('背包已满，无法获得物品');
+                    }
+                }
+            } else if (victory === false) {
+                // 失败惩罚
+                const goldLoss = Math.floor(gameData.player.attributes.gold * 0.1);
+                gameData.player.attributes.gold = Math.max(0, gameData.player.attributes.gold - goldLoss);
+                
+                addBattleLog('你被击败了！');
+                addBattleLog(`失去了 ${goldLoss} 金币`);
+                
+                // 恢复一些生命值
+                gameData.player.attributes.hp = Math.ceil(gameData.player.attributes.maxHp * 0.3);
+            }
+            
+            // 清除战斗状态
+            currentBattle = null;
+            setTimeout(() => {
+                elements.battleLog.innerHTML = '<p class="text-gray-500 italic">战斗尚未开始...</p>';
+                elements.enemyHpProgress.style.width = '100%';
+                elements.enemyHp.textContent = '100/100';
+            }, 2000);
+            
+            // 更新UI
+            updateUI();
+        }
+
+        // 更新敌人显示
+        function updateEnemyDisplay() {
+            if (!currentBattle) return;
+            
+            const enemy = currentBattle.enemy;
+            elements.enemyName.textContent = enemy.name;
+            elements.enemyHp.textContent = `${enemy.hp}/${gameEnemies[enemy.id].hp}`;
+            elements.enemyHpProgress.style.width = `${(enemy.hp / gameEnemies[enemy.id].hp) * 100}%`;
+        }
+
+        // 添加战斗日志
+        function addBattleLog(message) {
+            if (!elements.battleLog) return;
+            
+            const logEntry = document.createElement('p');
+            logEntry.textContent = message;
+            elements.battleLog.appendChild(logEntry);
+            elements.battleLog.scrollTop = elements.battleLog.scrollHeight;
+        }
+
+        // 探索
+        function explore() {
+            if (gameData.gameState.exploreCooldown > 0) return;
+            
+            // 设置冷却时间
+            gameData.gameState.exploreCooldown = 30;
+            updateExploreCooldown();
+            
+            // 增加探索次数
+            gameData.gameState.explored++;
+            
+            // 更新任务进度
+            gameData.gameState.quests[3].progress++;
+            checkQuestCompletion(3);
+            
+            // 显示探索结果
+            elements.exploreResult.classList.remove('hidden');
+            
+            // 随机事件
+            if (Math.random() < 0.3) {
+                triggerRandomEvent();
+                elements.exploreResult.innerHTML = '<p class="text-center">你在探索过程中遇到了一些特殊的事情...</p>';
+            } else {
+                // 普通探索结果
+                const results = [
+                    { text: '你在路边发现了一些金币', gold: Math.floor(Math.random() * 20) + 10 },
+                    { text: '你找到了一些修炼心得', exp: Math.floor(Math.random() * 15) + 5 },
+                    { text: '你遇到了一位好心人，他给了你一些金币', gold: Math.floor(Math.random() * 30) + 20 },
+                    { text: '你在山洞中发现了一些宝藏', gold: Math.floor(Math.random() * 40) + 30, exp: Math.floor(Math.random() * 20) + 10 },
+                    { text: '你在森林中迷路了，浪费了一些时间', text: '你在森林中迷路了，浪费了一些时间' },
+                    { text: '你遇到了一只友善的小动物，它带你找到了一些金币', gold: Math.floor(Math.random() * 25) + 15 }
+                ];
+                
+                const result = results[Math.floor(Math.random() * results.length)];
+                let resultText = `<p class="text-center">${result.text}</p>`;
+                
+                if (result.gold) {
+                    gameData.player.attributes.gold += result.gold;
+                    resultText += `<p class="text-center text-green-600 mt-1">获得了 ${result.gold} 金币</p>`;
+                }
+                
+                if (result.exp) {
+                    gameData.player.exp += result.exp;
+                    checkLevelUp();
+                    resultText += `<p class="text-center text-blue-600 mt-1">获得了 ${result.exp} 经验值</p>`;
+                }
+                
+                elements.exploreResult.innerHTML = resultText;
+            }
+            
+            updateUI();
+        }
+
+        // 触发随机事件
+        function triggerRandomEvent() {
+            const event = gameEvents[Math.floor(Math.random() * gameEvents.length)];
+            
+            elements.eventTitle.textContent = event.title;
+            elements.eventContent.innerHTML = `<p>${event.content}</p>`;
+            
+            // 清空选项
+            elements.eventChoices.innerHTML = '';
+            
+            // 添加选项
+            event.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'bg-primary text-light py-2 px-4 rounded hover:bg-opacity-90 transition-colors';
+                button.textContent = choice.text;
+                
+                // 检查条件
+                let canChoose = true;
+                if (choice.requirement) {
+                    if (choice.requirement.gold && gameData.player.attributes.gold < choice.requirement.gold) {
+                        canChoose = false;
+                        button.classList.add('opacity-50', 'cursor-not-allowed');
+                        button.title = '金币不足';
+                    }
+                    
+                    if (choice.requirement.exp && gameData.player.exp < choice.requirement.exp) {
+                        canChoose = false;
+                        button.classList.add('opacity-50', 'cursor-not-allowed');
+                        button.title = '经验不足';
+                    }
+                }
+                
+                button.addEventListener('click', () => {
+                    if (!canChoose) return;
+                    
+                    // 应用效果
+                    if (choice.effect) {
+                        if (choice.effect.gold) {
+                            gameData.player.attributes.gold += choice.effect.gold;
+                        }
+                        
+                        if (choice.effect.exp) {
+                            gameData.player.exp += choice.effect.exp;
+                            checkLevelUp();
+                        }
+                        
+                        if (choice.effect.hp) {
+                            gameData.player.attributes.hp = Math.min(
+                                gameData.player.attributes.maxHp,
+                                gameData.player.attributes.hp + choice.effect.hp
+                            );
+                        }
+                        
+                        if (choice.effect.attack) {
+                            gameData.player.attributes.attack += choice.effect.attack;
+                        }
+                        
+                        if (choice.effect.defense) {
+                            gameData.player.attributes.defense += choice.effect.defense;
+                        }
+                        
+                        if (choice.effect.luck) {
+                            gameData.player.attributes.luck += choice.effect.luck;
+                        }
+                        
+                        if (choice.effect.wisdom) {
+                            gameData.player.attributes.wisdom += choice.effect.wisdom;
+                        }
+                    }
+                    
+                    // 显示结果
+                    showMessage(event.title, choice.result);
+                    closeEventModal();
+                    updateUI();
+                });
+                
+                elements.eventChoices.appendChild(button);
+            });
+            
+            // 显示事件弹窗
+            elements.eventModal.classList.remove('hidden');
+        }
+
+        // 开始修炼
+        function startTraining() {
+            if (gameData.gameState.training) {
+                showMessage('提示', '你已经在修炼中');
+                return;
+            }
+            
+            const time = parseInt(elements.trainingTime.value);
+            const target = elements.trainingTarget.value;
+            
+            gameData.gameState.training = {
+                startTime: Date.now(),
+                duration: time,
+                target: target,
+                progress: 0
+            };
+            
+            // 开始修炼计时器
+            if (trainingInterval) clearInterval(trainingInterval);
+            trainingInterval = setInterval(() => {
+                updateTrainingDisplay();
+            }, 1000);
+            
+            updateTrainingDisplay();
+            showMessage('成功', `开始修炼 ${getTrainingTargetText(target)}，预计需要 ${formatTime(time)}`);
+        }
+
+        // 领取修炼成果
+        function collectTraining() {
+            const training = gameData.gameState.training;
+            
+            if (!training) return;
+            
+            const progress = calculateTrainingProgress();
+            
+            if (progress < 1) {
+                showMessage('提示', '修炼尚未完成');
+                return;
+            }
+            
+            // 根据修炼目标获得属性提升
+            const wisdomBonus = gameData.player.attributes.wisdom * 0.1;
+            let gain = 0;
+            
+            switch (training.target) {
+                case 'attack':
+                    gain = Math.floor(5 + wisdomBonus);
+                    gameData.player.attributes.attack += gain;
+                    showMessage('成功', `修炼完成！攻击力提升了 ${gain} 点`);
+                    break;
+                case 'defense':
+                    gain = Math.floor(3 + wisdomBonus);
+                    gameData.player.attributes.defense += gain;
+                    showMessage('成功', `修炼完成！防御力提升了 ${gain} 点`);
+                    break;
+                case 'hp':
+                    gain = Math.floor(10 + wisdomBonus * 2);
+                    gameData.player.attributes.maxHp += gain;
+                    gameData.player.attributes.hp = gameData.player.attributes.maxHp;
+                    showMessage('成功', `修炼完成！生命值上限提升了 ${gain} 点`);
+                    break;
+                case 'luck':
+                    gain = Math.floor(1 + wisdomBonus * 0.5);
+                    gameData.player.attributes.luck += gain;
+                    showMessage('成功', `修炼完成！幸运值提升了 ${gain} 点`);
+                    break;
+                case 'wisdom':
+                    gain = Math.floor(1 + wisdomBonus * 0.3);
+                    gameData.player.attributes.wisdom += gain;
+                    showMessage('成功', `修炼完成！悟性值提升了 ${gain} 点`);
+                    break;
+            }
+            
+            // 清除修炼状态
+            gameData.gameState.training = null;
+            clearInterval(trainingInterval);
+            trainingInterval = null;
+            
+            updateUI();
+        }
+
+        // 计算修炼进度
+        function calculateTrainingProgress() {
+            const training = gameData.gameState.training;
+            
+            if (!training) return 0;
+            
+            const elapsed = Date.now() - training.startTime;
+            return Math.min(1, elapsed / (training.duration * 1000));
+        }
+
+        // 计算修炼剩余时间
+        function calculateTrainingRemaining() {
+            const training = gameData.gameState.training;
+            
+            if (!training) return 0;
+            
+            const elapsed = Date.now() - training.startTime;
+            const remaining = (training.duration * 1000) - elapsed;
+            
+            return Math.max(0, Math.ceil(remaining / 1000));
+        }
+
+        // 获取修炼目标文本
+        function getTrainingTargetText(target) {
+            switch (target) {
+                case 'attack': return '攻击力';
+                case 'defense': return '防御力';
+                case 'hp': return '生命值';
+                case 'luck': return '幸运值';
+                case 'wisdom': return '悟性值';
+                default: return target;
+            }
+        }
+
+        // 获取物品类型文本
+        function getItemTypeText(type) {
+            switch (type) {
+                case 'weapon': return '武器';
+                case 'armor': return '防具';
+                case 'accessory': return '饰品';
+                case 'pet': return '宠物';
+                case 'consumable': return '消耗品';
+                default: return type;
+            }
+        }
+
+        // 选择副本
+        function selectDungeon(dungeonId) {
+            const dungeon = gameDungeons[dungeonId];
+            
+            if (!dungeon) return;
+            
+            // 检查等级要求
+            if (gameData.player.level < dungeon.level) {
+                showMessage('提示', `等级不足，需要 ${dungeon.level} 级才能挑战该副本`);
+                return;
+            }
+            
+            selectedDungeon = dungeon;
+            
+            // 更新副本信息
+            elements.dungeonTitle.textContent = dungeon.name;
+            elements.dungeonInfo.innerHTML = `<p class="mb-2">等级要求: ${dungeon.level}</p><p>击败所有敌人，获得丰厚奖励！</p>`;
+            
+            // 显示敌人信息
+            elements.dungeonEnemies.classList.remove('hidden');
+            elements.dungeonEnemies.innerHTML = '<h4 class="font-medium mb-2">敌人信息</h4>';
+            
+            dungeon.enemies.forEach(enemyId => {
+                const enemy = gameEnemies[enemyId];
+                const isBoss = enemyId === 3;
+                
+                let enemyHtml = `
+                    <div class="flex justify-between items-center">
+                        <span>${enemy.name}</span>
+                        ${isBoss ? '<span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Boss</span>' : ''}
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>生命值:</span>
+                        <span>${enemy.hp}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>攻击力:</span>
+                        <span>${enemy.attack}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>防御力:</span>
+                        <span>${enemy.defense}</span>
+                    </div>
+                `;
+                
+                elements.dungeonEnemies.innerHTML += enemyHtml;
+            });
+            
+            // 显示奖励信息
+            elements.dungeonRewards.classList.remove('hidden');
+            elements.dungeonRewards.innerHTML = '<h4 class="font-medium mb-2">副本奖励</h4>';
+            
+            let rewardsHtml = `
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center">
+                        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 mr-1">
+                        <span>${dungeon.rewards.gold} 金币</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fa fa-star text-secondary mr-1"></i>
+                        <span>${dungeon.rewards.exp} 经验值</span>
+                    </div>
+            `;
+            
+            if (dungeon.rewards.item) {
+                rewardsHtml += '<div>随机装备 × 1</div>';
+            }
+            
+            if (dungeon.rewards.rareItem) {
+                rewardsHtml += '<div class="text-blue-600">随机稀有装备 × 1</div>';
+            }
+            
+            if (dungeon.rewards.epicItem) {
+                rewardsHtml += '<div class="text-purple-600">随机史诗装备 × 1</div>';
+            }
+            
+            rewardsHtml += '</div>';
+            elements.dungeonRewards.innerHTML += rewardsHtml;
+            
+            // 显示开始挑战按钮
+            elements.startDungeonBtn.classList.remove('hidden');
+        }
+
+        // 开始副本挑战
+        function startDungeon() {
+            if (!selectedDungeon) return;
+            
+            // 这里简化处理，直接完成副本
+            // 实际游戏中应该有更复杂的副本战斗逻辑
+            
+            // 获得奖励
+            gameData.player.attributes.gold += selectedDungeon.rewards.gold;
+            gameData.player.exp += selectedDungeon.rewards.exp;
+            
+            // 检查升级
+            checkLevelUp();
+            
+            // 获得物品
+            let itemReward = null;
+            
+            if (selectedDungeon.rewards.epicItem) {
+                // 史诗装备
+                itemReward = gameItems[3]; // 杜杜菜刀
+            } else if (selectedDungeon.rewards.rareItem) {
+                // 稀有装备
+                const rareItems = [2, 5, 7]; // 精钢刀、皮甲、智慧珠
+                itemReward = gameItems[rareItems[Math.floor(Math.random() * rareItems.length)]];
+            } else if (selectedDungeon.rewards.item) {
+                // 普通装备
+                const normalItems = [1, 4, 6, 8]; // 铁剑、粗布衫、幸运符、小狗
+                itemReward = gameItems[normalItems[Math.floor(Math.random() * normalItems.length)]];
+            }
+            
+            if (itemReward && gameData.player.inventory.length < 20) {
+                gameData.player.inventory.push({ ...itemReward });
+            }
+            
+            updateUI();
+            
+            let message = `成功挑战 ${selectedDungeon.name}！<br>获得了 ${selectedDungeon.rewards.gold} 金币和 ${selectedDungeon.rewards.exp} 经验值`;
+            
+            if (itemReward) {
+                message += `<br>获得了 ${itemReward.name}`;
+            }
+            
+            showMessage('成功', message);
+        }
+
+        // 检查任务完成
+        function checkQuestCompletion(questId) {
+            const quest = gameData.gameState.quests[questId];
+            
+            if (quest.progress >= quest.maxProgress && quest.status === 'available') {
+                quest.status = 'completed';
+                
+                // 发放奖励
+                gameData.player.attributes.gold += quest.rewards.gold;
+                gameData.player.exp += quest.rewards.exp;
+                
+                // 检查升级
+                checkLevelUp();
+                
+                showMessage('任务完成', `完成任务「${quest.name}」<br>获得了 ${quest.rewards.gold} 金币和 ${quest.rewards.exp} 经验值`);
+                
+                // 如果是每日任务，重置进度
+                if (quest.type === 'daily') {
+                    quest.progress = 0;
+                    quest.status = 'available';
+                }
+            }
+            
+            updateQuestProgress();
+        }
+
+        // 检查升级
+        function checkLevelUp() {
+            while (gameData.player.exp >= gameData.player.maxExp) {
+                gameData.player.exp -= gameData.player.maxExp;
+                gameData.player.level++;
+                
+                // 提升属性
+                gameData.player.attributes.attack += 2;
+                gameData.player.attributes.defense += 1;
+                gameData.player.attributes.maxHp += 10;
+                gameData.player.attributes.hp = gameData.player.attributes.maxHp;
+                gameData.player.attributes.luck += 0.5;
+                gameData.player.attributes.wisdom += 0.5;
+                
+                // 增加升级所需经验
+                gameData.player.maxExp = Math.floor(gameData.player.maxExp * 1.2);
+                
+                showMessage('升级', `恭喜！你升级到了 ${gameData.player.level} 级`);
+            }
+        }
+
+        // 检查离线收益
+        function checkOfflineRewards() {
+            const lastLogin = gameData.player.lastLogin;
+            
+            if (!lastLogin) return;
+            
+            const now = Date.now();
+            const offlineTime = (now - lastLogin) / 1000; // 秒
+            
+            // 只计算最多24小时的离线收益
+            const maxOfflineTime = 24 * 60 * 60;
+            const effectiveTime = Math.min(offlineTime, maxOfflineTime);
+            
+            if (effectiveTime < 60) return; // 少于1分钟不计算收益
+            
+            // 计算收益
+            const goldPerHour = 10 + gameData.player.level * 2;
+            const expPerHour = 5 + gameData.player.level;
+            
+            const gold = Math.floor((effectiveTime / 3600) * goldPerHour);
+            const exp = Math.floor((effectiveTime / 3600) * expPerHour);
+            
+            if (gold > 0 || exp > 0) {
+                gameData.gameState.offlineRewards = {
+                    time: effectiveTime,
+                    gold: gold,
+                    exp: exp
+                };
+                
+                showOfflineRewards();
+            }
+        }
+
+        // 显示离线收益
+        function showOfflineRewards() {
+            const rewards = gameData.gameState.offlineRewards;
+            
+            if (!rewards) return;
+            
+            elements.offlineTime.textContent = formatTime(rewards.time);
+            elements.offlineGold.textContent = rewards.gold;
+            elements.offlineExp.textContent = rewards.exp;
+            
+            elements.offlineModal.classList.remove('hidden');
+        }
+
+        // 领取离线收益
+        function claimOfflineRewards() {
+            const rewards = gameData.gameState.offlineRewards;
+            
+            if (!rewards) return;
+            
+            gameData.player.attributes.gold += rewards.gold;
+            gameData.player.exp += rewards.exp;
+            
+            // 检查升级
+            checkLevelUp();
+            
+            // 清除离线收益
+            gameData.gameState.offlineRewards = null;
+            
+            closeOfflineModal();
+            updateUI();
+            showMessage('成功', `领取了 ${rewards.gold} 金币和 ${rewards.exp} 经验值`);
+        }
+
+        // 双倍领取离线收益
+        function claimOfflineRewardsDouble() {
+            const rewards = gameData.gameState.offlineRewards;
+            
+            if (!rewards) return;
+            
+            // 这里简化处理，直接双倍领取
+            // 实际游戏中可能需要观看广告或使用特殊道具
+            
+            const doubleGold = rewards.gold * 2;
+            const doubleExp = rewards.exp * 2;
+            
+            gameData.player.attributes.gold += doubleGold;
+            gameData.player.exp += doubleExp;
+            
+            // 检查升级
+            checkLevelUp();
+            
+            // 清除离线收益
+            gameData.gameState.offlineRewards = null;
+            
+            closeOfflineModal();
+            updateUI();
+            showMessage('成功', `双倍领取了 ${doubleGold} 金币和 ${doubleExp} 经验值`);
+        }
+
+        // 打开设置
+        function openSettings() {
+            // 更新设置UI
+            elements.soundVolume.value = gameData.settings.soundVolume;
+            elements.musicVolume.value = gameData.settings.musicVolume;
+            elements.autoSave.checked = gameData.settings.autoSave;
+            elements.battleAnimations.checked = gameData.settings.battleAnimations;
+            
+            elements.settingsModal.classList.remove('hidden');
+        }
+
+        // 关闭设置
+        function closeSettings() {
+            elements.settingsModal.classList.add('hidden');
+        }
+
+        // 保存设置
+        function saveSettings() {
+            gameData.settings.soundVolume = parseInt(elements.soundVolume.value);
+            gameData.settings.musicVolume = parseInt(elements.musicVolume.value);
+            gameData.settings.autoSave = elements.autoSave.checked;
+            gameData.settings.battleAnimations = elements.battleAnimations.checked;
+            
+            closeSettings();
+            showMessage('成功', '设置已保存');
+        }
+
+        // 重置游戏
+        function resetGame() {
+            if (confirm('确定要重置游戏吗？所有进度将会丢失！')) {
+                localStorage.removeItem('qianDaxiaSave');
+                location.reload();
+            }
+        }
+
+        // 显示消息
+        function showMessage(title, content) {
+            elements.messageTitle.textContent = title;
+            elements.messageContent.innerHTML = content;
+            elements.messageModal.classList.remove('hidden');
+        }
+
+        // 关闭消息弹窗
+        function closeMessageModal() {
+            elements.messageModal.classList.add('hidden');
+        }
+
+        // 关闭离线收益弹窗
+        function closeOfflineModal() {
+            elements.offlineModal.classList.add('hidden');
+        }
+
+        // 关闭随机事件弹窗
+        function closeEventModal() {
+            elements.eventModal.classList.add('hidden');
+        }
+
+        // 登出
+        function logout() {
+            if (confirm('确定要退出游戏吗？')) {
+                saveGame();
+                location.reload();
+            }
+        }
+
+        // 格式化时间
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // 初始化游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
 </body>
 </html>
