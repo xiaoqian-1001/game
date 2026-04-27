@@ -14,32 +14,43 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#8B4513',
-                        secondary: '#DAA520',
-                        accent: '#B22222',
-                        light: '#F5F5DC',
-                        dark: '#2F4F4F'
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
                     },
                     fontFamily: {
                         sans: ['Arial', 'sans-serif'],
-                        serif: ['SimSun', 'serif']
+                        display: ['Comic Sans MS', 'cursive']
                     },
                     animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
                         'float': 'float 3s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both'
+                        'glow': 'glow 2s ease-in-out infinite alternate'
                     },
                     keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' }
+                        },
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-10px)' }
                         },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(79, 70, 229, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(79, 70, 229, 0.8)' }
                         }
+                    },
+                    boxShadow: {
+                        'button': '0 4px 0 0 rgba(0, 0, 0, 0.2)',
+                        'button-active': '0 2px 0 0 rgba(0, 0, 0, 0.2)',
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
                     }
                 }
             }
@@ -47,77 +58,146 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .text-shadow {
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            .btn-3d {
+                @apply relative px-6 py-3 rounded-lg font-bold transform transition-all duration-150 active:translate-y-1 active:shadow-button-active shadow-button overflow-hidden;
             }
-            .text-shadow-lg {
-                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
+            
+            .btn-3d-primary {
+                @apply btn-3d bg-primary text-white shadow-[0_4px_0_0_#3730A3];
             }
-            .bg-scroll {
-                background-image: url('https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/52f45f2999e94330b5bc6ab4d36599be~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871919&x-signature=WhWoHambHqNff7G9PS%2FkIdjmp%2Bo%3D');
-                background-size: cover;
-                background-position: center;
+            
+            .btn-3d-secondary {
+                @apply btn-3d bg-secondary text-white shadow-[0_4px_0_0_#059669];
             }
-            .bg-pattern {
-                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            
+            .btn-3d-accent {
+                @apply btn-3d bg-accent text-white shadow-[0_4px_0_0_#D97706];
             }
-            .scroll-border {
-                border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%238B4513" stroke-width="10" rx="10" ry="10"/></svg>') 10;
-                border-width: 10px;
-                border-style: solid;
+            
+            .btn-3d-danger {
+                @apply btn-3d bg-danger text-white shadow-[0_4px_0_0_#DC2626];
             }
-            .btn-ancient {
-                @apply bg-primary text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 transform hover:-translate-y-1 border-2 border-secondary;
+            
+            .btn-3d-light {
+                @apply btn-3d bg-white text-dark shadow-[0_4px_0_0_#D1D5DB] border-2 border-gray-200;
             }
-            .btn-ancient:active {
-                @apply transform translate-y-0;
+            
+            .btn-3d-disabled {
+                @apply btn-3d bg-gray-300 text-gray-500 shadow-[0_4px_0_0_#9CA3AF] cursor-not-allowed;
             }
-            .card-ancient {
-                @apply bg-light bg-opacity-90 rounded-lg shadow-lg border-2 border-primary p-4;
+            
+            .btn-3d::before {
+                content: '';
+                @apply absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/30 to-transparent z-0;
             }
-            .progress-bar {
-                @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+            
+            .btn-3d span {
+                @apply relative z-10;
             }
-            .progress-value {
-                @apply h-full bg-secondary;
+            
+            .progress-bar-3d {
+                @apply w-full h-6 bg-gray-200 rounded-full overflow-hidden shadow-inner relative;
             }
-            .item-hover {
-                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+            
+            .progress-bar-3d::before {
+                content: '';
+                @apply absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent z-10;
             }
-            .item-active {
-                @apply ring-2 ring-secondary ring-offset-2;
+            
+            .progress-value-3d {
+                @apply h-full rounded-full transition-all duration-500 ease-out relative z-0;
+            }
+            
+            .card-3d {
+                @apply bg-white rounded-xl shadow-card transition-all duration-300 hover:shadow-card-hover p-6 border-2 border-gray-100;
+            }
+            
+            .resource-icon {
+                @apply relative inline-flex items-center justify-center;
+            }
+            
+            .resource-icon::after {
+                content: '';
+                @apply absolute top-1 left-1 w-2 h-2 bg-white/60 rounded-full z-10;
+            }
+            
+            .level-node {
+                @apply w-16 h-16 rounded-full flex items-center justify-center shadow-md transform transition-all duration-300 hover:scale-105 border-4;
+            }
+            
+            .level-node-completed {
+                @apply level-node bg-green-100 border-green-500;
+            }
+            
+            .level-node-current {
+                @apply level-node bg-primary text-white border-primary/80 animate-pulse;
+            }
+            
+            .level-node-locked {
+                @apply level-node bg-gray-100 border-gray-300 opacity-70 cursor-not-allowed;
+            }
+            
+            .shine-effect {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .shine-effect::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(
+                    to bottom right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%
+                );
+                transform: rotate(30deg);
+                animation: shine 3s infinite;
+            }
+            
+            @keyframes shine {
+                0% {
+                    transform: translateX(-100%) rotate(30deg);
+                }
+                100% {
+                    transform: translateX(100%) rotate(30deg);
+                }
             }
         }
     </style>
 </head>
-<body class="bg-scroll bg-pattern min-h-screen font-serif text-dark overflow-x-hidden">
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen font-sans text-dark overflow-x-hidden">
     <!-- 加载动画 -->
-    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-dark bg-opacity-80">
         <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="钱大侠" class="w-32 h-32 object-contain animate-float mb-4">
-        <h2 class="text-2xl text-light font-bold mb-2">江湖最后一个钱大侠</h2>
-        <p class="text-light mb-4">加载中，请稍候...</p>
-        <div class="w-64 progress-bar">
-            <div id="loading-progress" class="progress-value" style="width: 0%"></div>
+        <h2 class="text-2xl text-white font-bold mb-2 font-display">江湖最后一个钱大侠</h2>
+        <p class="text-white mb-4">加载中，请稍候...</p>
+        <div class="w-64 progress-bar-3d">
+            <div id="loading-progress" class="progress-value-3d bg-primary" style="width: 0%"></div>
         </div>
     </div>
 
     <!-- 登录界面 -->
     <div id="login-screen" class="fixed inset-0 z-40 flex flex-col items-center justify-center hidden">
-        <div class="bg-light bg-opacity-90 rounded-lg shadow-2xl p-8 max-w-md w-full mx-4 border-2 border-primary">
+        <div class="card-3d max-w-md w-full mx-4">
             <div class="flex justify-center mb-6">
                 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="钱大侠" class="w-32 h-32 object-contain animate-float">
             </div>
-            <h1 class="text-3xl font-bold text-center mb-6 text-primary">江湖最后一个钱大侠</h1>
+            <h1 class="text-3xl font-bold text-center mb-6 text-primary font-display">江湖最后一个钱大侠</h1>
             <div class="mb-6">
                 <label for="player-name" class="block text-sm font-medium text-dark mb-2">请输入你的江湖名号</label>
-                <input type="text" id="player-name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="例：钱大侠" maxlength="10">
+                <input type="text" id="player-name" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="例：钱大侠" maxlength="10">
             </div>
             <div class="flex flex-col space-y-3">
-                <button id="start-game" class="btn-ancient flex items-center justify-center">
+                <button id="start-game" class="btn-3d-primary flex items-center justify-center">
                     <span>开始游戏</span>
                 </button>
-                <button id="load-game" class="bg-dark text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">
-                    读取存档
+                <button id="load-game" class="btn-3d-light flex items-center justify-center">
+                    <span>读取存档</span>
                 </button>
             </div>
             <div class="mt-6 text-center text-sm text-gray-600">
@@ -127,247 +207,303 @@
     </div>
 
     <!-- 游戏主界面 -->
-    <div id="game-screen" class="fixed inset-0 z-30 hidden">
+    <div id="game-screen" class="fixed inset-0 z-30 hidden flex flex-col">
         <!-- 顶部状态栏 -->
-        <div class="bg-dark bg-opacity-80 text-light py-2 px-4 flex justify-between items-center">
-            <div class="flex items-center space-x-4">
+        <div class="bg-white shadow-md py-2 px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-6">
                 <div class="flex items-center">
-                    <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-6 h-6 mr-1">
-                    <span id="gold-amount">0</span>
+                    <div class="resource-icon mr-2">
+                        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-6 h-6">
+                    </div>
+                    <span id="gold-amount" class="font-bold">0</span>
                 </div>
                 <div class="flex items-center">
-                    <i class="fa fa-star text-secondary mr-1"></i>
-                    <span id="reputation-amount">0</span>
+                    <div class="resource-icon mr-2">
+                        <i class="fa fa-star text-accent text-xl"></i>
+                    </div>
+                    <span id="reputation-amount" class="font-bold">0</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <span id="player-level">Lv.1</span>
-                <div class="w-32 progress-bar">
-                    <div id="exp-progress" class="progress-value" style="width: 0%"></div>
+            <div class="flex items-center space-x-3">
+                <div class="bg-primary text-white px-3 py-1 rounded-full font-bold flex items-center">
+                    <span id="player-level">Lv.1</span>
                 </div>
-                <span id="exp-amount">0/100</span>
+                <div class="w-48 progress-bar-3d">
+                    <div id="exp-progress" class="progress-value-3d bg-accent" style="width: 0%"></div>
+                </div>
+                <span id="exp-amount" class="font-bold text-sm">0/100</span>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="settings-btn" class="text-light hover:text-secondary transition-colors">
+                <button id="settings-btn" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
                     <i class="fa fa-cog text-xl"></i>
                 </button>
-                <button id="logout-btn" class="text-light hover:text-red-500 transition-colors">
+                <button id="logout-btn" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
                     <i class="fa fa-sign-out text-xl"></i>
                 </button>
             </div>
         </div>
 
         <!-- 主游戏区域 -->
-        <div class="flex h-[calc(100vh-48px)]">
+        <div class="flex-1 flex overflow-hidden">
             <!-- 左侧角色信息 -->
-            <div class="w-64 bg-dark bg-opacity-70 p-4 text-light overflow-y-auto">
+            <div class="w-64 bg-white shadow-lg p-4 overflow-y-auto">
                 <div class="flex flex-col items-center mb-6">
-                    <img id="player-avatar" src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="角色头像" class="w-32 h-32 object-contain mb-2">
-                    <h2 id="player-name-display" class="text-xl font-bold">钱大侠</h2>
-                    <p id="player-title" class="text-sm text-gray-300">初入江湖</p>
+                    <div class="relative mb-2 shine-effect">
+                        <img id="player-avatar" src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/f6e13fbf66f047769c3481cbb22be9b6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=TN32qH4lIs%2FIO8GR5q%2F0UuVpRCw%3D" alt="角色头像" class="w-32 h-32 object-contain">
+                    </div>
+                    <h2 id="player-name-display" class="text-xl font-bold font-display">钱大侠</h2>
+                    <div class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm mt-1">
+                        <span id="player-title">初入江湖</span>
+                    </div>
                 </div>
                 
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-2 border-b border-gray-600 pb-1">基本属性</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between">
-                            <span>生命值:</span>
-                            <span id="hp-amount">100/100</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div id="hp-progress" class="progress-value bg-red-500" style="width: 100%"></div>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>攻击力:</span>
-                            <span id="attack-amount">10</span>
+                    <h3 class="text-lg font-bold mb-3 border-b-2 border-gray-100 pb-2">基本属性</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">生命值:</span>
+                                <span id="hp-amount" class="font-bold">100/100</span>
+                            </div>
+                            <div class="progress-bar-3d">
+                                <div id="hp-progress" class="progress-value-3d bg-danger" style="width: 100%"></div>
+                            </div>
                         </div>
                         <div class="flex justify-between">
-                            <span>防御力:</span>
-                            <span id="defense-amount">5</span>
+                            <span class="font-medium">攻击力:</span>
+                            <span id="attack-amount" class="font-bold">10</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>幸运值:</span>
-                            <span id="luck-amount">5</span>
+                            <span class="font-medium">防御力:</span>
+                            <span id="defense-amount" class="font-bold">5</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>悟性值:</span>
-                            <span id="wisdom-amount">5</span>
+                            <span class="font-medium">幸运值:</span>
+                            <span id="luck-amount" class="font-bold">5</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">悟性值:</span>
+                            <span id="wisdom-amount" class="font-bold">5</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-2 border-b border-gray-600 pb-1">装备</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div id="weapon-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="weapon">
-                            <div class="text-gray-400 text-sm">武器</div>
-                            <div id="weapon-name" class="text-xs mt-1">无</div>
+                    <h3 class="text-lg font-bold mb-3 border-b-2 border-gray-100 pb-2">装备</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div id="weapon-slot" class="bg-gray-50 rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="weapon">
+                            <div class="text-gray-400 text-sm mb-1">武器</div>
+                            <div id="weapon-name" class="font-bold">无</div>
                         </div>
-                        <div id="armor-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="armor">
-                            <div class="text-gray-400 text-sm">防具</div>
-                            <div id="armor-name" class="text-xs mt-1">无</div>
+                        <div id="armor-slot" class="bg-gray-50 rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="armor">
+                            <div class="text-gray-400 text-sm mb-1">防具</div>
+                            <div id="armor-name" class="font-bold">无</div>
                         </div>
-                        <div id="accessory-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="accessory">
-                            <div class="text-gray-400 text-sm">饰品</div>
-                            <div id="accessory-name" class="text-xs mt-1">无</div>
+                        <div id="accessory-slot" class="bg-gray-50 rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="accessory">
+                            <div class="text-gray-400 text-sm mb-1">饰品</div>
+                            <div id="accessory-name" class="font-bold">无</div>
                         </div>
-                        <div id="pet-slot" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="pet">
-                            <div class="text-gray-400 text-sm">宠物</div>
-                            <div id="pet-name" class="text-xs mt-1">无</div>
+                        <div id="pet-slot" class="bg-gray-50 rounded-xl p-3 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="pet">
+                            <div class="text-gray-400 text-sm mb-1">宠物</div>
+                            <div id="pet-name" class="font-bold">无</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 中央主操作区 -->
-            <div class="flex-1 flex flex-col">
+            <div class="flex-1 flex flex-col overflow-hidden">
                 <!-- 场景导航 -->
-                <div class="bg-dark bg-opacity-70 p-2 flex justify-center space-x-4">
-                    <button class="scene-btn px-4 py-1 rounded bg-primary text-light hover:bg-opacity-90 transition-colors" data-scene="town">城镇</button>
-                    <button class="scene-btn px-4 py-1 rounded bg-gray-700 text-light hover:bg-opacity-90 transition-colors" data-scene="wild">野外</button>
-                    <button class="scene-btn px-4 py-1 rounded bg-gray-700 text-light hover:bg-opacity-90 transition-colors" data-scene="training">修炼</button>
-                    <button class="scene-btn px-4 py-1 rounded bg-gray-700 text-light hover:bg-opacity-90 transition-colors" data-scene="dungeon">副本</button>
+                <div class="bg-white shadow-sm p-2 flex justify-center space-x-4">
+                    <button class="scene-btn px-5 py-2 rounded-full bg-primary text-white font-bold hover:bg-primary/90 transition-colors" data-scene="town">城镇</button>
+                    <button class="scene-btn px-5 py-2 rounded-full bg-gray-100 text-dark font-bold hover:bg-gray-200 transition-colors" data-scene="wild">野外</button>
+                    <button class="scene-btn px-5 py-2 rounded-full bg-gray-100 text-dark font-bold hover:bg-gray-200 transition-colors" data-scene="training">修炼</button>
+                    <button class="scene-btn px-5 py-2 rounded-full bg-gray-100 text-dark font-bold hover:bg-gray-200 transition-colors" data-scene="dungeon">副本</button>
+                    <button class="scene-btn px-5 py-2 rounded-full bg-gray-100 text-dark font-bold hover:bg-gray-200 transition-colors" data-scene="events">活动</button>
                 </div>
 
                 <!-- 场景内容区 -->
-                <div class="flex-1 overflow-y-auto p-4">
+                <div class="flex-1 overflow-y-auto p-6">
                     <!-- 城镇场景 -->
                     <div id="town-scene" class="scene-content">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <!-- 钱庄 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">钱庄</h3>
-                                <p class="mb-4">存钱生息，积累财富的好地方。</p>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-8 h-8">
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">钱庄</h3>
+                                </div>
+                                <p class="mb-4 text-gray-600">存钱生息，积累财富的好地方。</p>
                                 <div class="mb-4">
                                     <label for="deposit-amount" class="block text-sm font-medium mb-1">存款金额</label>
                                     <div class="flex">
-                                        <input type="number" id="deposit-amount" class="flex-1 px-3 py-1 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-secondary" min="1" value="10">
-                                        <button id="deposit-btn" class="bg-primary text-light px-3 py-1 rounded-r hover:bg-opacity-90">存入</button>
+                                        <input type="number" id="deposit-amount" class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-primary" min="1" value="10">
+                                        <button id="deposit-btn" class="btn-3d-primary rounded-l-none">
+                                            <span>存入</span>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="mb-4">
                                     <label for="withdraw-amount" class="block text-sm font-medium mb-1">取款金额</label>
                                     <div class="flex">
-                                        <input type="number" id="withdraw-amount" class="flex-1 px-3 py-1 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-secondary" min="1" value="10">
-                                        <button id="withdraw-btn" class="bg-primary text-light px-3 py-1 rounded-r hover:bg-opacity-90">取出</button>
+                                        <input type="number" id="withdraw-amount" class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-primary" min="1" value="10">
+                                        <button id="withdraw-btn" class="btn-3d-primary rounded-l-none">
+                                            <span>取出</span>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="text-sm">
-                                    <div class="flex justify-between">
-                                        <span>当前存款:</span>
-                                        <span id="bank-amount">0</span>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="font-medium">当前存款:</span>
+                                        <span id="bank-amount" class="font-bold">0</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span>日利息率:</span>
-                                        <span>1%</span>
+                                        <span class="font-medium">日利息率:</span>
+                                        <span class="text-green-600 font-bold">1%</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 武器店 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">武器店</h3>
-                                <p class="mb-4">购买强力武器，提升战斗力。</p>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-cutlery text-danger text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">武器店</h3>
+                                </div>
+                                <p class="mb-4 text-gray-600">购买强力武器，提升战斗力。</p>
                                 <div class="space-y-3">
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="1" data-item-type="weapon" data-item-name="铁剑" data-item-price="50" data-item-attack="5">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">铁剑</span>
-                                            <span class="text-green-600">50 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="1" data-item-type="weapon" data-item-name="铁剑" data-item-price="50" data-item-attack="5">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">铁剑</span>
+                                            <span class="text-green-600 font-bold">50 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
                                         </div>
-                                        <div class="text-sm text-gray-600">攻击力 +5</div>
+                                        <div class="text-sm text-gray-600 mt-1">攻击力 +5</div>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="2" data-item-type="weapon" data-item-name="精钢刀" data-item-price="100" data-item-attack="10">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">精钢刀</span>
-                                            <span class="text-green-600">100 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="2" data-item-type="weapon" data-item-name="精钢刀" data-item-price="100" data-item-attack="10">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">精钢刀</span>
+                                            <span class="text-green-600 font-bold">100 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
                                         </div>
-                                        <div class="text-sm text-gray-600">攻击力 +10</div>
+                                        <div class="text-sm text-gray-600 mt-1">攻击力 +10</div>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="3" data-item-type="weapon" data-item-name="杜杜菜刀" data-item-price="0" data-item-attack="15" data-item-special="true">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium text-red-600">杜杜菜刀</span>
-                                            <span class="text-blue-600">兑换码</span>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300 shine-effect" data-item-id="3" data-item-type="weapon" data-item-name="杜杜菜刀" data-item-price="0" data-item-attack="15" data-item-special="true">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-red-600">杜杜菜刀</span>
+                                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">兑换码</span>
                                         </div>
-                                        <div class="text-sm text-gray-600">攻击力 +15，对野兽伤害+20%</div>
+                                        <div class="text-sm text-gray-600 mt-1">攻击力 +15，对野兽伤害+20%</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300 shine-effect" data-item-id="10" data-item-type="weapon" data-item-name="钱氏长剑" data-item-price="0" data-item-attack="20" data-item-special="true">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-red-600">钱氏长剑</span>
+                                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">兑换码</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 mt-1">攻击力 +20，对所有敌人伤害+10%</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 防具店 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">防具店</h3>
-                                <p class="mb-4">购买防具，提升防御力。</p>
-                                <div class="space-y-3">
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="4" data-item-type="armor" data-item-name="粗布衫" data-item-price="30" data-item-defense="3">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">粗布衫</span>
-                                            <span class="text-green-600">30 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
-                                        </div>
-                                        <div class="text-sm text-gray-600">防御力 +3</div>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-shield text-primary text-2xl"></i>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="5" data-item-type="armor" data-item-name="皮甲" data-item-price="80" data-item-defense="7">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">皮甲</span>
-                                            <span class="text-green-600">80 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                    <h3 class="text-xl font-bold font-display">防具店</h3>
+                                </div>
+                                <p class="mb-4 text-gray-600">购买防具，提升防御力。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="4" data-item-type="armor" data-item-name="粗布衫" data-item-price="30" data-item-defense="3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">粗布衫</span>
+                                            <span class="text-green-600 font-bold">30 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
                                         </div>
-                                        <div class="text-sm text-gray-600">防御力 +7</div>
+                                        <div class="text-sm text-gray-600 mt-1">防御力 +3</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="5" data-item-type="armor" data-item-name="皮甲" data-item-price="80" data-item-defense="7">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">皮甲</span>
+                                            <span class="text-green-600 font-bold">80 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 mt-1">防御力 +7</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 饰品店 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">饰品店</h3>
-                                <p class="mb-4">购买饰品，提升特殊属性。</p>
-                                <div class="space-y-3">
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="6" data-item-type="accessory" data-item-name="幸运符" data-item-price="60" data-item-luck="3">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">幸运符</span>
-                                            <span class="text-green-600">60 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
-                                        </div>
-                                        <div class="text-sm text-gray-600">幸运值 +3</div>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-diamond text-purple-500 text-2xl"></i>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="7" data-item-type="accessory" data-item-name="智慧珠" data-item-price="60" data-item-wisdom="3">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">智慧珠</span>
-                                            <span class="text-green-600">60 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                    <h3 class="text-xl font-bold font-display">饰品店</h3>
+                                </div>
+                                <p class="mb-4 text-gray-600">购买饰品，提升特殊属性。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="6" data-item-type="accessory" data-item-name="幸运符" data-item-price="60" data-item-luck="3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">幸运符</span>
+                                            <span class="text-green-600 font-bold">60 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
                                         </div>
-                                        <div class="text-sm text-gray-600">悟性值 +3</div>
+                                        <div class="text-sm text-gray-600 mt-1">幸运值 +3</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="7" data-item-type="accessory" data-item-name="智慧珠" data-item-price="60" data-item-wisdom="3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">智慧珠</span>
+                                            <span class="text-green-600 font-bold">60 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 mt-1">悟性值 +3</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 宠物店 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">宠物店</h3>
-                                <p class="mb-4">购买宠物，获得特殊加成。</p>
-                                <div class="space-y-3">
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="8" data-item-type="pet" data-item-name="小狗" data-item-price="100" data-item-attack="2" data-item-defense="2">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">小狗</span>
-                                            <span class="text-green-600">100 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
-                                        </div>
-                                        <div class="text-sm text-gray-600">攻击力 +2，防御力 +2</div>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-paw text-secondary text-2xl"></i>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-item-id="9" data-item-type="pet" data-item-name="糊涂" data-item-price="0" data-item-attack="5" data-item-defense="5" data-item-luck="5" data-item-special="true">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium text-red-600">糊涂（奶油法斗）</span>
-                                            <span class="text-blue-600">限定</span>
+                                    <h3 class="text-xl font-bold font-display">宠物店</h3>
+                                </div>
+                                <p class="mb-4 text-gray-600">购买宠物，获得特殊加成。</p>
+                                <div class="space-y-3">
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-item-id="8" data-item-type="pet" data-item-name="小狗" data-item-price="100" data-item-attack="2" data-item-defense="2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold">小狗</span>
+                                            <span class="text-green-600 font-bold">100 <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"></span>
                                         </div>
-                                        <div class="text-sm text-gray-600">攻击力 +5，防御力 +5，幸运值 +5</div>
+                                        <div class="text-sm text-gray-600 mt-1">攻击力 +2，防御力 +2</div>
+                                    </div>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-3 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300 shine-effect" data-item-id="9" data-item-type="pet" data-item-name="糊涂" data-item-price="0" data-item-attack="5" data-item-defense="5" data-item-luck="5" data-item-special="true">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-red-600">糊涂（奶油法斗）</span>
+                                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-bold">限定</span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 mt-1">攻击力 +5，防御力 +5，幸运值 +5</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 兑换码 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">兑换码</h3>
-                                <p class="mb-4">输入兑换码获取特殊奖励。</p>
-                                <div class="flex">
-                                    <input type="text" id="code-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="输入兑换码">
-                                    <button id="redeem-btn" class="bg-primary text-light px-4 py-2 rounded-r hover:bg-opacity-90">兑换</button>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-gift text-accent text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">兑换码</h3>
                                 </div>
-                                <div id="code-message" class="mt-2 text-sm hidden"></div>
+                                <p class="mb-4 text-gray-600">输入兑换码获取特殊奖励。</p>
+                                <div class="flex">
+                                    <input type="text" id="code-input" class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-primary" placeholder="输入兑换码">
+                                    <button id="redeem-btn" class="btn-3d-accent rounded-l-none">
+                                        <span>兑换</span>
+                                    </button>
+                                </div>
+                                <div id="code-message" class="mt-3 text-sm hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -376,43 +512,61 @@
                     <div id="wild-scene" class="scene-content hidden">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- 战斗区域 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">江湖遭遇</h3>
-                                <div class="mb-4 text-center">
-                                    <img id="enemy-image" src="https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5bf8ce011e2f4d11bea45828257b34ef~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871968&x-signature=SZvQR6bbI727r0vnx5Jq4vVABf8%3D" alt="敌人" class="w-48 h-48 object-contain mx-auto">
-                                    <h4 id="enemy-name" class="text-lg font-bold mt-2">山贼</h4>
-                                    <div class="flex justify-center items-center mt-1">
-                                        <div class="w-32 progress-bar">
-                                            <div id="enemy-hp-progress" class="progress-value bg-red-500" style="width: 100%"></div>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-bolt text-yellow-500 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">江湖遭遇</h3>
+                                </div>
+                                <div class="mb-6 text-center">
+                                    <div class="relative inline-block">
+                                        <img id="enemy-image" src="https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5bf8ce011e2f4d11bea45828257b34ef~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871968&x-signature=SZvQR6bbI727r0vnx5Jq4vVABf8%3D" alt="敌人" class="w-48 h-48 object-contain mx-auto animate-float">
+                                    </div>
+                                    <h4 id="enemy-name" class="text-lg font-bold mt-3">山贼</h4>
+                                    <div class="flex justify-center items-center mt-2">
+                                        <div class="w-48 progress-bar-3d">
+                                            <div id="enemy-hp-progress" class="progress-value-3d bg-danger" style="width: 100%"></div>
                                         </div>
-                                        <span id="enemy-hp" class="ml-2 text-sm">100/100</span>
+                                        <span id="enemy-hp" class="ml-3 font-bold">100/100</span>
                                     </div>
                                 </div>
                                 <div class="flex justify-center space-x-4">
-                                    <button id="attack-btn" class="btn-ancient">攻击</button>
-                                    <button id="flee-btn" class="bg-gray-600 text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">逃跑</button>
+                                    <button id="attack-btn" class="btn-3d-danger">
+                                        <span>攻击</span>
+                                    </button>
+                                    <button id="flee-btn" class="btn-3d-light">
+                                        <span>逃跑</span>
+                                    </button>
                                 </div>
-                                <div id="battle-log" class="mt-4 h-32 overflow-y-auto p-2 bg-gray-100 rounded text-sm">
+                                <div id="battle-log" class="mt-6 h-40 overflow-y-auto p-3 bg-gray-50 rounded-xl border-2 border-gray-100 text-sm">
                                     <p class="text-gray-500 italic">战斗尚未开始...</p>
                                 </div>
                             </div>
 
                             <!-- 探索区域 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">江湖探索</h3>
-                                <p class="mb-4">在江湖中探索，可能会发现宝藏或遇到奇遇。</p>
-                                <div class="flex justify-center mb-4">
-                                    <button id="explore-btn" class="btn-ancient">探索</button>
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-map text-blue-500 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">江湖探索</h3>
                                 </div>
-                                <div id="explore-result" class="p-3 bg-gray-100 rounded text-sm hidden">
+                                <p class="mb-6 text-gray-600">在江湖中探索，可能会发现宝藏或遇到奇遇。</p>
+                                <div class="flex justify-center mb-6">
+                                    <button id="explore-btn" class="btn-3d-primary px-8 py-4 text-lg">
+                                        <span>探索</span>
+                                    </button>
+                                </div>
+                                <div id="explore-result" class="p-4 bg-gray-50 rounded-xl border-2 border-gray-100 text-sm hidden mb-6">
                                     <!-- 探索结果将在这里显示 -->
                                 </div>
                                 <div class="mt-4">
-                                    <h4 class="font-medium mb-2">探索冷却</h4>
-                                    <div class="w-full progress-bar">
-                                        <div id="explore-cooldown" class="progress-value" style="width: 0%"></div>
+                                    <h4 class="font-bold mb-2">探索冷却</h4>
+                                    <div class="progress-bar-3d">
+                                        <div id="explore-cooldown" class="progress-value-3d bg-primary" style="width: 0%"></div>
                                     </div>
-                                    <div class="text-center text-sm mt-1">
+                                    <div class="text-center font-bold mt-2">
                                         <span id="cooldown-time">00:00</span>
                                     </div>
                                 </div>
@@ -424,15 +578,22 @@
                     <div id="training-scene" class="scene-content hidden">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- 修炼区域 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">闭关修炼</h3>
-                                <div class="mb-4 text-center">
-                                    <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/52cfa94167f24c2aa776753aaa564e68~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871965&x-signature=%2BRNfRmZb%2Bnxn2AAVLahvlo6HmKI%3D" alt="修炼" class="w-48 h-48 object-contain mx-auto">
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-fire text-orange-500 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">闭关修炼</h3>
                                 </div>
-                                <div class="space-y-3">
+                                <div class="mb-6 text-center">
+                                    <div class="relative inline-block">
+                                        <img src="https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/52cfa94167f24c2aa776753aaa564e68~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871965&x-signature=%2BRNfRmZb%2Bnxn2AAVLahvlo6HmKI%3D" alt="修炼" class="w-48 h-48 object-contain mx-auto animate-float">
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
                                     <div class="flex justify-between items-center">
-                                        <span>修炼时间:</span>
-                                        <select id="training-time" class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-secondary">
+                                        <span class="font-bold">修炼时间:</span>
+                                        <select id="training-time" class="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary">
                                             <option value="3600">1小时</option>
                                             <option value="7200">2小时</option>
                                             <option value="10800">3小时</option>
@@ -442,8 +603,8 @@
                                         </select>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span>修炼目标:</span>
-                                        <select id="training-target" class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-secondary">
+                                        <span class="font-bold">修炼目标:</span>
+                                        <select id="training-target" class="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary">
                                             <option value="attack">攻击力</option>
                                             <option value="defense">防御力</option>
                                             <option value="hp">生命值</option>
@@ -451,43 +612,54 @@
                                             <option value="wisdom">悟性值</option>
                                         </select>
                                     </div>
-                                    <div class="flex justify-center">
-                                        <button id="start-training-btn" class="btn-ancient">开始修炼</button>
+                                    <div class="flex justify-center mt-2">
+                                        <button id="start-training-btn" class="btn-3d-secondary px-8">
+                                            <span>开始修炼</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 修炼状态 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">修炼状态</h3>
-                                <div id="training-status" class="mb-4">
+                            <div class="card-3d">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-clock-o text-purple-500 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">修炼状态</h3>
+                                </div>
+                                <div id="training-status" class="mb-6">
                                     <p class="text-center text-gray-500 italic">当前没有进行中的修炼</p>
                                 </div>
                                 <div id="training-progress-container" class="hidden">
-                                    <div class="mb-2">
-                                        <div class="flex justify-between text-sm">
+                                    <div class="mb-3">
+                                        <div class="flex justify-between font-bold mb-1">
                                             <span>修炼进度:</span>
                                             <span id="training-progress-text">0%</span>
                                         </div>
-                                        <div class="w-full progress-bar">
-                                            <div id="training-progress-bar" class="progress-value" style="width: 0%"></div>
+                                        <div class="progress-bar-3d">
+                                            <div id="training-progress-bar" class="progress-value-3d bg-secondary" style="width: 0%"></div>
                                         </div>
                                     </div>
-                                    <div class="mb-2">
-                                        <div class="flex justify-between text-sm">
+                                    <div class="mb-6">
+                                        <div class="flex justify-between font-bold mb-1">
                                             <span>剩余时间:</span>
                                             <span id="training-remaining">00:00:00</span>
                                         </div>
                                     </div>
-                                    <div class="mt-4 flex justify-center">
-                                        <button id="collect-training-btn" class="btn-ancient">领取修炼成果</button>
+                                    <div class="flex justify-center">
+                                        <button id="collect-training-btn" class="btn-3d-secondary">
+                                            <span>领取修炼成果</span>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="mt-6">
-                                    <h4 class="font-medium mb-2">离线收益</h4>
-                                    <p class="text-sm mb-2">上次离线时间: <span id="last-login-time">未知</span></p>
+                                <div class="mt-8">
+                                    <h4 class="font-bold mb-3 border-b-2 border-gray-100 pb-2">离线收益</h4>
+                                    <p class="text-sm mb-3">上次离线时间: <span id="last-login-time" class="font-bold">未知</span></p>
                                     <div class="flex justify-center">
-                                        <button id="claim-offline-btn" class="bg-secondary text-dark py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">领取离线收益</button>
+                                        <button id="claim-offline-btn" class="btn-3d-accent">
+                                            <span>领取离线收益</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -496,114 +668,170 @@
 
                     <!-- 副本场景 -->
                     <div id="dungeon-scene" class="scene-content hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- 副本列表 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">副本挑战</h3>
-                                <p class="mb-4">挑战副本，获取稀有装备和大量奖励。</p>
-                                <div class="space-y-3">
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-dungeon-id="1" data-dungeon-name="山贼巢穴" data-dungeon-level="1" data-dungeon-reward="50">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">山贼巢穴</span>
-                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Lv.1</span>
-                                        </div>
-                                        <div class="text-sm text-gray-600">击败山贼头目，获得50金币和随机装备</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- 副本地图 -->
+                            <div class="card-3d md:col-span-1">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <i class="fa fa-map-signs text-red-500 text-2xl"></i>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-dungeon-id="2" data-dungeon-name="黑风寨" data-dungeon-level="5" data-dungeon-reward="100">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">黑风寨</span>
-                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Lv.5</span>
+                                    <h3 class="text-xl font-bold font-display">副本挑战</h3>
+                                </div>
+                                <p class="mb-6 text-gray-600">挑战副本，获取稀有装备和大量奖励。</p>
+                                
+                                <!-- 游戏化关卡地图 -->
+                                <div class="levels-map flex flex-col gap-8 items-center relative mb-6">
+                                    <!-- 背景路径 -->
+                                    <div class="absolute z-0 w-2 bg-gray-200 h-full left-1/2 transform -translate-x-1/2"></div>
+                                
+                                    <!-- 完成的关卡 -->
+                                    <div class="relative z-10">
+                                        <button class="level-node-completed" data-dungeon-id="1">
+                                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </button>
+                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap bg-primary text-white px-2 py-1 rounded text-xs font-bold">
+                                            山贼巢穴
                                         </div>
-                                        <div class="text-sm text-gray-600">击败黑风寨主，获得100金币和随机稀有装备</div>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded opacity-50" data-dungeon-id="3" data-dungeon-name="神秘洞穴" data-dungeon-level="10" data-dungeon-reward="200">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">神秘洞穴</span>
-                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Lv.10</span>
+                                
+                                    <!-- 当前关卡 -->
+                                    <div class="relative z-10 -ml-16"> <!-- 使用负margin创建弧形路径效果 -->
+                                        <button class="level-node-current" data-dungeon-id="2">
+                                            <span class="font-bold text-xl">2</span>
+                                        </button>
+                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap bg-primary text-white px-2 py-1 rounded text-xs font-bold">
+                                            黑风寨
                                         </div>
-                                        <div class="text-sm text-gray-600">探索神秘洞穴，获得200金币和随机史诗装备</div>
+                                    </div>
+                                
+                                    <!-- 未解锁关卡 -->
+                                    <div class="relative z-10 ml-16"> <!-- 使用正margin再次改变方向 -->
+                                        <button class="level-node-locked" data-dungeon-id="3" disabled>
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                        </button>
+                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap bg-gray-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                            神秘洞穴 (Lv.10)
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 副本信息 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary" id="dungeon-title">选择副本</h3>
-                                <div id="dungeon-info" class="mb-4">
+                            <div class="card-3d md:col-span-2">
+                                <h3 id="dungeon-title" class="text-xl font-bold font-display mb-4">选择副本</h3>
+                                <div id="dungeon-info" class="mb-6">
                                     <p class="text-center text-gray-500 italic">请从左侧选择一个副本</p>
                                 </div>
-                                <div id="dungeon-enemies" class="mb-4 hidden">
-                                    <h4 class="font-medium mb-2">敌人信息</h4>
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between items-center">
-                                            <span>山贼头目</span>
-                                            <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Boss</span>
+                                <div id="dungeon-enemies" class="mb-6 hidden">
+                                    <h4 class="font-bold mb-3 border-b-2 border-gray-100 pb-2">敌人信息</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl">
+                                            <span class="font-bold">山贼头目</span>
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-bold">Boss</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span>生命值:</span>
-                                            <span>300</span>
+                                            <span class="font-bold">300</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span>攻击力:</span>
-                                            <span>25</span>
+                                            <span class="font-bold">25</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span>防御力:</span>
-                                            <span>10</span>
+                                            <span class="font-bold">10</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div id="dungeon-rewards" class="mb-4 hidden">
-                                    <h4 class="font-medium mb-2">副本奖励</h4>
+                                <div id="dungeon-rewards" class="mb-6 hidden">
+                                    <h4 class="font-bold mb-3 border-b-2 border-gray-100 pb-2">副本奖励</h4>
                                     <div class="space-y-2 text-sm">
                                         <div class="flex items-center">
-                                            <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 mr-1">
-                                            <span>50 金币</span>
+                                            <div class="resource-icon mr-2">
+                                                <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4">
+                                            </div>
+                                            <span class="font-bold">50 金币</span>
                                         </div>
-                                        <div>随机装备 × 1</div>
+                                        <div class="flex items-center">
+                                            <div class="resource-icon mr-2">
+                                                <i class="fa fa-star text-accent"></i>
+                                            </div>
+                                            <span class="font-bold">100 经验值</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="resource-icon mr-2">
+                                                <i class="fa fa-gift text-primary"></i>
+                                            </div>
+                                            <span class="font-bold">随机装备 × 1</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="flex justify-center">
-                                    <button id="start-dungeon-btn" class="btn-ancient hidden">开始挑战</button>
+                                    <button id="start-dungeon-btn" class="btn-3d-danger px-8 hidden">
+                                        <span>开始挑战</span>
+                                    </button>
                                 </div>
                             </div>
 
                             <!-- 任务板 -->
-                            <div class="card-ancient">
-                                <h3 class="text-xl font-bold mb-3 text-primary">任务板</h3>
-                                <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5d2a730bdbb94baa8ffa692380517ca6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871928&x-signature=TWWmkhfhZDpalN%2FmbZ43a6pSIJE%3D" alt="任务卷轴" class="w-16 h-16 object-contain mx-auto mb-4">
-                                <div class="space-y-3">
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-quest-id="1" data-quest-name="初入江湖" data-quest-type="main" data-quest-status="available">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">初入江湖</span>
-                                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">主线</span>
+                            <div class="card-3d md:col-span-3">
+                                <div class="flex items-center mb-4">
+                                    <div class="resource-icon mr-3">
+                                        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5d2a730bdbb94baa8ffa692380517ca6~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871928&x-signature=TWWmkhfhZDpalN%2FmbZ43a6pSIJE%3D" alt="任务卷轴" class="w-8 h-8">
+                                    </div>
+                                    <h3 class="text-xl font-bold font-display">任务板</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-4 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-quest-id="1" data-quest-name="初入江湖" data-quest-type="main" data-quest-status="available">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-bold">初入江湖</span>
+                                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">主线</span>
                                         </div>
-                                        <div class="text-sm text-gray-600">击败5名山贼，证明你的实力</div>
-                                        <div class="flex justify-between text-xs mt-1">
-                                            <span>进度: <span id="quest-1-progress">0/5</span></span>
-                                            <span>奖励: 100金币, 50经验</span>
+                                        <div class="text-sm text-gray-600 mb-3">击败5名山贼，证明你的实力</div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-xs">
+                                                <span class="font-medium">进度: </span>
+                                                <span id="quest-1-progress" class="font-bold">0/5</span>
+                                            </div>
+                                            <div class="text-xs text-green-600 font-bold">
+                                                奖励: 100金币
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-quest-id="2" data-quest-name="装备升级" data-quest-type="side" data-quest-status="available">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">装备升级</span>
-                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">支线</span>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-4 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-quest-id="2" data-quest-name="装备升级" data-quest-type="side" data-quest-status="available">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-bold">装备升级</span>
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">支线</span>
                                         </div>
-                                        <div class="text-sm text-gray-600">购买一件武器和一件防具</div>
-                                        <div class="flex justify-between text-xs mt-1">
-                                            <span>进度: <span id="quest-2-progress">0/2</span></span>
-                                            <span>奖励: 50金币, 30经验</span>
+                                        <div class="text-sm text-gray-600 mb-3">购买一件武器和一件防具</div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-xs">
+                                                <span class="font-medium">进度: </span>
+                                                <span id="quest-2-progress" class="font-bold">0/2</span>
+                                            </div>
+                                            <div class="text-xs text-green-600 font-bold">
+                                                奖励: 50金币
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="item-hover cursor-pointer bg-gray-100 p-2 rounded" data-quest-id="3" data-quest-name="每日巡逻" data-quest-type="daily" data-quest-status="available">
-                                        <div class="flex justify-between">
-                                            <span class="font-medium">每日巡逻</span>
-                                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">日常</span>
+                                    <div class="item-hover cursor-pointer bg-gray-50 p-4 rounded-xl border-2 border-transparent hover:border-primary transition-all duration-300" data-quest-id="3" data-quest-name="每日巡逻" data-quest-type="daily" data-quest-status="available">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-bold">每日巡逻</span>
+                                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-bold">日常</span>
                                         </div>
-                                        <div class="text-sm text-gray-600">探索野外3次</div>
-                                        <div class="flex justify-between text-xs mt-1">
-                                            <span>进度: <span id="quest-3-progress">0/3</span></span>
-                                            <span>奖励: 30金币, 20经验</span>
+                                        <div class="text-sm text-gray-600 mb-3">探索野外3次</div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="text-xs">
+                                                <span class="font-medium">进度: </span>
+                                                <span id="quest-3-progress" class="font-bold">0/3</span>
+                                            </div>
+                                            <div class="text-xs text-green-600 font-bold">
+                                                奖励: 30金币
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -614,64 +842,70 @@
             </div>
 
             <!-- 右侧背包/任务栏 -->
-            <div class="w-64 bg-dark bg-opacity-70 p-4 text-light overflow-y-auto">
+            <div class="w-64 bg-white shadow-lg p-4 overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">背包</h3>
-                    <div class="text-sm">
+                    <h3 class="text-lg font-bold font-display">背包</h3>
+                    <div class="bg-gray-100 text-dark px-2 py-1 rounded-full text-xs font-bold">
                         <span id="bag-count">0/20</span>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-2 mb-6">
-                    <div id="bag-slot-1" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="1">
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div id="bag-slot-1" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="1">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-2" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="2">
+                    <div id="bag-slot-2" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="2">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-3" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="3">
+                    <div id="bag-slot-3" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="3">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-4" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="4">
+                    <div id="bag-slot-4" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="4">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-5" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="5">
+                    <div id="bag-slot-5" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="5">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-6" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="6">
+                    <div id="bag-slot-6" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="6">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-7" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="7">
+                    <div id="bag-slot-7" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="7">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-8" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="8">
+                    <div id="bag-slot-8" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="8">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-9" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="9">
+                    <div id="bag-slot-9" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="9">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-10" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="10">
+                    <div id="bag-slot-10" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="10">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-11" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="11">
+                    <div id="bag-slot-11" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="11">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
-                    <div id="bag-slot-12" class="bg-gray-800 rounded p-2 text-center item-hover cursor-pointer" data-slot="12">
+                    <div id="bag-slot-12" class="bg-gray-50 rounded-xl p-2 text-center cursor-pointer transition-all duration-300 hover:bg-gray-100 hover:scale-105" data-slot="12">
                         <div class="text-gray-400 text-xs">空</div>
                     </div>
                 </div>
                 
                 <div class="mb-4">
-                    <h3 class="text-lg font-semibold mb-2 border-b border-gray-600 pb-1">物品详情</h3>
+                    <h3 class="text-lg font-bold mb-3 border-b-2 border-gray-100 pb-2">物品详情</h3>
                     <div id="item-details" class="text-sm">
                         <p class="text-gray-400 italic">请选择一个物品查看详情</p>
                     </div>
                 </div>
                 
                 <div class="flex space-x-2">
-                    <button id="use-item-btn" class="flex-1 bg-primary text-light py-1 px-3 rounded hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>使用</button>
-                    <button id="equip-item-btn" class="flex-1 bg-primary text-light py-1 px-3 rounded hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>装备</button>
-                    <button id="drop-item-btn" class="flex-1 bg-red-600 text-light py-1 px-3 rounded hover:bg-opacity-90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>丢弃</button>
+                    <button id="use-item-btn" class="flex-1 btn-3d-light py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <span>使用</span>
+                    </button>
+                    <button id="equip-item-btn" class="flex-1 btn-3d-primary py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <span>装备</span>
+                    </button>
+                    <button id="drop-item-btn" class="flex-1 btn-3d-danger py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <span>丢弃</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -680,20 +914,20 @@
     <!-- 设置弹窗 -->
     <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50" id="settings-overlay"></div>
-        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-primary">设置</h2>
-                <button id="close-settings" class="text-gray-500 hover:text-gray-700">
-                    <i class="fa fa-times text-xl"></i>
+        <div class="card-3d max-w-md w-full mx-4 relative z-10">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold font-display">设置</h2>
+                <button id="close-settings" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <i class="fa fa-times"></i>
                 </button>
             </div>
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium mb-1">音效音量</label>
+                    <label class="block text-sm font-medium mb-2">音效音量</label>
                     <input type="range" id="sound-volume" min="0" max="100" value="80" class="w-full">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">背景音乐音量</label>
+                    <label class="block text-sm font-medium mb-2">背景音乐音量</label>
                     <input type="range" id="music-volume" min="0" max="100" value="50" class="w-full">
                 </div>
                 <div class="flex items-center justify-between">
@@ -711,9 +945,13 @@
                     </label>
                 </div>
             </div>
-            <div class="mt-6 flex justify-between">
-                <button id="save-settings" class="btn-ancient">保存设置</button>
-                <button id="reset-game" class="bg-red-600 text-light py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">重置游戏</button>
+            <div class="mt-8 flex justify-between">
+                <button id="save-settings" class="btn-3d-primary">
+                    <span>保存设置</span>
+                </button>
+                <button id="reset-game" class="btn-3d-danger">
+                    <span>重置游戏</span>
+                </button>
             </div>
         </div>
     </div>
@@ -721,11 +959,13 @@
     <!-- 消息弹窗 -->
     <div id="message-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50" id="message-overlay"></div>
-        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
-            <h2 id="message-title" class="text-2xl font-bold text-primary mb-4">消息</h2>
+        <div class="card-3d max-w-md w-full mx-4 relative z-10">
+            <h2 id="message-title" class="text-2xl font-bold font-display mb-4">消息</h2>
             <p id="message-content" class="mb-6">消息内容将显示在这里</p>
             <div class="flex justify-center">
-                <button id="close-message" class="btn-ancient">确定</button>
+                <button id="close-message" class="btn-3d-primary">
+                    <span>确定</span>
+                </button>
             </div>
         </div>
     </div>
@@ -733,22 +973,36 @@
     <!-- 离线收益弹窗 -->
     <div id="offline-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50" id="offline-overlay"></div>
-        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
-            <h2 class="text-2xl font-bold text-primary mb-2">离线收益</h2>
-            <p class="text-gray-600 mb-4">你离线了 <span id="offline-time">0</span>，获得了以下收益：</p>
-            <div class="bg-gray-100 p-4 rounded-lg mb-6">
-                <div class="flex items-center justify-between mb-2">
-                    <span>金币:</span>
-                    <span class="font-bold"><img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 inline"> <span id="offline-gold">0</span></span>
+        <div class="card-3d max-w-md w-full mx-4 relative z-10">
+            <h2 class="text-2xl font-bold font-display mb-2">离线收益</h2>
+            <p class="text-gray-600 mb-4">你离线了 <span id="offline-time" class="font-bold">0</span>，获得了以下收益：</p>
+            <div class="bg-gray-50 p-4 rounded-xl mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center">
+                        <div class="resource-icon mr-2">
+                            <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-5 h-5">
+                        </div>
+                        <span class="font-medium">金币:</span>
+                    </div>
+                    <span class="font-bold text-lg"><span id="offline-gold">0</span></span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span>经验值:</span>
-                    <span class="font-bold"><i class="fa fa-star text-secondary mr-1"></i> <span id="offline-exp">0</span></span>
+                    <div class="flex items-center">
+                        <div class="resource-icon mr-2">
+                            <i class="fa fa-star text-accent"></i>
+                        </div>
+                        <span class="font-medium">经验值:</span>
+                    </div>
+                    <span class="font-bold text-lg"><span id="offline-exp">0</span></span>
                 </div>
             </div>
             <div class="flex space-x-4">
-                <button id="claim-offline-normal" class="flex-1 btn-ancient">领取</button>
-                <button id="claim-offline-double" class="flex-1 bg-secondary text-dark py-2 px-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300">双倍领取</button>
+                <button id="claim-offline-normal" class="flex-1 btn-3d-primary">
+                    <span>领取</span>
+                </button>
+                <button id="claim-offline-double" class="flex-1 btn-3d-accent">
+                    <span>双倍领取</span>
+                </button>
             </div>
         </div>
     </div>
@@ -756,8 +1010,8 @@
     <!-- 随机事件弹窗 -->
     <div id="event-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50" id="event-overlay"></div>
-        <div class="bg-light rounded-lg shadow-2xl p-6 max-w-md w-full mx-4 border-2 border-primary relative z-10">
-            <h2 id="event-title" class="text-2xl font-bold text-primary mb-4">江湖奇遇</h2>
+        <div class="card-3d max-w-md w-full mx-4 relative z-10">
+            <h2 id="event-title" class="text-2xl font-bold font-display mb-4">江湖奇遇</h2>
             <div id="event-content" class="mb-6">
                 <p>事件内容将显示在这里</p>
             </div>
@@ -809,7 +1063,26 @@
                 itemsPurchased: 0,
                 exploreCooldown: 0,
                 activeEvent: null,
-                redeemedCodes: []
+                redeemedCodes: [],
+                signIn: {
+                    streak: 0,
+                    lastSignIn: null,
+                    rewards: [
+                        { day: 1, reward: { gold: 100 }, claimed: false },
+                        { day: 2, reward: { gold: 200 }, claimed: false },
+                        { day: 3, reward: { gold: 300 }, claimed: false },
+                        { day: 4, reward: { item: 7 }, claimed: false },
+                        { day: 5, reward: { gold: 500 }, claimed: false },
+                        { day: 6, reward: { item: 6 }, claimed: false },
+                        { day: 7, reward: { special: "mystery_box" }, claimed: false }
+                    ]
+                },
+                tournament: {
+                    season: "第一赛季",
+                    score: 0,
+                    rank: null,
+                    lastParticipation: null
+                }
             },
             settings: {
                 soundVolume: 80,
@@ -829,7 +1102,8 @@
             6: { id: 6, name: "幸运符", type: "accessory", price: 60, luck: 3, description: "一个能带来好运的符，幸运值+3" },
             7: { id: 7, name: "智慧珠", type: "accessory", price: 60, wisdom: 3, description: "一颗蕴含智慧的珠子，悟性值+3" },
             8: { id: 8, name: "小狗", type: "pet", price: 100, attack: 2, defense: 2, description: "一只可爱的小狗，攻击力+2，防御力+2" },
-            9: { id: 9, name: "糊涂", type: "pet", price: 0, attack: 5, defense: 5, luck: 5, special: true, description: "一只稀有的奶油法斗，攻击力+5，防御力+5，幸运值+5" }
+            9: { id: 9, name: "糊涂", type: "pet", price: 0, attack: 5, defense: 5, luck: 5, special: true, description: "一只稀有的奶油法斗，攻击力+5，防御力+5，幸运值+5" },
+            10: { id: 10, name: "钱氏长剑", type: "weapon", price: 0, attack: 20, special: true, description: "钱家祖传的长剑，攻击力+20，对所有敌人伤害+10%" }
         };
 
         // 游戏敌人数据
@@ -973,6 +1247,12 @@
             equipItemBtn: document.getElementById('equip-item-btn'),
             dropItemBtn: document.getElementById('drop-item-btn'),
             
+            // 活动场景
+            signInBtn: document.getElementById('sign-in-btn'),
+            signStreak: document.getElementById('sign-streak'),
+            joinTournamentBtn: document.getElementById('join-tournament-btn'),
+            tournamentRank: document.getElementById('tournament-rank'),
+            
             // 设置
             settingsBtn: document.getElementById('settings-btn'),
             settingsModal: document.getElementById('settings-modal'),
@@ -1094,6 +1374,12 @@
             elements.equipItemBtn.addEventListener('click', equipItem);
             elements.dropItemBtn.addEventListener('click', dropItem);
             
+            // 活动场景
+            signInBtn: document.getElementById('sign-in-btn'),
+            signStreak: document.getElementById('sign-streak'),
+            joinTournamentBtn: document.getElementById('join-tournament-btn'),
+            tournamentRank: document.getElementById('tournament-rank'),
+            
             // 设置
             elements.settingsBtn.addEventListener('click', openSettings);
             elements.settingsOverlay.addEventListener('click', closeSettings);
@@ -1183,7 +1469,7 @@
             elements.playerLevel.textContent = `Lv.${gameData.player.level}`;
             elements.expProgress.style.width = `${(gameData.player.exp / gameData.player.maxExp) * 100}%`;
             elements.expAmount.textContent = `${gameData.player.exp}/${gameData.player.maxExp}`;
-            elements.goldAmount.textContent = gameData.player.gold;
+            elements.goldAmount.textContent = gameData.player.attributes.gold;
             elements.reputationAmount.textContent = gameData.player.attributes.reputation;
             
             // 属性
@@ -1211,6 +1497,36 @@
             
             // 探索冷却
             updateExploreCooldown();
+            
+            // 活动场景
+            updateEventsDisplay();
+        }
+
+        // 更新活动场景显示
+        function updateEventsDisplay() {
+            const signInData = gameData.gameState.signIn;
+            const tournamentData = gameData.gameState.tournament;
+            
+            // 更新签到信息
+            elements.signStreak.textContent = `${signInData.streak}天`;
+            
+            // 更新签到按钮状态
+            const today = new Date().toDateString();
+            elements.signInBtn.disabled = signInData.lastSignIn === today;
+            
+            // 更新签到天数显示
+            for (let i = 1; i <= 7; i++) {
+                const dayElement = document.getElementById(`sign-day-${i}`);
+                if (i <= signInData.streak) {
+                    dayElement.classList.remove('bg-gray-100', 'border-gray-300');
+                    dayElement.classList.add('bg-green-100', 'border-green-500');
+                }
+            }
+            
+            // 更新武林大会信息
+            if (tournamentData.rank) {
+                elements.tournamentRank.textContent = `第${tournamentData.rank}名 (${tournamentData.score}分)`;
+            }
         }
 
         // 更新装备显示
@@ -1220,37 +1536,37 @@
             // 武器
             if (equipment.weapon) {
                 elements.weaponName.textContent = equipment.weapon.name;
-                elements.weaponSlot.classList.add('bg-blue-900');
+                elements.weaponSlot.classList.add('bg-blue-50', 'border-2', 'border-blue-200');
             } else {
                 elements.weaponName.textContent = '无';
-                elements.weaponSlot.classList.remove('bg-blue-900');
+                elements.weaponSlot.classList.remove('bg-blue-50', 'border-2', 'border-blue-200');
             }
             
             // 防具
             if (equipment.armor) {
                 elements.armorName.textContent = equipment.armor.name;
-                elements.armorSlot.classList.add('bg-green-900');
+                elements.armorSlot.classList.add('bg-green-50', 'border-2', 'border-green-200');
             } else {
                 elements.armorName.textContent = '无';
-                elements.armorSlot.classList.remove('bg-green-900');
+                elements.armorSlot.classList.remove('bg-green-50', 'border-2', 'border-green-200');
             }
             
             // 饰品
             if (equipment.accessory) {
                 elements.accessoryName.textContent = equipment.accessory.name;
-                elements.accessorySlot.classList.add('bg-purple-900');
+                elements.accessorySlot.classList.add('bg-purple-50', 'border-2', 'border-purple-200');
             } else {
                 elements.accessoryName.textContent = '无';
-                elements.accessorySlot.classList.remove('bg-purple-900');
+                elements.accessorySlot.classList.remove('bg-purple-50', 'border-2', 'border-purple-200');
             }
             
             // 宠物
             if (equipment.pet) {
                 elements.petName.textContent = equipment.pet.name;
-                elements.petSlot.classList.add('bg-yellow-900');
+                elements.petSlot.classList.add('bg-yellow-50', 'border-2', 'border-yellow-200');
             } else {
                 elements.petName.textContent = '无';
-                elements.petSlot.classList.remove('bg-yellow-900');
+                elements.petSlot.classList.remove('bg-yellow-50', 'border-2', 'border-yellow-200');
             }
         }
 
@@ -1264,28 +1580,28 @@
             // 清空所有背包槽
             elements.bagSlots.forEach((slot, index) => {
                 slot.innerHTML = '<div class="text-gray-400 text-xs">空</div>';
-                slot.classList.remove('bg-blue-900', 'bg-green-900', 'bg-purple-900', 'bg-yellow-900');
+                slot.classList.remove('bg-blue-50', 'bg-green-50', 'bg-purple-50', 'bg-yellow-50', 'border-2', 'border-blue-200', 'border-green-200', 'border-purple-200', 'border-yellow-200');
             });
             
             // 填充物品
             inventory.forEach((item, index) => {
                 if (index < 12) { // 只显示前12个物品
                     const slot = elements.bagSlots[index];
-                    slot.innerHTML = `<div class="text-xs">${item.name}</div>`;
+                    slot.innerHTML = `<div class="font-bold text-xs">${item.name}</div>`;
                     
                     // 根据物品类型设置背景色
                     switch (item.type) {
                         case 'weapon':
-                            slot.classList.add('bg-blue-900');
+                            slot.classList.add('bg-blue-50', 'border-2', 'border-blue-200');
                             break;
                         case 'armor':
-                            slot.classList.add('bg-green-900');
+                            slot.classList.add('bg-green-50', 'border-2', 'border-green-200');
                             break;
                         case 'accessory':
-                            slot.classList.add('bg-purple-900');
+                            slot.classList.add('bg-purple-50', 'border-2', 'border-purple-200');
                             break;
                         case 'pet':
-                            slot.classList.add('bg-yellow-900');
+                            slot.classList.add('bg-yellow-50', 'border-2', 'border-yellow-200');
                             break;
                     }
                 }
@@ -1374,11 +1690,11 @@
             // 更新场景按钮状态
             elements.sceneBtns.forEach(btn => {
                 if (btn.dataset.scene === scene) {
-                    btn.classList.remove('bg-gray-700');
-                    btn.classList.add('bg-primary');
+                    btn.classList.remove('bg-gray-100', 'text-dark');
+                    btn.classList.add('bg-primary', 'text-white');
                 } else {
-                    btn.classList.remove('bg-primary');
-                    btn.classList.add('bg-gray-700');
+                    btn.classList.remove('bg-primary', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-dark');
                 }
             });
             
@@ -1502,6 +1818,12 @@
                 case 'xiaodu':
                     reward = gameItems[3]; // 杜杜菜刀
                     break;
+                case 'hutu':
+                    reward = gameItems[9]; // 糊涂
+                    break;
+                case 'xiaoqian':
+                    reward = gameItems[10]; // 钱氏长剑
+                    break;
                 default:
                     showMessage('提示', '无效的兑换码');
                     return;
@@ -1520,6 +1842,84 @@
             elements.codeInput.value = '';
             updateUI();
             showMessage('成功', `成功兑换 ${reward.name}`);
+        }
+
+        // 每日签到
+        function signIn() {
+            const signInData = gameData.gameState.signIn;
+            const today = new Date().toDateString();
+            
+            // 检查今天是否已经签到
+            if (signInData.lastSignIn === today) {
+                showMessage('提示', '今天已经签到过了');
+                return;
+            }
+            
+            // 计算连续签到天数
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toDateString();
+            
+            if (signInData.lastSignIn !== yesterdayStr) {
+                // 断签，重置连续签到天数
+                signInData.streak = 0;
+            }
+            
+            signInData.streak++;
+            signInData.lastSignIn = today;
+            
+            // 发放奖励
+            const currentRewardIndex = Math.min(signInData.streak - 1, 6); // 最多7天
+            const reward = signInData.rewards[currentRewardIndex];
+            
+            if (!reward.claimed) {
+                if (reward.reward.gold) {
+                    gameData.player.gold += reward.reward.gold;
+                }
+                
+                if (reward.reward.item) {
+                    if (gameData.player.inventory.length >= 20) {
+                        showMessage('提示', '背包已满，无法领取物品奖励');
+                        return;
+                    }
+                    gameData.player.inventory.push({ ...gameItems[reward.reward.item] });
+                }
+                
+                if (reward.reward.special === 'mystery_box') {
+                    // 神秘宝箱，随机奖励
+                    const randomReward = Math.random();
+                    if (randomReward < 0.5) {
+                        gameData.player.gold += 1000;
+                        showMessage('恭喜', '获得神秘宝箱奖励：1000金币！');
+                    } else {
+                        gameData.player.reputation += 50;
+                        showMessage('恭喜', '获得神秘宝箱奖励：50声望！');
+                    }
+                }
+                
+                reward.claimed = true;
+            }
+            
+            updateUI();
+            showMessage('成功', `签到成功！连续签到${signInData.streak}天`);
+        }
+
+        // 参加武林大会
+        function joinTournament() {
+            const tournamentData = gameData.gameState.tournament;
+            const now = Date.now();
+            
+            // 模拟战斗
+            const baseScore = Math.floor(gameData.player.attack * 10 + gameData.player.defense * 5 + gameData.player.level * 100);
+            const randomFactor = 0.8 + Math.random() * 0.4; // 0.8-1.2的随机因子
+            const finalScore = Math.floor(baseScore * randomFactor);
+            
+            tournamentData.score = finalScore;
+            tournamentData.rank = Math.floor(Math.random() * 100) + 1; // 模拟排名
+            tournamentData.lastParticipation = now;
+            
+            updateUI();
+            showMessage('比赛结果', `武林大会成绩：${finalScore}分，排名第${tournamentData.rank}名！`);
         }
 
         // 查看装备详情
@@ -1832,6 +2232,12 @@
         function explore() {
             if (gameData.gameState.exploreCooldown > 0) return;
             
+            // 活动场景
+            signInBtn: document.getElementById('sign-in-btn'),
+            signStreak: document.getElementById('sign-streak'),
+            joinTournamentBtn: document.getElementById('join-tournament-btn'),
+            tournamentRank: document.getElementById('tournament-rank'),
+            
             // 设置冷却时间
             gameData.gameState.exploreCooldown = 30;
             updateExploreCooldown();
@@ -1866,13 +2272,13 @@
                 
                 if (result.gold) {
                     gameData.player.attributes.gold += result.gold;
-                    resultText += `<p class="text-center text-green-600 mt-1">获得了 ${result.gold} 金币</p>`;
+                    resultText += `<p class="text-center text-green-600 mt-1 font-bold">获得了 ${result.gold} 金币</p>`;
                 }
                 
                 if (result.exp) {
                     gameData.player.exp += result.exp;
                     checkLevelUp();
-                    resultText += `<p class="text-center text-blue-600 mt-1">获得了 ${result.exp} 经验值</p>`;
+                    resultText += `<p class="text-center text-blue-600 mt-1 font-bold">获得了 ${result.exp} 经验值</p>`;
                 }
                 
                 elements.exploreResult.innerHTML = resultText;
@@ -1894,7 +2300,7 @@
             // 添加选项
             event.choices.forEach(choice => {
                 const button = document.createElement('button');
-                button.className = 'bg-primary text-light py-2 px-4 rounded hover:bg-opacity-90 transition-colors';
+                button.className = 'btn-3d-light text-left';
                 button.textContent = choice.text;
                 
                 // 检查条件
@@ -1902,13 +2308,13 @@
                 if (choice.requirement) {
                     if (choice.requirement.gold && gameData.player.attributes.gold < choice.requirement.gold) {
                         canChoose = false;
-                        button.classList.add('opacity-50', 'cursor-not-allowed');
+                        button.classList.add('btn-3d-disabled');
                         button.title = '金币不足';
                     }
                     
                     if (choice.requirement.exp && gameData.player.exp < choice.requirement.exp) {
                         canChoose = false;
-                        button.classList.add('opacity-50', 'cursor-not-allowed');
+                        button.classList.add('btn-3d-disabled');
                         button.title = '经验不足';
                     }
                 }
@@ -2111,28 +2517,28 @@
             
             // 显示敌人信息
             elements.dungeonEnemies.classList.remove('hidden');
-            elements.dungeonEnemies.innerHTML = '<h4 class="font-medium mb-2">敌人信息</h4>';
+            elements.dungeonEnemies.innerHTML = '<h4 class="font-bold mb-3 border-b-2 border-gray-100 pb-2">敌人信息</h4>';
             
             dungeon.enemies.forEach(enemyId => {
                 const enemy = gameEnemies[enemyId];
                 const isBoss = enemyId === 3;
                 
                 let enemyHtml = `
-                    <div class="flex justify-between items-center">
-                        <span>${enemy.name}</span>
-                        ${isBoss ? '<span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Boss</span>' : ''}
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl mb-2">
+                        <span class="font-bold">${enemy.name}</span>
+                        ${isBoss ? '<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-bold">Boss</span>' : ''}
                     </div>
-                    <div class="flex justify-between text-sm">
+                    <div class="flex justify-between text-sm mb-1">
                         <span>生命值:</span>
-                        <span>${enemy.hp}</span>
+                        <span class="font-bold">${enemy.hp}</span>
                     </div>
-                    <div class="flex justify-between text-sm">
+                    <div class="flex justify-between text-sm mb-1">
                         <span>攻击力:</span>
-                        <span>${enemy.attack}</span>
+                        <span class="font-bold">${enemy.attack}</span>
                     </div>
-                    <div class="flex justify-between text-sm">
+                    <div class="flex justify-between text-sm mb-3">
                         <span>防御力:</span>
-                        <span>${enemy.defense}</span>
+                        <span class="font-bold">${enemy.defense}</span>
                     </div>
                 `;
                 
@@ -2141,30 +2547,55 @@
             
             // 显示奖励信息
             elements.dungeonRewards.classList.remove('hidden');
-            elements.dungeonRewards.innerHTML = '<h4 class="font-medium mb-2">副本奖励</h4>';
+            elements.dungeonRewards.innerHTML = '<h4 class="font-bold mb-3 border-b-2 border-gray-100 pb-2">副本奖励</h4>';
             
             let rewardsHtml = `
                 <div class="space-y-2 text-sm">
                     <div class="flex items-center">
-                        <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4 mr-1">
-                        <span>${dungeon.rewards.gold} 金币</span>
+                        <div class="resource-icon mr-2">
+                            <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/e435da572dd0488a9bb08a078e899de2~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260427165052582131EEFAA2A8D47A3C&rrcfp=f06b921b&x-expires=1779871915&x-signature=JnhjZjlf6Kqqd1dCOhPH7g%2FmRvE%3D" alt="铜钱" class="w-4 h-4">
+                        </div>
+                        <span class="font-bold">${dungeon.rewards.gold} 金币</span>
                     </div>
                     <div class="flex items-center">
-                        <i class="fa fa-star text-secondary mr-1"></i>
-                        <span>${dungeon.rewards.exp} 经验值</span>
+                        <div class="resource-icon mr-2">
+                            <i class="fa fa-star text-accent"></i>
+                        </div>
+                        <span class="font-bold">${dungeon.rewards.exp} 经验值</span>
                     </div>
             `;
             
             if (dungeon.rewards.item) {
-                rewardsHtml += '<div>随机装备 × 1</div>';
+                rewardsHtml += `
+                    <div class="flex items-center">
+                        <div class="resource-icon mr-2">
+                            <i class="fa fa-gift text-primary"></i>
+                        </div>
+                        <span class="font-bold">随机装备 × 1</span>
+                    </div>
+                `;
             }
             
             if (dungeon.rewards.rareItem) {
-                rewardsHtml += '<div class="text-blue-600">随机稀有装备 × 1</div>';
+                rewardsHtml += `
+                    <div class="flex items-center">
+                        <div class="resource-icon mr-2">
+                            <i class="fa fa-gift text-primary"></i>
+                        </div>
+                        <span class="font-bold text-blue-600">随机稀有装备 × 1</span>
+                    </div>
+                `;
             }
             
             if (dungeon.rewards.epicItem) {
-                rewardsHtml += '<div class="text-purple-600">随机史诗装备 × 1</div>';
+                rewardsHtml += `
+                    <div class="flex items-center">
+                        <div class="resource-icon mr-2">
+                            <i class="fa fa-gift text-primary"></i>
+                        </div>
+                        <span class="font-bold text-purple-600">随机史诗装备 × 1</span>
+                    </div>
+                `;
             }
             
             rewardsHtml += '</div>';
